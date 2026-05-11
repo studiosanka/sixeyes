@@ -230,6 +230,27 @@ Prototype policy for this revision:
 
 If your exact connector stock differs, keep net names and pin order unchanged and only swap footprint package.
 
+## 4.1.1 Devboard Header Footprints (Explicit)
+
+All controller/driver modules are treated as pluggable devboards and must connect through 2.54 mm through-hole headers.
+
+ESP32-S3 devboard (on main PCB):
+- PCB footprint: PinSocket_1x19_P2.54mm_Vertical x2 (female socket on PCB).
+- Devboard mating part: PinHeader_1x19_P2.54mm_Vertical x2 (male pins soldered on ESP32 devboard).
+
+TMC2209 devboards (each driver on main PCB):
+- PCB footprint: PinSocket_1x08_P2.54mm_Vertical x2 per driver.
+- Devboard mating part: PinHeader_1x08_P2.54mm_Vertical x2 soldered on each TMC board.
+
+Alternative if you want lower stack height:
+- Use PinHeader_* on PCB and PinSocket_* on module side, but keep 2.54 mm pitch and same pin count.
+
+Mechanical/orientation notes:
+- Add clear silkscreen marker for pin 1 on every devboard socket row.
+- Keep at least 2.0 mm courtyard clearance around sockets for insertion/removal.
+- Lock one orientation only (no mirrored socket rows).
+- Place TMC sockets so EN/STEP/DIR/PDN side is consistent across J1..J4.
+
 ## 4.2 Discrete Passives BOM (Through-Hole)
 
 These are the minimum recommended passives for stable first-spin bring-up.
