@@ -343,6 +343,138 @@ Place these as:
 - Signal jumpers for unavoidable single-layer crossings.
 - Ground jumpers between disconnected ground-pour islands.
 
+## 4.5 Schematic Symbols (What To Use)
+
+Use hierarchical, connector-style symbols for devboards so pin names match firmware nets directly.
+
+Recommended symbol naming in your schematic library:
+- U1: ESP32_S3_DEVBOARD_2x19
+- U2-U5: TMC2209_DEVBOARD_2x08
+- J1_MOTOR..J4_MOTOR: JST6_STEPPER_4USED
+- J_SERVO1..J_SERVO3: JST3_SERVO
+- H_UART1: HDR_1x04_UART
+- H_SD1: HDR_1x06_SD_SPI
+
+### 4.5.1 ESP32-S3 Devboard Symbol (U1)
+
+Create one multi-pin symbol named ESP32_S3_DEVBOARD_2x19 with at least the used pins below exposed and labeled exactly:
+
+| Symbol Pin Name | MCU GPIO | Net Label to Wire |
+|:--|:--|:--|
+| GPIO4 | 4 | STEP_J1 |
+| GPIO5 | 5 | DIR_J1 |
+| GPIO6 | 6 | EN_ALL |
+| GPIO7 | 7 | PDN_J1 |
+| GPIO8 | 8 | STEP_J2 |
+| GPIO9 | 9 | DIR_J2 |
+| GPIO11 | 11 | PDN_J2 |
+| GPIO12 | 12 | STEP_J3 |
+| GPIO13 | 13 | DIR_J3 |
+| GPIO15 | 15 | PDN_J3 |
+| GPIO16 | 16 | STEP_J4 |
+| GPIO17 | 17 | DIR_J4 |
+| GPIO21 | 21 | PDN_J4 |
+| GPIO35 | 35 | SERVO_WRIST_PITCH |
+| GPIO36 | 36 | SERVO_WRIST_YAW |
+| GPIO37 | 37 | SERVO_GRIPPER |
+| GPIO38 | 38 | UART_LEADER_RX |
+| GPIO39 | 39 | UART_LEADER_TX |
+| GPIO40 | 40 | SD_SCK |
+| GPIO41 | 41 | SD_MISO |
+| GPIO42 | 42 | SD_MOSI |
+| GPIO2 | 2 | SD_CS |
+| 3V3 | - | +3V3_LOGIC |
+| GND | - | GND |
+
+Symbol rules:
+- Mark GPIO pins as bidirectional/passive (project preference), power pins as power input.
+- Keep pin names as GPIOxx text, not custom aliases.
+
+### 4.5.2 TMC2209 Devboard Symbol (U2-U5)
+
+Create symbol TMC2209_DEVBOARD_2x08 with these functional pins:
+
+| Symbol Pin Name | Net (Per Channel x) |
+|:--|:--|
+| STEP | STEP_Jx |
+| DIR | DIR_Jx |
+| EN | EN_ALL |
+| PDN_UART | PDN_Jx |
+| VIO | +3V3_LOGIC |
+| VMOT | +24V_MOTOR |
+| GND | GND |
+| OA1 | Jx_MOTOR_PIN1 (COIL_A+) |
+| OA2 | Jx_MOTOR_PIN2 (COIL_A-) |
+| OB1 | Jx_MOTOR_PIN3 (COIL_B+) |
+| OB2 | Jx_MOTOR_PIN4 (COIL_B-) |
+
+Instantiate four copies:
+- U2 (J1), U3 (J2), U4 (J3), U5 (J4)
+
+### 4.5.3 JST-6 Stepper Connector Symbol (Jx_MOTOR)
+
+Create symbol JST6_STEPPER_4USED (single-row 6-pin connector):
+
+| Connector Pin | Net |
+|:--|:--|
+| 1 | Jx_MOTOR_PIN1 / COIL_A+ |
+| 2 | Jx_MOTOR_PIN2 / COIL_A- |
+| 3 | Jx_MOTOR_PIN3 / COIL_B+ |
+| 4 | Jx_MOTOR_PIN4 / COIL_B- |
+| 5 | NC |
+| 6 | NC |
+
+In KiCad, set pins 5 and 6 as passive and mark explicitly as NC with no-connect flags.
+
+### 4.5.4 JST-3 Servo Connector Symbol (J_SERVOx)
+
+Create symbol JST3_SERVO:
+
+| Connector Pin | Net |
+|:--|:--|
+| 1 | GND |
+| 2 | +6V6_SERVO |
+| 3 | SERVO_* (per channel) |
+
+Use three instances with signal nets:
+- J_SERVO1 -> SERVO_WRIST_PITCH
+- J_SERVO2 -> SERVO_WRIST_YAW
+- J_SERVO3 -> SERVO_GRIPPER
+
+### 4.5.5 UART Header Symbol (H_UART1)
+
+Create symbol HDR_1x04_UART:
+
+| Header Pin | Net |
+|:--|:--|
+| 1 | GND |
+| 2 | UART_LEADER_RX |
+| 3 | UART_LEADER_TX |
+| 4 | +3V3_LOGIC (optional) |
+
+### 4.5.6 SD Header Symbol (H_SD1)
+
+Create symbol HDR_1x06_SD_SPI:
+
+| Header Pin | Net |
+|:--|:--|
+| 1 | +3V3_LOGIC |
+| 2 | GND |
+| 3 | SD_SCK |
+| 4 | SD_MISO |
+| 5 | SD_MOSI |
+| 6 | SD_CS |
+
+### 4.5.7 Power Symbols and Net Labels
+
+Use global power symbols and labels:
+- +24V_MOTOR
+- +6V6_SERVO
+- +3V3_LOGIC
+- GND
+
+For readability, place net labels on every cross-sheet entry even if wires are continuous.
+
 ---
 
 ## 5) Trace Width, Clearance, and Via Rules
