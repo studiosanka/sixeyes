@@ -6,6 +6,7 @@ Design intent for this revision:
 - Single-layer routing for prototype bring-up.
 - Use jumper wires for unavoidable crossovers and to stitch ground islands/pours.
 - Keep compatibility with current follower firmware and NodeMesh direction.
+- Through-hole parts only for this prototype spin.
 
 ---
 
@@ -63,6 +64,7 @@ Use these exact net names in schematic and PCB for easy firmware cross-check:
 - EN_ALL
 - SERVO_WRIST_PITCH, SERVO_WRIST_YAW, SERVO_GRIPPER
 - UART_LEADER_RX, UART_LEADER_TX
+- SD_SCK, SD_MISO, SD_MOSI, SD_CS
 - +24V_MOTOR, +6V6_SERVO, +3V3_LOGIC, GND
 
 Optional debug nets (recommended):
@@ -114,11 +116,30 @@ Per driver block Jx:
 - Motor outputs OA1/OA2/OB1/OB2 -> matching motor connector Jx_MOTOR
 
 Recommended support passives per driver:
-- 100 nF ceramic decoupler at VIO-to-GND.
-- Bulk capacitor near VMOT entry area (see power section).
-- PDN line: keep short and include optional 0R series link footprint for debug isolation.
+- 100 nF through-hole decoupler at VIO-to-GND.
+- 4.7 k pull-up on each PDN_Jx to +3V3_LOGIC.
+- Optional 0R (through-hole axial) series link on each PDN_Jx for debug isolation.
+- Bulk capacitor near VMOT entry area (see passives section).
 
-## 3.3 Servo Connectors (3-pin each)
+## 3.3 Stepper Motor Outputs (6-pin JST, 4 used)
+
+Use one 6-pin JST connector per NEMA17 stepper channel, with only pins 1-4 populated electrically.
+
+Per motor connector Jx_MOTOR (x4):
+- Pin 1: COIL_A+
+- Pin 2: COIL_A-
+- Pin 3: COIL_B+
+- Pin 4: COIL_B-
+- Pin 5: NC
+- Pin 6: NC
+
+Channel mapping:
+- J1_MOTOR -> TMC2209 J1 OA1/OA2/OB1/OB2
+- J2_MOTOR -> TMC2209 J2 OA1/OA2/OB1/OB2
+- J3_MOTOR -> TMC2209 J3 OA1/OA2/OB1/OB2
+- J4_MOTOR -> TMC2209 J4 OA1/OA2/OB1/OB2
+
+## 3.4 Servo Connectors (3-pin JST each)
 
 For each servo connector:
 - Pin 1: GND
@@ -130,7 +151,7 @@ Signal map:
 - Servo 2 signal -> SERVO_WRIST_YAW
 - Servo 3 signal -> SERVO_GRIPPER
 
-## 3.4 Leader/Follower UART Connector
+## 3.5 Leader/Follower UART Connector
 
 4-pin recommended header:
 - Pin 1: GND
@@ -138,7 +159,7 @@ Signal map:
 - Pin 3: UART_LEADER_TX (leader RX)
 - Pin 4: +3V3_LOGIC (optional, only if power-sharing is required)
 
-## 3.5 Power Input and Rails
+## 3.6 Power Input and Rails
 
 Power entry terminal (2-pin minimum):
 - VIN_24V -> +24V_MOTOR
@@ -152,11 +173,43 @@ Ground strategy for single-layer prototype:
 - One primary ground pour on bottom.
 - If pour is segmented by traces, stitch segments with dedicated wire jumpers (labeled GND_JMP1, GND_JMP2, ...).
 
+## 3.7 SD Card Reader Board (SPI) Pinout
+
+Use a through-hole 6-pin header to connect a standard SPI microSD reader board.
+
+ESP32-S3 to SD net mapping:
+- GPIO40 -> SD_SCK
+- GPIO41 -> SD_MISO
+- GPIO42 -> SD_MOSI
+- GPIO2 -> SD_CS
+
+Recommended SD header pinout (H_SD1, 1x06):
+- Pin 1: +3V3_LOGIC (to SD VCC)
+- Pin 2: GND
+- Pin 3: SD_SCK
+- Pin 4: SD_MISO
+- Pin 5: SD_MOSI
+- Pin 6: SD_CS
+
+Wire-up to common SD module labels:
+- SD_SCK -> CLK
+- SD_MISO -> DO / MISO
+- SD_MOSI -> DI / MOSI
+- SD_CS -> CS / SS
+
+Important:
+- Use 3.3V SD modules for direct ESP32-S3 logic compatibility.
+- Keep SD SPI traces short and away from motor phase traces.
+
 ---
 
 ## 4) Footprints and Package Choices
 
 Use common KiCad library footprints where possible to avoid custom risk.
+
+Prototype policy for this revision:
+- Through-hole parts only.
+- No SMD passives in this build.
 
 ## 4.1 Recommended Footprint Map
 
@@ -165,15 +218,81 @@ Use common KiCad library footprints where possible to avoid custom risk.
 | ESP32-S3 DevKitC-1 socket headers | PinSocket_1x19_P2.54mm_Vertical x2 (adjust pin count to module) |
 | TMC2209 carrier sockets | PinSocket_1x08_P2.54mm_Vertical x2 per driver (for stepstick-style modules) |
 | Servo connectors | JST_XH_B3B-XH-A_1x03_P2.50mm_Vertical |
-| Motor outputs | JST_VH_B4B-VH_1x04_P3.96mm_Vertical or screw terminal 4-pin |
+| Motor outputs (6-pin, 4 active) | JST_XH_B6B-XH-A_1x06_P2.50mm_Vertical (or same-series equivalent matching your harness pitch) |
 | Main power in | TerminalBlock_1x02_P5.08mm |
 | UART link | PinHeader_1x04_P2.54mm_Vertical |
+| SD reader board header | PinHeader_1x06_P2.54mm_Vertical |
 | Test points | TestPoint_Pad_D1.5mm |
 | Mount holes | MountingHole_3.2mm_M3 |
+| Through-hole resistors | R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal |
+| Through-hole electrolytics | CP_Radial_D8.0mm_P3.50mm, CP_Radial_D10.0mm_P5.00mm (based on value/voltage) |
+| Through-hole film/ceramic caps | C_Disc_D5.0mm_W2.5mm_P5.00mm or C_Rect_L7.2mm_W2.5mm_P5.00mm |
 
 If your exact connector stock differs, keep net names and pin order unchanged and only swap footprint package.
 
-## 4.2 Optional Custom Footprint Code (KiCad .kicad_mod Template)
+## 4.2 Discrete Passives BOM (Through-Hole)
+
+These are the minimum recommended passives for stable first-spin bring-up.
+
+| RefDes | Qty | Value | Type | Voltage/Power | Net Placement |
+|:--|:--:|:--|:--|:--|:--|
+| C1 | 1 | 470 uF | Electrolytic radial | 35V min | +24V_MOTOR to GND at power entry |
+| C2 | 1 | 1 uF | Film/ceramic THT | 50V min | +24V_MOTOR to GND near TMC bank |
+| C3 | 1 | 100 nF | Ceramic disc THT | 50V min | +24V_MOTOR to GND near TMC bank |
+| C4 | 1 | 1000 uF | Electrolytic radial | 16V min | +6V6_SERVO to GND at servo power fan-out |
+| C5 | 1 | 100 nF | Ceramic disc THT | 25V min | +6V6_SERVO to GND near servo connector cluster |
+| C6 | 1 | 220 uF | Electrolytic radial | 10V min | +3V3_LOGIC to GND near ESP32 socket |
+| C7-C10 | 4 | 100 nF | Ceramic disc THT | 25V min | Each TMC VIO pin to nearest GND |
+| C11 | 1 | 100 nF | Ceramic disc THT | 25V min | +3V3_LOGIC to GND near UART header |
+| C12 | 1 | 10 uF | Electrolytic radial | 10V min | +3V3_LOGIC to GND near SD header |
+| C13 | 1 | 100 nF | Ceramic disc THT | 25V min | +3V3_LOGIC to GND near SD header |
+| R1-R4 | 4 | 4.7 k | Axial resistor | 1/4W | PDN_J1..PDN_J4 pull-up to +3V3_LOGIC |
+| R5-R8 | 4 | 0R link | Axial resistor | 1/4W | Series on PDN_J1..PDN_J4 (optional debug isolation) |
+| R9-R11 | 3 | 100 k | Axial resistor | 1/4W | Servo signal pulldown to GND (one per SERVO_* net) |
+| R12-R13 | 2 | 220 ohm | Axial resistor | 1/4W | Series on UART_LEADER_RX and UART_LEADER_TX (optional EMI damping) |
+| R14-R17 | 4 | 33 ohm | Axial resistor | 1/4W | Series on SD_SCK/SD_MISO/SD_MOSI/SD_CS (optional signal damping) |
+
+Notes:
+- R5-R8 can be DNI if you prefer direct PDN routing.
+- R12-R13 can be DNI if UART link is short and clean.
+- Keep all capacitor leads short, especially C7-C10 around TMC VIO pins.
+
+## 4.3 Discrete Passives Wiring Guide
+
+Follow this order for clean bring-up.
+
+1. 24V input filtering:
+- Wire C1 directly across +24V_MOTOR and GND at the board input terminal.
+- Place C2 and C3 in parallel across +24V_MOTOR and GND near the first/center TMC driver socket.
+
+2. 6.6V servo rail stabilization:
+- Wire C4 across +6V6_SERVO and GND at the servo rail branch point.
+- Add C5 near the servo connector cluster between +6V6_SERVO and GND.
+
+3. 3.3V logic rail stabilization:
+- Place C6 across +3V3_LOGIC and GND near ESP32 power entry pins.
+- Place C11 across +3V3_LOGIC and GND near UART header/logic edge.
+- Place C12 and C13 across +3V3_LOGIC and GND near the SD header.
+
+4. Per-driver logic decoupling:
+- Place C7, C8, C9, C10 each from TMC VIO to nearest GND on J1..J4 respectively.
+
+5. PDN conditioning:
+- Route PDN_J1..PDN_J4 from ESP32 to corresponding drivers.
+- Add R1-R4 as pull-ups from each PDN_Jx net to +3V3_LOGIC.
+- Insert R5-R8 in series on each PDN_Jx trace (ESP32 side -> resistor -> driver side).
+
+6. Servo signal default-safe state:
+- Add R9-R11 from SERVO_WRIST_PITCH, SERVO_WRIST_YAW, SERVO_GRIPPER to GND.
+
+7. UART damping:
+- Place R12 in series on UART_LEADER_RX and R13 in series on UART_LEADER_TX close to ESP32 header side.
+
+8. SD SPI conditioning:
+- Route SD_SCK, SD_MISO, SD_MOSI, SD_CS from ESP32 pins to H_SD1.
+- Optionally place R14-R17 in series on each SD line near the ESP32 side.
+
+## 4.4 Optional Custom Footprint Code (KiCad .kicad_mod Template)
 
 Use this only when you need a custom jumper pad footprint for GND stitching wires.
 
@@ -251,6 +370,9 @@ Schematic/ERC:
 - PDN_J1..PDN_J4 are unique and not tied together.
 - UART_LEADER_RX/TX are correctly crossed to leader board.
 - All servo connectors have GND and +6V6_SERVO in correct pin order.
+- All stepper JST-6 connectors map pins 1..4 to motor phases and pins 5..6 as NC.
+- SD header maps exactly: 40/41/42/2 to SD_SCK/SD_MISO/SD_MOSI/SD_CS.
+- All listed passives are through-hole package footprints (no SMD passives).
 
 PCB/DRC:
 - No unrouted nets.
@@ -269,7 +391,7 @@ Bring-up:
 
 For this follower motor board revision:
 - Keep the board focused on motion/servo/UART.
-- Do not route Node0 SD SPI (GPIO40/41/42/2) unless this board is intentionally merged with Node0 orchestrator roles.
+- SD SPI header is optional for NodeMesh expansion and should use GPIO40/41/42/2 mapping above.
 
 This keeps the follower board modular and consistent with NodeMesh partitioning.
 
@@ -284,8 +406,10 @@ Pin map summary:
 - PDN: GPIO7,11,15,21
 - Servo PWM: GPIO35,36,37
 - UART: RX GPIO38, TX GPIO39
+- SD SPI: SCK GPIO40, MISO GPIO41, MOSI GPIO42, CS GPIO2
 
 Prototype constraints:
 - Single-layer priority.
 - Use labeled jumper wires for crossings and GND pour stitching.
 - Use wide power traces and keep motor-current loops compact.
+- Use through-hole components and JST XH-style connectors for this prototype.
