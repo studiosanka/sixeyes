@@ -91,7 +91,7 @@ Navigation guide for SixEyes firmware, ROS2, teleoperation, and hardware documen
   - Grounding and noise management
 
 #### [Dual-Controller Pinout & Wiring Matrix](hardware/DUAL_CONTROLLER_PINOUT_MATRIX.md)
-- **Contents**: Consolidated pin map for both ESP32-S3 boards, 4× TMC2209 channels, servos, UART links, and power rails
+- **Contents**: Consolidated pin map for leader ESP32-C6 SuperMini and follower ESP32-S3, 4× TMC2209 channels, servos, UART links, and power rails
 - **Best For**: Fast verification of inter-board wiring and GPIO assignments against Technical Reference 2
 - **Read Time**: 8 minutes
 - **Key Sections**:

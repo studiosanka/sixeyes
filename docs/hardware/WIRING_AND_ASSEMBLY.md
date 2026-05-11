@@ -1,6 +1,6 @@
 # SixEyes Wiring & Hardware Assembly Guide
 
-Complete reference for physically integrating the ESP32-S3 controllers with motors, servos, and the onboard power architecture.
+Complete reference for physically integrating the ESP32 controllers with motors, servos, and the onboard power architecture.
 
 For dual-mode operation, hardware can be deployed in two configurations:
 - **VLA Inference**: follower controller only
@@ -37,7 +37,7 @@ Motors + Servos
 ### Teleoperation Topology
 
 ```
-Leader ESP32 (joint sensors) --USB--> Laptop Bridge --USB--> Follower ESP32-S3
+Leader ESP32-C6 SuperMini (joint sensors) --USB--> Laptop Bridge --USB--> Follower ESP32-S3
                                      ↕
                                   Motors + Servos
 ```
@@ -52,10 +52,15 @@ Leader ESP32 (joint sensors) --USB--> Laptop Bridge --USB--> Follower ESP32-S3
 ## Parts List
 
 ### Controller
-- **ESP32-S3-WROOM-1 DevKit** (or compatible board)
+- **Follower: ESP32-S3-WROOM-1 DevKit** (or ESP32-S3 SuperMini)
   - Dual-core 240 MHz
   - Native USB-CDC
   - 320 KB RAM, 8 MB Flash
+  - GPIO: 3.3V logic
+
+- **Leader: ESP32-C6 SuperMini**
+  - Single-core RISC-V 160 MHz
+  - Native USB Serial/JTAG
   - GPIO: 3.3V logic
 
 ### Stepper Motors & Drivers

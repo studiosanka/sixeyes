@@ -6,11 +6,11 @@ Primary source: `docs/references/SixEyes Technical Reference 2.txt`.
 
 ---
 
-## 1) Leader ESP32-S3 (Teleoperation Controller)
+## 1) Leader ESP32-C6 SuperMini (Teleoperation Controller)
 
 ### Analog Inputs (Potentiometers)
 
-| Joint Input | ESP32-S3 GPIO |
+| Joint Input | ESP32-C6 GPIO |
 |:------------|:--------------|
 | Pot 1 | GPIO1 |
 | Pot 2 | GPIO2 |
@@ -103,7 +103,7 @@ Embedded boards focus on motor/sensor/safety/telemetry; laptop handles camera + 
 
 | Item | Status | Firmware Reference |
 |:-----|:-------|:-------------------|
-| Leader ADC pins GPIO1..GPIO6 | ✅ Aligned | `sixeyes/firmware/leader_esp32/src/main.cpp` |
+| Leader ADC pins GPIO1..GPIO6 | ✅ Aligned | `sixeyes/firmware/leader_esp32/src/main.cpp` (ESP32-C6 SuperMini) |
 | Follower TMC2209 pin map | ✅ Aligned | `sixeyes/firmware/follower_esp32/src/modules/drivers/tmc2209/tmc2209_config.h` |
 | Follower UART pins GPIO38/39 | ✅ Aligned | `sixeyes/firmware/follower_esp32/src/modules/config/board_config.h`, `.../uart_leader.cpp` |
 | Servo outputs GPIO35/36/37 | ✅ Aligned | `sixeyes/firmware/follower_esp32/src/modules/servo_control/servo_manager.h` |

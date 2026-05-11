@@ -66,7 +66,11 @@ This guide now covers **dual-mode firmware setup**:
 
 ### Hardware Preparation
 
-- [ ] **ESP32-S3 DevKitC-1 board** (or compatible)
+- [ ] **Follower: ESP32-S3 DevKitC-1 board** (or ESP32-S3 SuperMini)
+  - Identify USB port for programming
+  - Good quality USB cable available (not cheap knockoff)
+
+- [ ] **Leader: ESP32-C6 SuperMini board**
   - Identify USB port for programming
   - Good quality USB cable available (not cheap knockoff)
 
@@ -120,7 +124,7 @@ pio run
 
 **Expected Output**:
 ```
-Processing leader_esp32 (platform: espressif32; board: esp32dev; ...)
+Processing leader_esp32 (platform: espressif32; board: esp32-c6-devkitc-1; ...)
 Building in release mode
 ====== BUILD SUCCESSFUL ======
 ```

@@ -128,7 +128,7 @@ follower_esp32/
 └── test/
     ├── mock_hardware.h
     ├── test_vla_mode.cpp       (VLA-specific tests)
-    └── test_teleoperation_mode.cpp  (Teleoperation tests)
+    └── test_teleoperation_mode.cpp  (Teleoperation tests)q 
 ```
 
 ### Option 2: Runtime Mode Selection (More Flexible, Phase 2)

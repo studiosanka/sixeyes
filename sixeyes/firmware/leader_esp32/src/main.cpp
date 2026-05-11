@@ -1,4 +1,4 @@
-// Leader ESP32 teleoperation streamer
+// Leader ESP32-C6 SuperMini teleoperation streamer
 // Role: sample leader-arm joint inputs and publish JOINT_STATE at 100 Hz.
 
 #include <Arduino.h>
@@ -159,13 +159,13 @@ void setup() {
   delay(100);
 
   analogReadResolution(12);
-  analogSetAttenuation(ADC_11db);
+  analogSetAttenuation(ADC_ATTEN_DB_11);
 
   for (size_t i = 0; i < NUM_JOINTS; ++i) {
     pinMode(JOINT_ADC_PINS[i], INPUT);
   }
 
-  Serial.println("SixEyes leader_esp32 starting (teleoperation mode)");
+  Serial.println("SixEyes leader_esp32 (ESP32-C6 SuperMini) starting (teleoperation mode)");
   Serial.println("Streaming JOINT_STATE at 100 Hz");
   Serial.println("Send HOME_ZERO or CAPTURE_ZERO to latch current pot pose");
 }
