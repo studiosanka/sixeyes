@@ -2,9 +2,12 @@
 
 An open-source, in-progress robotics platform for a 6-degree-of-freedom arm, spanning ESP32 firmware, ROS2 integration, teleoperation tooling, and hardware bring-up.
 
+NodeMesh-specific firmware and IC-design work has moved to a dedicated repository: [https://github.com/SixEyes-Open-Source/nodemesh](https://github.com/SixEyes-Open-Source/nodemesh).
+
 ## Quick Links
 
 - 📘 **Getting Started**: Read [Complete Documentation Index](docs/README.md#quick-start)
+- 🧠 **NodeMesh Repository**: [SixEyes-Open-Source/nodemesh](https://github.com/SixEyes-Open-Source/nodemesh)
 - 🚀 **Deploy Firmware**: [Flashing & Deployment Guide](docs/deployment/FLASHING_AND_DEPLOYMENT.md)
 - 🔌 **Build Hardware**: [Wiring & Assembly Guide](docs/hardware/WIRING_AND_ASSEMBLY.md)
 - 🧩 **Pinout Matrix**: [Dual-Controller Pinout & Wiring Matrix](docs/hardware/DUAL_CONTROLLER_PINOUT_MATRIX.md)

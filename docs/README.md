@@ -2,6 +2,8 @@
 
 Navigation guide for SixEyes firmware, ROS2, teleoperation, and hardware documentation.
 
+NodeMesh-specific materials now live in a separate repository: [https://github.com/SixEyes-Open-Source/nodemesh](https://github.com/SixEyes-Open-Source/nodemesh).
+
 ## Quick Start
 
 👉 **New to SixEyes?** Start here based on your role:

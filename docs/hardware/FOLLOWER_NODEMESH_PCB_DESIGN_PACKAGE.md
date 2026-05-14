@@ -1,5 +1,7 @@
 # SixEyes Follower PCB Design Package (NodeMesh-Aware)
 
+Migration note: active NodeMesh firmware and NodeMesh-specific architecture docs are maintained in [https://github.com/SixEyes-Open-Source/nodemesh](https://github.com/SixEyes-Open-Source/nodemesh).
+
 This document is a practical, copy-into-CAD checklist for the first follower PCB prototype.
 
 Design intent for this revision:

@@ -2,6 +2,8 @@
 
 Open-source 6 DOF robotic arm for Vision–Language–Action (VLA) research.
 
+NodeMesh-specific firmware and IC-design artifacts were moved to: [https://github.com/SixEyes-Open-Source/nodemesh](https://github.com/SixEyes-Open-Source/nodemesh).
+
 This repository follows the authoritative system specification in `SixEyes Technical Reference.txt` and implements a distributed embodied AI platform where the laptop handles intelligence and ESP32 devices handle deterministic control and safety.
 
 Repository layout (top-level):
