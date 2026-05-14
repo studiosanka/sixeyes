@@ -107,15 +107,20 @@ Power/header pins:
 
 ## 3.2 TMC2209 Drivers (x4)
 
-Per driver block Jx:
+Per driver block Jx (stepstick-style 2x08 module):
 - STEP pin -> STEP_Jx
 - DIR pin -> DIR_Jx
 - EN pin -> EN_ALL
-- PDN_UART pin -> PDN_Jx
-- VIO -> +3V3_LOGIC
-- VMOT -> +24V_MOTOR
+- PDN pin -> PDN_Jx
+- VIO / VDD -> +3V3_LOGIC
+- VMOT / VM -> +24V_MOTOR
 - GND pins -> GND
-- Motor outputs OA1/OA2/OB1/OB2 -> matching motor connector Jx_MOTOR
+- Motor outputs A1/A2/B1/B2 -> matching motor connector Jx_MOTOR
+
+Reference socket orientation used in this project:
+- Logic row: EN, MS1, MS2, PDN, CLK, STEP, DIR
+- Power/motor row: VM, GND, A2, A1, B1, B2, VDD, GND
+- MS1, MS2, and CLK are reserved for future use unless explicitly wired.
 
 Recommended support passives per driver:
 - 100 nF through-hole decoupler at VIO-to-GND.
@@ -127,19 +132,19 @@ Recommended support passives per driver:
 
 Use one 6-pin JST connector per NEMA17 stepper channel, with only pins 1-4 populated electrically.
 
-Per motor connector Jx_MOTOR (x4):
-- Pin 1: COIL_A+
-- Pin 2: COIL_A-
-- Pin 3: COIL_B+
-- Pin 4: COIL_B-
+Per motor connector Jx_MOTOR (x4), fixed cable order:
+- Pin 1: 1B (B1)
+- Pin 2: 2A (A2)
+- Pin 3: 1A (A1)
+- Pin 4: 2B (B2)
 - Pin 5: NC
 - Pin 6: NC
 
 Channel mapping:
-- J1_MOTOR -> TMC2209 J1 OA1/OA2/OB1/OB2
-- J2_MOTOR -> TMC2209 J2 OA1/OA2/OB1/OB2
-- J3_MOTOR -> TMC2209 J3 OA1/OA2/OB1/OB2
-- J4_MOTOR -> TMC2209 J4 OA1/OA2/OB1/OB2
+- J1_MOTOR -> TMC2209 J1 B1/A2/A1/B2 (pins 1/2/3/4)
+- J2_MOTOR -> TMC2209 J2 B1/A2/A1/B2 (pins 1/2/3/4)
+- J3_MOTOR -> TMC2209 J3 B1/A2/A1/B2 (pins 1/2/3/4)
+- J4_MOTOR -> TMC2209 J4 B1/A2/A1/B2 (pins 1/2/3/4)
 
 ## 3.4 Servo Connectors (3-pin JST each)
 
@@ -163,13 +168,14 @@ Signal map:
 
 ## 3.6 Power Input and Rails
 
-Power entry terminal (2-pin minimum):
-- VIN_24V -> +24V_MOTOR
-- GND -> GND
+Power terminals in this revision (5x 2-pin terminal blocks):
+- J_PWR1 (PWR-IN-24V): external 24V input -> +24V_MOTOR, GND
+- J_PWR2 (24V-OUT-BUCK3V3-IN): +24V_MOTOR, GND output to 3.3V buck input
+- J_PWR3 (24V-OUT-BUCK6V6-IN): +24V_MOTOR, GND output to 6.6V buck input
+- J_PWR4 (BUCK3V3-OUT-IN): external buck 3.3V output input -> +3V3_LOGIC, GND
+- J_PWR5 (BUCK6V6-OUT-IN): external buck 6.6V output input -> +6V6_SERVO, GND
 
-Buck/regulator outputs:
-- 24V -> 6.6V converter output -> +6V6_SERVO
-- 24V -> 3.3V converter/LDO output -> +3V3_LOGIC
+This architecture intentionally keeps buck converters off-board for prototype flexibility.
 
 Ground strategy for single-layer prototype:
 - One primary ground pour on bottom.
@@ -177,7 +183,7 @@ Ground strategy for single-layer prototype:
 
 ## 3.7 SD Card Reader Board (SPI) Pinout
 
-Use a through-hole 6-pin header to connect a standard SPI microSD reader board.
+Use a through-hole 6-pin socket (female) for direct SD module plug-in, no flying jumpers.
 
 ESP32-S3 to SD net mapping:
 - GPIO40 -> SD_SCK
@@ -185,7 +191,7 @@ ESP32-S3 to SD net mapping:
 - GPIO42 -> SD_MOSI
 - GPIO2 -> SD_CS
 
-Recommended SD header pinout (H_SD1, 1x06):
+Recommended SD socket pinout (H_SD1, 1x06):
 - Pin 1: +3V3_LOGIC (to SD VCC)
 - Pin 2: GND
 - Pin 3: SD_SCK
@@ -218,12 +224,12 @@ Prototype policy for this revision:
 | Ref Type | Suggested Footprint |
 |:--|:--|
 | ESP32-S3 DevKitC-1 socket headers | PinSocket_1x19_P2.54mm_Vertical x2 (adjust pin count to module) |
-| TMC2209 carrier sockets | PinSocket_1x08_P2.54mm_Vertical x2 per driver (for stepstick-style modules) |
+| TMC2209 carrier sockets | PinSocket_2x08_P2.54mm_Vertical per driver (through-hole female socket) |
 | Servo connectors | JST_XH_B3B-XH-A_1x03_P2.50mm_Vertical |
 | Motor outputs (6-pin, 4 active) | JST_XH_B6B-XH-A_1x06_P2.50mm_Vertical (or same-series equivalent matching your harness pitch) |
-| Main power in | TerminalBlock_1x02_P5.08mm |
+| Power terminals (J_PWR1..J_PWR5) | TerminalBlock_1x02_P5.08mm |
 | UART link | PinHeader_1x04_P2.54mm_Vertical |
-| SD reader board header | PinHeader_1x06_P2.54mm_Vertical |
+| SD module direct socket | PinSocket_1x06_P2.54mm_Vertical |
 | Test points | TestPoint_Pad_D1.5mm |
 | Mount holes | MountingHole_3.2mm_M3 |
 | Through-hole resistors | R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal |
@@ -241,8 +247,8 @@ ESP32-S3 devboard (on main PCB):
 - Devboard mating part: PinHeader_1x19_P2.54mm_Vertical x2 (male pins soldered on ESP32 devboard).
 
 TMC2209 devboards (each driver on main PCB):
-- PCB footprint: PinSocket_1x08_P2.54mm_Vertical x2 per driver.
-- Devboard mating part: PinHeader_1x08_P2.54mm_Vertical x2 soldered on each TMC board.
+- PCB footprint: PinSocket_2x08_P2.54mm_Vertical per driver.
+- Devboard mating part: PinHeader_2x08_P2.54mm_Vertical on each TMC board.
 
 Alternative if you want lower stack height:
 - Use PinHeader_* on PCB and PinSocket_* on module side, but keep 2.54 mm pitch and same pin count.
@@ -405,10 +411,10 @@ Create symbol TMC2209_DEVBOARD_2x08 with these functional pins:
 | VIO | +3V3_LOGIC |
 | VMOT | +24V_MOTOR |
 | GND | GND |
-| OA1 | Jx_MOTOR_PIN1 (COIL_A+) |
-| OA2 | Jx_MOTOR_PIN2 (COIL_A-) |
-| OB1 | Jx_MOTOR_PIN3 (COIL_B+) |
-| OB2 | Jx_MOTOR_PIN4 (COIL_B-) |
+| A1 | Jx_MOTOR_PIN3 (1A) |
+| A2 | Jx_MOTOR_PIN2 (2A) |
+| B1 | Jx_MOTOR_PIN1 (1B) |
+| B2 | Jx_MOTOR_PIN4 (2B) |
 
 Instantiate four copies:
 - U2 (J1), U3 (J2), U4 (J3), U5 (J4)
@@ -419,10 +425,10 @@ Create symbol JST6_STEPPER_4USED (single-row 6-pin connector):
 
 | Connector Pin | Net |
 |:--|:--|
-| 1 | Jx_MOTOR_PIN1 / COIL_A+ |
-| 2 | Jx_MOTOR_PIN2 / COIL_A- |
-| 3 | Jx_MOTOR_PIN3 / COIL_B+ |
-| 4 | Jx_MOTOR_PIN4 / COIL_B- |
+| 1 | Jx_MOTOR_PIN1 / 1B |
+| 2 | Jx_MOTOR_PIN2 / 2A |
+| 3 | Jx_MOTOR_PIN3 / 1A |
+| 4 | Jx_MOTOR_PIN4 / 2B |
 | 5 | NC |
 | 6 | NC |
 
@@ -456,7 +462,7 @@ Create symbol HDR_1x04_UART:
 
 ### 4.5.6 SD Header Symbol (H_SD1)
 
-Create symbol HDR_1x06_SD_SPI:
+Create symbol HDR_1x06_SD_SPI (mated to PinSocket_1x06_P2.54mm_Vertical on PCB):
 
 | Header Pin | Net |
 |:--|:--|
@@ -525,7 +531,7 @@ Schematic/ERC:
 - PDN_J1..PDN_J4 are unique and not tied together.
 - UART_LEADER_RX/TX are correctly crossed to leader board.
 - All servo connectors have GND and +6V6_SERVO in correct pin order.
-- All stepper JST-6 connectors map pins 1..4 to motor phases and pins 5..6 as NC.
+- All stepper JST-6 connectors map pins 1..4 as 1B/2A/1A/2B and pins 5..6 as NC.
 - SD header maps exactly: 40/41/42/2 to SD_SCK/SD_MISO/SD_MOSI/SD_CS.
 - All listed passives are through-hole package footprints (no SMD passives).
 
