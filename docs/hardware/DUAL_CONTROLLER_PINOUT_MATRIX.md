@@ -12,11 +12,11 @@ Primary source: `docs/references/SixEyes Technical Reference 2.txt`.
 
 | Joint Input | ESP32-C6 GPIO |
 |:------------|:--------------|
-| Pot 1 | GPIO1 |
-| Pot 2 | GPIO2 |
-| Pot 3 | GPIO3 |
-| Pot 4 | GPIO4 |
-| Pot 5 | GPIO5 |
+| Pot 1 | GPIO0 |
+| Pot 2 | GPIO1 |
+| Pot 3 | GPIO2 |
+| Pot 4 | GPIO3 |
+| Pot 5 | GPIO4 |
 | Pot 6 | GPIO6 |
 
 ### UART to Follower (Dedicated Inter-Board Link)
@@ -103,7 +103,7 @@ Embedded boards focus on motor/sensor/safety/telemetry; laptop handles camera + 
 
 | Item | Status | Firmware Reference |
 |:-----|:-------|:-------------------|
-| Leader ADC pins GPIO1..GPIO6 | ✅ Aligned | `sixeyes/firmware/leader_esp32/src/main.cpp` (ESP32-C6 SuperMini) |
+| Leader ADC pins GPIO0,1,2,3,4,6 | ✅ Aligned | `sixeyes/firmware/leader_esp32/src/main.cpp` (ESP32-C6 SuperMini) |
 | Follower TMC2209 pin map | ✅ Aligned | `sixeyes/firmware/follower_esp32/src/modules/drivers/tmc2209/tmc2209_config.h` |
 | Follower UART pins GPIO38/39 | ✅ Aligned | `sixeyes/firmware/follower_esp32/src/modules/config/board_config.h`, `.../uart_leader.cpp` |
 | Servo outputs GPIO35/36/37 | ✅ Aligned | `sixeyes/firmware/follower_esp32/src/modules/servo_control/servo_manager.h` |

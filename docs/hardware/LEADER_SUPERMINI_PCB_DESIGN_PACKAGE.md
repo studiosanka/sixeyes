@@ -18,11 +18,11 @@ Authoritative mapping is based on current leader firmware.
 
 | Joint Input | ESP32-C6 GPIO | Net Name |
 |:--|:--|:--|
-| Pot 1 | GPIO1 | POT1_WIPER |
-| Pot 2 | GPIO2 | POT2_WIPER |
-| Pot 3 | GPIO3 | POT3_WIPER |
-| Pot 4 | GPIO4 | POT4_WIPER |
-| Pot 5 | GPIO5 | POT5_WIPER |
+| Pot 1 | GPIO0 | POT1_WIPER |
+| Pot 2 | GPIO1 | POT2_WIPER |
+| Pot 3 | GPIO2 | POT3_WIPER |
+| Pot 4 | GPIO3 | POT4_WIPER |
+| Pot 5 | GPIO4 | POT5_WIPER |
 | Pot 6 | GPIO6 | POT6_WIPER |
 
 ### Inter-Board UART (Leader -> Follower)
@@ -62,11 +62,11 @@ Optional debug nets:
 
 | MCU GPIO | Net |
 |:--|:--|
-| 1 | POT1_WIPER |
-| 2 | POT2_WIPER |
-| 3 | POT3_WIPER |
-| 4 | POT4_WIPER |
-| 5 | POT5_WIPER |
+| 0 | POT1_WIPER |
+| 1 | POT2_WIPER |
+| 2 | POT3_WIPER |
+| 3 | POT4_WIPER |
+| 4 | POT5_WIPER |
 | 6 | POT6_WIPER |
 | 17 | UART_FOLLOWER_RX |
 | 18 | UART_FOLLOWER_TX |
@@ -215,7 +215,7 @@ For low-current leader board signals (1 oz copper):
 ## 7) ERC/DRC Checklist Before Fabrication
 
 Schematic/ERC:
-- POT1..POT6 wipers map exactly to GPIO1..GPIO6.
+- POT1..POT6 wipers map exactly to GPIO0,1,2,3,4,6.
 - UART pins map exactly: TX GPIO17, RX GPIO18.
 - All pot connectors use 3-pin order: 3V3, WIPER, GND.
 - Through-hole package footprints are used for all passives.
@@ -256,11 +256,11 @@ Create symbol ESP32_C6_SUPERMINI_2x12 with at least these pins exposed:
 
 | Symbol Pin Name | MCU GPIO | Net Label |
 |:--|:--|:--|
-| GPIO1 | 1 | POT1_WIPER |
-| GPIO2 | 2 | POT2_WIPER |
-| GPIO3 | 3 | POT3_WIPER |
-| GPIO4 | 4 | POT4_WIPER |
-| GPIO5 | 5 | POT5_WIPER |
+| GPIO0 | 0 | POT1_WIPER |
+| GPIO1 | 1 | POT2_WIPER |
+| GPIO2 | 2 | POT3_WIPER |
+| GPIO3 | 3 | POT4_WIPER |
+| GPIO4 | 4 | POT5_WIPER |
 | GPIO6 | 6 | POT6_WIPER |
 | GPIO17 | 17 | UART_FOLLOWER_RX |
 | GPIO18 | 18 | UART_FOLLOWER_TX |
@@ -310,7 +310,7 @@ Use global labels:
 ## 10) Quick Copy Block for CAD Project Notes
 
 Pin map summary:
-- POT ADC: GPIO1,2,3,4,5,6
+- POT ADC: GPIO0,1,2,3,4,6
 - UART: TX GPIO17, RX GPIO18
 
 Prototype constraints:

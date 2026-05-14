@@ -13,8 +13,9 @@ constexpr uint32_t STREAM_PERIOD_MS = 1000 / STREAM_HZ;
 constexpr size_t NUM_JOINTS = 6;
 constexpr uint16_t ADC_MAX = 4095;
 
-// Leader ADC pins for 6 joint channels (Technical Reference 2).
-constexpr uint8_t JOINT_ADC_PINS[NUM_JOINTS] = {1, 2, 3, 4, 5, 6};
+// Leader ADC pins for 6 joint channels.
+// GPIO5 is intentionally avoided due to board-specific ADC instability.
+constexpr uint8_t JOINT_ADC_PINS[NUM_JOINTS] = {0, 1, 2, 3, 4, 6};
 constexpr const char *CMD_CAPTURE_ZERO = "CAPTURE_ZERO";
 constexpr const char *CMD_HOME_ZERO = "HOME_ZERO";
 

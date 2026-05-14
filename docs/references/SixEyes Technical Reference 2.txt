@@ -91,11 +91,11 @@ Inputs:
 
 Leader Pinout:
 
-Pot 1  → GPIO1
-Pot 2  → GPIO2
-Pot 3  → GPIO3
-Pot 4  → GPIO4
-Pot 5  → GPIO5
+Pot 1  → GPIO0
+Pot 2  → GPIO1
+Pot 3  → GPIO2
+Pot 4  → GPIO3
+Pot 5  → GPIO4
 Pot 6  → GPIO6
 
 UART Link to Follower:
