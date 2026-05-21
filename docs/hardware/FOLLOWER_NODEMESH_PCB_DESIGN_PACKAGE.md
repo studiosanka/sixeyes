@@ -130,21 +130,21 @@ Recommended support passives per driver:
 
 ## 3.3 Stepper Motor Outputs (6-pin JST, 4 used)
 
-Use one 6-pin JST connector per NEMA17 stepper channel, with only pins 1-4 populated electrically.
+Use one 6-pin JST connector per NEMA17 stepper channel for 6-wire bipolar motors, leaving center taps open.
 
-Per motor connector Jx_MOTOR (x4), fixed cable order:
-- Pin 1: 1B (B1)
-- Pin 2: 2A (A2)
-- Pin 3: 1A (A1)
-- Pin 4: 2B (B2)
-- Pin 5: NC
-- Pin 6: NC
+Per motor connector Jx_MOTOR (x4):
+- Pin 1: A+ (TMC A1 / OUT1 / 1A)
+- Pin 2: NC (center tap, leave open)
+- Pin 3: A- (TMC A2 / OUT2 / 2A)
+- Pin 4: B+ (TMC B1 / OUT3 / 1B)
+- Pin 5: NC (center tap, leave open)
+- Pin 6: B- (TMC B2 / OUT4 / 2B)
 
 Channel mapping:
-- J1_MOTOR -> TMC2209 J1 B1/A2/A1/B2 (pins 1/2/3/4)
-- J2_MOTOR -> TMC2209 J2 B1/A2/A1/B2 (pins 1/2/3/4)
-- J3_MOTOR -> TMC2209 J3 B1/A2/A1/B2 (pins 1/2/3/4)
-- J4_MOTOR -> TMC2209 J4 B1/A2/A1/B2 (pins 1/2/3/4)
+- J1_MOTOR -> TMC2209 J1 A1/A2/B1/B2 to connector pins 1/3/4/6
+- J2_MOTOR -> TMC2209 J2 A1/A2/B1/B2 to connector pins 1/3/4/6
+- J3_MOTOR -> TMC2209 J3 A1/A2/B1/B2 to connector pins 1/3/4/6
+- J4_MOTOR -> TMC2209 J4 A1/A2/B1/B2 to connector pins 1/3/4/6
 
 ## 3.4 Servo Connectors (3-pin JST each)
 
@@ -425,12 +425,12 @@ Create symbol JST6_STEPPER_4USED (single-row 6-pin connector):
 
 | Connector Pin | Net |
 |:--|:--|
-| 1 | Jx_MOTOR_PIN1 / 1B |
-| 2 | Jx_MOTOR_PIN2 / 2A |
-| 3 | Jx_MOTOR_PIN3 / 1A |
-| 4 | Jx_MOTOR_PIN4 / 2B |
-| 5 | NC |
-| 6 | NC |
+| 1 | Jx_MOTOR_PIN1 / A+ |
+| 2 | NC (center tap open) |
+| 3 | Jx_MOTOR_PIN2 / A- |
+| 4 | Jx_MOTOR_PIN3 / B+ |
+| 5 | NC (center tap open) |
+| 6 | Jx_MOTOR_PIN4 / B- |
 
 In KiCad, set pins 5 and 6 as passive and mark explicitly as NC with no-connect flags.
 
@@ -531,7 +531,7 @@ Schematic/ERC:
 - PDN_J1..PDN_J4 are unique and not tied together.
 - UART_LEADER_RX/TX are correctly crossed to leader board.
 - All servo connectors have GND and +6V6_SERVO in correct pin order.
-- All stepper JST-6 connectors map pins 1..4 as 1B/2A/1A/2B and pins 5..6 as NC.
+- All stepper JST-6 connectors map active phases to pins 1/3/4/6 with pins 2 and 5 left NC.
 - SD header maps exactly: 40/41/42/2 to SD_SCK/SD_MISO/SD_MOSI/SD_CS.
 - All listed passives are through-hole package footprints (no SMD passives).
 
