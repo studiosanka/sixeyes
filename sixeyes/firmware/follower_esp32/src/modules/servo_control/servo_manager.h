@@ -7,9 +7,9 @@
  * ServoManager: PWM control for MG996R servos
  *
  * SixEyes Follower uses 3× MG996R servos:
- * - Servo 0 (Wrist Pitch):  GPIO35, ~6V
- * - Servo 1 (Wrist Yaw):    GPIO36, ~6V
- * - Servo 2 (Gripper):      GPIO37, ~6V
+ * - Servo 0 (Wrist Pitch):  GPIO40, ~6V
+ * - Servo 1 (Wrist Yaw):    GPIO41, ~6V
+ * - Servo 2 (Gripper):      GPIO42, ~6V
  *
  * PWM Mapping (standard RC servo):
  * - 500 µs  → 0°
@@ -61,7 +61,7 @@ private:
   static constexpr float DEGREES_MIN = 0.0f;
   static constexpr float DEGREES_MAX = 180.0f;
 
-  // Servo GPIO pins: GPIO35, GPIO36, GPIO37
+  // Servo GPIO pins: GPIO40, GPIO41, GPIO42
   static const uint8_t SERVO_PINS[NUM_SERVOS];
 
   // State tracking

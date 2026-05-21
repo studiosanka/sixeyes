@@ -138,18 +138,18 @@ Leader ESP32-C6 SuperMini (joint sensors) --USB--> Laptop Bridge --USB--> Follow
 ├────────────────────────────────────────────────────────┤
 │                                                         │
 │  UART Communication (all 4 drivers on same bus):       │
-│    GPIO17 ──→ Serial2 RX (TMC2209 Si input)          │
-│    GPIO18 ──→ Serial2 TX (TMC2209 So output)         │
+│    See firmware-selected UART path in TMC driver      │
+│    (PDN lines are per-driver GPIO selects below)      │
 │    Speed: 115200 baud                                │
 │                                                         │
 │  Device Selection (PDN pins, active-low):            │
-│    GPIO7  ──→ Motor 0 PDN (Base rotation)            │
-│    GPIO11 ──→ Motor 1 PDN (Shoulder pitch)           │
-│    GPIO15 ──→ Motor 2 PDN (Shoulder roll)            │
-│    GPIO21 ──→ Motor 3 PDN (Elbow pitch)              │
+│    GPIO13 ──→ Motor 0 PDN (Base rotation)            │
+│    GPIO10 ──→ Motor 1 PDN (Shoulder pitch)           │
+│    GPIO16 ──→ Motor 2 PDN (Shoulder roll)            │
+│    GPIO6  ──→ Motor 3 PDN (Elbow pitch)              │
 │                                                         │
 │  Motor Enable (all steppers):                         │
-│    GPIO6  ──→ EN pin (active HIGH, drives all 4)    │
+│    GPIO14 ──→ EN pin (active HIGH, drives all 4)    │
 │                                                         │
 └────────────────────────────────────────────────────────┘
 
@@ -157,9 +157,9 @@ Leader ESP32-C6 SuperMini (joint sensors) --USB--> Laptop Bridge --USB--> Follow
 │  SERVO CONTROL (LEDC PWM, 50 Hz)                       │
 ├────────────────────────────────────────────────────────┤
 │                                                         │
-│    GPIO35 ──→ Servo 0 PWM (Pitch)                     │
-│    GPIO36 ──→ Servo 1 PWM (Yaw)                       │
-│    GPIO37 ──→ Servo 2 PWM (Gripper)                   │
+│    GPIO40 ──→ Servo 0 PWM (Pitch)                     │
+│    GPIO41 ──→ Servo 1 PWM (Yaw)                       │
+│    GPIO42 ──→ Servo 2 PWM (Gripper)                   │
 │                                                         │
 │  PWM Spec:                                             │
 │    Frequency: 50 Hz                                    │
@@ -364,30 +364,30 @@ ASSEMBLY FOR 4 MOTORS:
 
 Motor 0 (Base):
   JST-XH 4-pin ──→ TMC2209 Driver #0 COIL inputs
-  TMC2209 PDN ──→ GPIO7 (pull to GND to disable)
+  TMC2209 PDN ──→ GPIO13 (pull to GND to disable)
 
 Motor 1 (Shoulder Pitch):
   JST-XH 4-pin ──→ TMC2209 Driver #1 COIL inputs
-  TMC2209 PDN ──→ GPIO11 (pull to GND to disable)
+  TMC2209 PDN ──→ GPIO10 (pull to GND to disable)
 
 Motor 2 (Shoulder Roll):
   JST-XH 4-pin ──→ TMC2209 Driver #2 COIL inputs
-  TMC2209 PDN ──→ GPIO15 (pull to GND to disable)
+  TMC2209 PDN ──→ GPIO16 (pull to GND to disable)
 
 Motor 3 (Elbow):
   JST-XH 4-pin ──→ TMC2209 Driver #3 COIL inputs
-  TMC2209 PDN ──→ GPIO21 (pull to GND to disable)
+  TMC2209 PDN ──→ GPIO6 (pull to GND to disable)
 
 SHARED UART BUS (all 4 drivers):
-  GPIO17 (RX) ──→ Si input on all TMC2209 boards
-  GPIO18 (TX) ──→ So output on all TMC2209 boards
+  Use firmware-selected UART pins for TMC2209 bus IO.
+  Inter-board UART is reserved on GPIO18 (RX) and GPIO17 (TX).
   
   Note: Si/So are UART daisy-chained internally.
         All drivers listen on same bus.
         PDN pin selection determines which responds.
 
 MOTOR ENABLE:
-  GPIO6 (EN) ──→ EN input on all 4 TMC2209 boards
+  GPIO14 (EN) ──→ EN input on all 4 TMC2209 boards
                (pull HIGH to enable, LOW to disable)
 ```
 
@@ -462,17 +462,17 @@ ASSEMBLY FOR 3 SERVOS:
 Servo 0 (Pitch):
   GND ─→ 6.6V Power Bus GND
   VCC ─→ 6.6V Power Bus +6.6V
-  PWM ─→ GPIO35 (LEDC channel 0)
+  PWM ─→ GPIO40 (LEDC channel 0)
 
 Servo 1 (Yaw):
   GND ─→ 6.6V Power Bus GND
   VCC ─→ 6.6V Power Bus +6.6V
-  PWM ─→ GPIO36 (LEDC channel 1)
+  PWM ─→ GPIO41 (LEDC channel 1)
 
 Servo 2 (Gripper):
   GND ─→ 6.6V Power Bus GND
   VCC ─→ 6.6V Power Bus +6.6V
-  PWM ─→ GPIO37 (LEDC channel 2)
+  PWM ─→ GPIO42 (LEDC channel 2)
 
 POWER-UP SEQUENCE:
 ═════════════════
@@ -832,7 +832,7 @@ But: Proper PSU with bulk caps usually sufficient.
    - If jittery: swap A± or B± wires
 
 4. **Check PDN signals**:
-   - GPIO7/11/15/21 should be HIGH when idle (3.3V)
+  - GPIO13/10/16/6 should be HIGH when idle (3.3V)
    - Should pulse LOW during UART communication
    - If stuck LOW: GPIO might be shorted to GND
 
@@ -955,16 +955,21 @@ STAR GROUND:       12 AWG (THICK) ────┬─→ ESP32 GND
 ### GPIO Quick Map
 
 ```
-GPIO6   = Motor EN (active HIGH)
-GPIO7   = Motor 0 PDN (active LOW)
-GPIO11  = Motor 1 PDN (active LOW)
-GPIO15  = Motor 2 PDN (active LOW)
-GPIO21  = Motor 3 PDN (active LOW)
-GPIO17  = UART RX (TMC2209)
-GPIO18  = UART TX (TMC2209)
-GPIO35  = Servo 0 PWM
-GPIO36  = Servo 1 PWM
-GPIO37  = Servo 2 PWM
+GPIO13  = Motor 0 PDN (active LOW)
+GPIO10  = Motor 1 PDN (active LOW)
+GPIO16  = Motor 2 PDN (active LOW)
+GPIO6   = Motor 3 PDN (active LOW)
+GPIO14  = Motor EN (active HIGH)
+GPIO18  = UART_LEADER_RX
+GPIO17  = UART_LEADER_TX
+GPIO35  = SD_MOSI
+GPIO36  = SD_SCK
+GPIO37  = SD_MISO
+GPIO38  = SD_CS
+GPIO39  = SD_CD
+GPIO40  = Servo 0 PWM
+GPIO41  = Servo 1 PWM
+GPIO42  = Servo 2 PWM
 ```
 
 ### Power Consumption Budget

@@ -20,25 +20,25 @@ Authoritative mapping is based on current follower firmware and NodeMesh pin doc
 
 | Channel | Joint | STEP | DIR | EN | PDN_UART |
 |:--|:--|:--|:--|:--|:--|
-| J1 | Base | GPIO4 | GPIO5 | GPIO6 (shared EN_ALL) | GPIO7 |
-| J2 | Shoulder A | GPIO8 | GPIO9 | GPIO6 (shared EN_ALL) | GPIO11 |
-| J3 | Shoulder B | GPIO12 | GPIO13 | GPIO6 (shared EN_ALL) | GPIO15 |
-| J4 | Elbow | GPIO16 | GPIO17 | GPIO6 (shared EN_ALL) | GPIO21 |
+| J1 | Base | GPIO12 | GPIO11 | GPIO14 (shared EN_ALL) | GPIO13 |
+| J2 | Shoulder A | GPIO9 | GPIO8 | GPIO14 (shared EN_ALL) | GPIO10 |
+| J3 | Shoulder B | GPIO15 | GPIO7 | GPIO14 (shared EN_ALL) | GPIO16 |
+| J4 | Elbow | GPIO5 | GPIO4 | GPIO14 (shared EN_ALL) | GPIO6 |
 
 ### Servo PWM Outputs
 
 | Function | GPIO | Net Name |
 |:--|:--|:--|
-| Wrist Pitch | GPIO35 | SERVO_WRIST_PITCH |
-| Wrist Yaw | GPIO36 | SERVO_WRIST_YAW |
-| Gripper | GPIO37 | SERVO_GRIPPER |
+| Wrist Pitch | GPIO40 | SERVO_WRIST_PITCH |
+| Wrist Yaw | GPIO41 | SERVO_WRIST_YAW |
+| Gripper | GPIO42 | SERVO_GRIPPER |
 
 ### Inter-Board UART (Leader <-> Follower)
 
 | Signal | Follower GPIO | Net Name |
 |:--|:--|:--|
-| RX (from leader TX) | GPIO38 | UART_LEADER_RX |
-| TX (to leader RX) | GPIO39 | UART_LEADER_TX |
+| RX (from leader TX) | GPIO18 | UART_LEADER_RX |
+| TX (to leader RX) | GPIO17 | UART_LEADER_TX |
 
 ### Power Nets
 
@@ -51,7 +51,9 @@ Authoritative mapping is based on current follower firmware and NodeMesh pin doc
 
 ### Reserved/Free GPIO in this revision
 
-GPIO10, GPIO14, GPIO18
+- Leave unconnected due to board constraints: GPIO3, GPIO46, GPIO19, GPIO20, GPIO45, GPIO0, GPIO44, GPIO43
+- Reserved/free for future use: GPIO21, GPIO47, GPIO1, GPIO2
+- Onboard RGB LED: GPIO48
 
 ---
 
@@ -66,7 +68,7 @@ Use these exact net names in schematic and PCB for easy firmware cross-check:
 - EN_ALL
 - SERVO_WRIST_PITCH, SERVO_WRIST_YAW, SERVO_GRIPPER
 - UART_LEADER_RX, UART_LEADER_TX
-- SD_SCK, SD_MISO, SD_MOSI, SD_CS
+- SD_SCK, SD_MISO, SD_MOSI, SD_CS, SD_CD
 - +24V_MOTOR, +6V6_SERVO, +3V3_LOGIC, GND
 
 Optional debug nets (recommended):
@@ -82,24 +84,29 @@ Optional debug nets (recommended):
 
 | MCU GPIO | Net |
 |:--|:--|
-| 4 | STEP_J1 |
-| 5 | DIR_J1 |
-| 6 | EN_ALL |
-| 7 | PDN_J1 |
-| 8 | STEP_J2 |
-| 9 | DIR_J2 |
-| 11 | PDN_J2 |
-| 12 | STEP_J3 |
-| 13 | DIR_J3 |
-| 15 | PDN_J3 |
-| 16 | STEP_J4 |
-| 17 | DIR_J4 |
-| 21 | PDN_J4 |
-| 35 | SERVO_WRIST_PITCH |
-| 36 | SERVO_WRIST_YAW |
-| 37 | SERVO_GRIPPER |
-| 38 | UART_LEADER_RX |
-| 39 | UART_LEADER_TX |
+| 14 | EN_ALL |
+| 13 | PDN_J1 |
+| 12 | STEP_J1 |
+| 11 | DIR_J1 |
+| 10 | PDN_J2 |
+| 9 | STEP_J2 |
+| 8 | DIR_J2 |
+| 18 | UART_LEADER_RX |
+| 17 | UART_LEADER_TX |
+| 16 | PDN_J3 |
+| 15 | STEP_J3 |
+| 7 | DIR_J3 |
+| 6 | PDN_J4 |
+| 5 | STEP_J4 |
+| 4 | DIR_J4 |
+| 35 | SD_MOSI |
+| 36 | SD_SCK |
+| 37 | SD_MISO |
+| 38 | SD_CS |
+| 39 | SD_CD |
+| 40 | SERVO_WRIST_PITCH |
+| 41 | SERVO_WRIST_YAW |
+| 42 | SERVO_GRIPPER |
 
 Power/header pins:
 - 3V3 -> +3V3_LOGIC
@@ -186,10 +193,11 @@ Ground strategy for single-layer prototype:
 Use a through-hole 6-pin socket (female) for direct SD module plug-in, no flying jumpers.
 
 ESP32-S3 to SD net mapping:
-- GPIO40 -> SD_SCK
-- GPIO41 -> SD_MISO
-- GPIO42 -> SD_MOSI
-- GPIO2 -> SD_CS
+- GPIO36 -> SD_SCK
+- GPIO37 -> SD_MISO
+- GPIO35 -> SD_MOSI
+- GPIO38 -> SD_CS
+- GPIO39 -> SD_CD (card detect, optional input)
 
 Recommended SD socket pinout (H_SD1, 1x06):
 - Pin 1: +3V3_LOGIC (to SD VCC)
@@ -198,6 +206,9 @@ Recommended SD socket pinout (H_SD1, 1x06):
 - Pin 4: SD_MISO
 - Pin 5: SD_MOSI
 - Pin 6: SD_CS
+
+Card detect wiring:
+- Route SD_CD to a dedicated test pad or optional 1-pin header (for modules exposing CD switch).
 
 Wire-up to common SD module labels:
 - SD_SCK -> CLK
@@ -369,28 +380,29 @@ Create one multi-pin symbol named ESP32_S3_DEVBOARD_2x19 with at least the used 
 
 | Symbol Pin Name | MCU GPIO | Net Label to Wire |
 |:--|:--|:--|
-| GPIO4 | 4 | STEP_J1 |
-| GPIO5 | 5 | DIR_J1 |
-| GPIO6 | 6 | EN_ALL |
-| GPIO7 | 7 | PDN_J1 |
-| GPIO8 | 8 | STEP_J2 |
-| GPIO9 | 9 | DIR_J2 |
-| GPIO11 | 11 | PDN_J2 |
-| GPIO12 | 12 | STEP_J3 |
-| GPIO13 | 13 | DIR_J3 |
-| GPIO15 | 15 | PDN_J3 |
-| GPIO16 | 16 | STEP_J4 |
-| GPIO17 | 17 | DIR_J4 |
-| GPIO21 | 21 | PDN_J4 |
-| GPIO35 | 35 | SERVO_WRIST_PITCH |
-| GPIO36 | 36 | SERVO_WRIST_YAW |
-| GPIO37 | 37 | SERVO_GRIPPER |
-| GPIO38 | 38 | UART_LEADER_RX |
-| GPIO39 | 39 | UART_LEADER_TX |
-| GPIO40 | 40 | SD_SCK |
-| GPIO41 | 41 | SD_MISO |
-| GPIO42 | 42 | SD_MOSI |
-| GPIO2 | 2 | SD_CS |
+| GPIO14 | 14 | EN_ALL |
+| GPIO13 | 13 | PDN_J1 |
+| GPIO12 | 12 | STEP_J1 |
+| GPIO11 | 11 | DIR_J1 |
+| GPIO10 | 10 | PDN_J2 |
+| GPIO9 | 9 | STEP_J2 |
+| GPIO8 | 8 | DIR_J2 |
+| GPIO18 | 18 | UART_LEADER_RX |
+| GPIO17 | 17 | UART_LEADER_TX |
+| GPIO16 | 16 | PDN_J3 |
+| GPIO15 | 15 | STEP_J3 |
+| GPIO7 | 7 | DIR_J3 |
+| GPIO6 | 6 | PDN_J4 |
+| GPIO5 | 5 | STEP_J4 |
+| GPIO4 | 4 | DIR_J4 |
+| GPIO35 | 35 | SD_MOSI |
+| GPIO36 | 36 | SD_SCK |
+| GPIO37 | 37 | SD_MISO |
+| GPIO38 | 38 | SD_CS |
+| GPIO39 | 39 | SD_CD |
+| GPIO40 | 40 | SERVO_WRIST_PITCH |
+| GPIO41 | 41 | SERVO_WRIST_YAW |
+| GPIO42 | 42 | SERVO_GRIPPER |
 | 3V3 | - | +3V3_LOGIC |
 | GND | - | GND |
 
@@ -473,6 +485,8 @@ Create symbol HDR_1x06_SD_SPI (mated to PinSocket_1x06_P2.54mm_Vertical on PCB):
 | 5 | SD_MOSI |
 | 6 | SD_CS |
 
+Add `SD_CD` as a separate 1-pin symbol/testpoint (for card detect input).
+
 ### 4.5.7 Power Symbols and Net Labels
 
 Use global power symbols and labels:
@@ -532,7 +546,7 @@ Schematic/ERC:
 - UART_LEADER_RX/TX are correctly crossed to leader board.
 - All servo connectors have GND and +6V6_SERVO in correct pin order.
 - All stepper JST-6 connectors map active phases to pins 1/3/4/6 with pins 2 and 5 left NC.
-- SD header maps exactly: 40/41/42/2 to SD_SCK/SD_MISO/SD_MOSI/SD_CS.
+- SD header maps exactly: 36/37/35/38 to SD_SCK/SD_MISO/SD_MOSI/SD_CS, and SD_CD on GPIO39.
 - All listed passives are through-hole package footprints (no SMD passives).
 
 PCB/DRC:
@@ -552,7 +566,7 @@ Bring-up:
 
 For this follower motor board revision:
 - Keep the board focused on motion/servo/UART.
-- SD SPI header is optional for NodeMesh expansion and should use GPIO40/41/42/2 mapping above.
+- SD SPI header is optional for NodeMesh expansion and should use GPIO36/37/35/38 mapping above, with optional SD_CD on GPIO39.
 
 This keeps the follower board modular and consistent with NodeMesh partitioning.
 
@@ -561,13 +575,13 @@ This keeps the follower board modular and consistent with NodeMesh partitioning.
 ## 9) Quick Copy Block for CAD Project Notes
 
 Pin map summary:
-- STEP: GPIO4,8,12,16
-- DIR: GPIO5,9,13,17
-- EN_ALL: GPIO6
-- PDN: GPIO7,11,15,21
-- Servo PWM: GPIO35,36,37
-- UART: RX GPIO38, TX GPIO39
-- SD SPI: SCK GPIO40, MISO GPIO41, MOSI GPIO42, CS GPIO2
+- STEP: GPIO12,9,15,5
+- DIR: GPIO11,8,7,4
+- EN_ALL: GPIO14
+- PDN: GPIO13,10,16,6
+- Servo PWM: GPIO40,41,42
+- UART: RX GPIO18, TX GPIO17
+- SD SPI: SCK GPIO36, MISO GPIO37, MOSI GPIO35, CS GPIO38, CD GPIO39
 
 Prototype constraints:
 - Single-layer priority.

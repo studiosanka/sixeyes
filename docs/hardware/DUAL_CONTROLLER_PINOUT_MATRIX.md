@@ -23,8 +23,8 @@ Primary source: `docs/references/SixEyes Technical Reference 2.txt`.
 
 | Signal | Leader GPIO | Connects To (Follower) |
 |:-------|:------------|:-----------------------|
-| TX | GPIO17 | RX on GPIO38 |
-| RX | GPIO18 | TX on GPIO39 |
+| TX | GPIO17 | RX on GPIO18 |
+| RX | GPIO18 | TX on GPIO17 |
 
 ### Power (Leader)
 
@@ -41,10 +41,10 @@ Primary source: `docs/references/SixEyes Technical Reference 2.txt`.
 
 | Channel | Joint | STEP | DIR | EN | PDN_UART |
 |:--------|:------|:-----|:----|:---|:---------|
-| J1 | Base | GPIO4 | GPIO5 | GPIO6 | GPIO7 |
-| J2 | Shoulder A | GPIO8 | GPIO9 | GPIO10 | GPIO11 |
-| J3 | Shoulder B | GPIO12 | GPIO13 | GPIO14 | GPIO15 |
-| J4 | Elbow | GPIO16 | GPIO17 | GPIO18 | GPIO21 |
+| J1 | Base | GPIO12 | GPIO11 | GPIO14 (shared EN_ALL) | GPIO13 |
+| J2 | Shoulder A | GPIO9 | GPIO8 | GPIO14 (shared EN_ALL) | GPIO10 |
+| J3 | Shoulder B | GPIO15 | GPIO7 | GPIO14 (shared EN_ALL) | GPIO16 |
+| J4 | Elbow | GPIO5 | GPIO4 | GPIO14 (shared EN_ALL) | GPIO6 |
 
 Notes:
 - EN control is safety-gated in firmware.
@@ -54,16 +54,26 @@ Notes:
 
 | Function | Follower GPIO | Power Rail |
 |:---------|:--------------|:-----------|
-| Wrist Pitch | GPIO35 | 6.6V |
-| Wrist Yaw | GPIO36 | 6.6V |
-| Gripper | GPIO37 | 6.6V |
+| Wrist Pitch | GPIO40 | 6.6V |
+| Wrist Yaw | GPIO41 | 6.6V |
+| Gripper | GPIO42 | 6.6V |
+
+### SD Card SPI + Detect
+
+| Signal | Follower GPIO |
+|:-------|:--------------|
+| SD_MOSI | GPIO35 |
+| SD_SCK | GPIO36 |
+| SD_MISO | GPIO37 |
+| SD_CS | GPIO38 |
+| SD_CD | GPIO39 |
 
 ### UART to Leader (Dedicated Inter-Board Link)
 
 | Signal | Follower GPIO | Connects To (Leader) |
 |:-------|:--------------|:---------------------|
-| RX | GPIO38 | TX on GPIO17 |
-| TX | GPIO39 | RX on GPIO18 |
+| RX | GPIO18 | TX on GPIO17 |
+| TX | GPIO17 | RX on GPIO18 |
 
 ### USB to Laptop
 
@@ -105,5 +115,5 @@ Embedded boards focus on motor/sensor/safety/telemetry; laptop handles camera + 
 |:-----|:-------|:-------------------|
 | Leader ADC pins GPIO0,1,2,3,4,6 | ✅ Aligned | `sixeyes/firmware/leader_esp32/src/main.cpp` (ESP32-C6 SuperMini) |
 | Follower TMC2209 pin map | ✅ Aligned | `sixeyes/firmware/follower_esp32/src/modules/drivers/tmc2209/tmc2209_config.h` |
-| Follower UART pins GPIO38/39 | ✅ Aligned | `sixeyes/firmware/follower_esp32/src/modules/config/board_config.h`, `.../uart_leader.cpp` |
-| Servo outputs GPIO35/36/37 | ✅ Aligned | `sixeyes/firmware/follower_esp32/src/modules/servo_control/servo_manager.h` |
+| Follower UART pins GPIO18/17 | ✅ Aligned | `sixeyes/firmware/follower_esp32/src/modules/config/board_config.h`, `.../uart_leader.cpp` |
+| Servo outputs GPIO40/41/42 | ✅ Aligned | `sixeyes/firmware/follower_esp32/src/modules/servo_control/servo_manager.h` |

@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <cmath>
 
-// Define servo PWM pins per SixEyes technical reference
-const uint8_t ServoManager::SERVO_PINS[NUM_SERVOS] = {35, 36, 37};
+// Define servo PWM pins per latest follower pinout
+const uint8_t ServoManager::SERVO_PINS[NUM_SERVOS] = {40, 41, 42};
 constexpr uint16_t ServoManager::PULSE_MIN_US;
 constexpr uint16_t ServoManager::PULSE_MID_US;
 constexpr uint16_t ServoManager::PULSE_MAX_US;
