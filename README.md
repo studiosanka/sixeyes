@@ -4,6 +4,20 @@ An open-source, in-progress robotics platform for a 6-degree-of-freedom arm, spa
 
 NodeMesh-specific firmware and IC-design work has moved to a dedicated repository: [https://github.com/SixEyes-Open-Source/nodemesh](https://github.com/SixEyes-Open-Source/nodemesh).
 
+## Scope Clarity (Read This First)
+
+SixEyes is the standard robotic-arm package.
+
+- Standard path in this repository: arm hardware + follower/leader firmware + laptop/ROS2-assisted operation.
+- Optional path in NodeMesh repository: 4-MCU edge firmware system with camera nodes and ESP-NOW.
+
+Important default policy for this repository:
+- SD card reader hardware may be present as a compatibility option, but it is not part of the default sixeyes runtime flow.
+- ESP32-CAM perception nodes are not part of the standard sixeyes package.
+
+Canonical split across all repos:
+- [Project Scope And Repo Map](docs/PROJECT_SCOPE_AND_REPO_MAP.md)
+
 ## Quick Links
 
 - 📘 **Getting Started**: Read [Complete Documentation Index](docs/README.md#quick-start)

@@ -4,6 +4,25 @@ Navigation guide for SixEyes firmware, ROS2, teleoperation, and hardware documen
 
 NodeMesh-specific materials now live in a separate repository: [https://github.com/SixEyes-Open-Source/nodemesh](https://github.com/SixEyes-Open-Source/nodemesh).
 
+## Scope Boundary (Critical)
+
+- This docs tree is for standard sixeyes hardware and firmware workflows.
+- NodeMesh is optional and maintained in a separate repository.
+- If you are doing the default build, you do not need NodeMesh docs.
+
+See authoritative boundaries here:
+- [Project Scope And Repo Map](PROJECT_SCOPE_AND_REPO_MAP.md)
+
+## Minimal Start Path (3 Docs Only)
+
+If you feel overwhelmed, start with only these:
+
+1. [Wiring & Assembly](hardware/WIRING_AND_ASSEMBLY.md)
+2. [Flashing & Deployment](deployment/FLASHING_AND_DEPLOYMENT.md)
+3. [Hardware Validation](hardware/HARDWARE_VALIDATION.md)
+
+Then expand to other docs only as needed.
+
 ## Quick Start
 
 👉 **New to SixEyes?** Start here based on your role:
