@@ -11,7 +11,6 @@ Repository layout (top-level):
 ```
 sixeyes/
 ├── firmware/
-│   ├── camera_esp32s3/
 │   ├── follower_esp32/
 │   └── leader_esp32/
 ├── ros2_ws/

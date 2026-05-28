@@ -47,17 +47,17 @@ Action:
 
 Keep as canonical:
 
-- firmware NodeMesh VLA/docs/NODEMESH_FIRMWARE_CHECKLIST.md
-- firmware NodeMesh VLA/docs/NODEMESH_VLA_GO_NO_GO.md
-- firmware NodeMesh VLA/docs/PINOUT_FOLLOWER_ESP32.md
-- firmware NodeMesh VLA/docs/SD_MODULE_WIRING_NODE0.md
-- firmware NodeMesh VLA/docs/WHAT_IS_NODEMESH_VLA.md
+- nodemesh/firmware NodeMesh VLA/docs/NODEMESH_FIRMWARE_CHECKLIST.md
+- nodemesh/firmware NodeMesh VLA/docs/NODEMESH_VLA_GO_NO_GO.md
+- nodemesh/firmware NodeMesh VLA/docs/PINOUT_FOLLOWER_ESP32.md
+- nodemesh/firmware NodeMesh VLA/docs/SD_MODULE_WIRING_NODE0.md
+- nodemesh/firmware NodeMesh VLA/docs/WHAT_IS_NODEMESH_VLA.md
 
 Candidates to simplify:
 
-- firmware NodeMesh VLA/docs/NODEMESH_VLA_PHASED_ROADMAP.md
-- firmware NodeMesh VLA/docs/CONNECTOR_LEGEND_ONE_PAGE.md
-- firmware NodeMesh VLA/docs/DEVKITC1_HEADER_TO_PCB_NET_TABLE.md
+- nodemesh/firmware NodeMesh VLA/docs/NODEMESH_VLA_PHASED_ROADMAP.md
+- nodemesh/firmware NodeMesh VLA/docs/CONNECTOR_LEGEND_ONE_PAGE.md
+- nodemesh/firmware NodeMesh VLA/docs/DEVKITC1_HEADER_TO_PCB_NET_TABLE.md
 
 Action for simplification candidates:
 
