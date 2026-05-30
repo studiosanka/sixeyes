@@ -34,3 +34,8 @@ Thumbs.db
 **/.history/
 **/*-backups/
 
+
+# PlatformIO build artifacts
+build.log
+.pio/
+
