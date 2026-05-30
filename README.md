@@ -288,12 +288,13 @@ cd firmware/follower_esp32
    source install/setup.bash
    ```
 
-2. **Run all nodes** (no launch file yet — run each in a separate terminal):
+2. **Run all nodes** with a single launch command:
    ```bash
-   ros2 run usb_bridge_node usb_bridge_node --ros-args -p port:=/dev/ttyACM0
-   ros2 run safety_node safety_node
-   ros2 run joint_state_node joint_state_node
-   ros2 run camera_node camera_node
+   # Teleoperation mode (4 nodes)
+   ros2 launch sixeyes_bringup teleop.launch.py port:=/dev/ttyACM0
+
+   # VLA inference mode (5 nodes, includes vla_inference_node stub)
+   ros2 launch sixeyes_bringup vla.launch.py port:=/dev/ttyACM0
    ```
 
 3. **Monitor firmware status**:

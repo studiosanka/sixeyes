@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>sixeyes_bringup</name>
+  <version>0.0.1</version>
+  <description>Launch files to bring up all SixEyes ROS2 nodes in a single command.</description>
+  <maintainer email="you@example.com">SixEyes</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_python</buildtool_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>usb_bridge_node</exec_depend>
+  <exec_depend>safety_node</exec_depend>
+  <exec_depend>joint_state_node</exec_depend>
+  <exec_depend>camera_node</exec_depend>
+  <exec_depend>vla_inference_node</exec_depend>
+</package>

@@ -151,7 +151,7 @@ void MotorControlScheduler::controlLoop() {
     max_loop_time_us_ = loop_time_us;
   }
 
-  // Log statistics periodically (every 100 loops = ~250 ms @ 500 Hz)
+  // Log statistics periodically (every 100 loops = 200 ms @ 500 Hz)
   if ((loop_count_ % STATS_INTERVAL) == 0) {
     float avg_time_ms = getAverageLoopTimeMs();
     uint32_t max_time_ms = getMaxLoopTimeMs();

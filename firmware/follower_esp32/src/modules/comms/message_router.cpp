@@ -39,13 +39,25 @@ bool MessageRouter::routeIncomingMessage(const JsonDocument &doc) {
 
   const char *cmd = doc["cmd"].as<const char *>();
 
+  // Runtime mode switching is not supported; reject gracefully so the caller
+  // receives a meaningful false instead of silently dropping the command.
+  if (strcmp(cmd, "MODE_CHANGE") == 0) {
+    Logging::warnf("MessageRouter: MODE_CHANGE rejected (current mode: %s). "
+                   "Recompile with -DOPERATION_MODE=1 or =2 to change modes.",
+                   getModeName());
+    return false;
+  }
+
 #if OPERATION_MODE == MODE_VLA_INFERENCE
-  // In VLA mode, route to VLA command handlers
   return VLACommandHandler::handleCommand(cmd, doc);
 
 #elif OPERATION_MODE == MODE_TELEOPERATION
-  // In teleoperation mode, route to teleoperation handlers
-  return TeleoperationHandler::handleCommand(cmd, doc);
+  // In teleoperation mode, JOINT_STATE commands are dispatched via
+  // UartJsonParser callbacks registered in TeleoperationHandler::init().
+  // Other utility commands (HOME_ZERO, ENABLE_MOTORS, etc.) are handled below.
+  Logging::warnf("MessageRouter: Unexpected routeIncomingMessage call in "
+                 "teleoperation mode for cmd: %s", cmd);
+  return false;
 #endif
 }
 

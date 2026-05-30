@@ -99,15 +99,30 @@ void VLACommandHandler::init() {
 
 bool VLACommandHandler::handleCommand(const char *cmd,
                                       const JsonDocument &doc) {
-  // In VLA mode, the JSON parser handles message routing through callbacks.
-  // This function is called by the message router when a parsed message
-  // arrives. The actual routing is done through the MessageHandler callbacks
-  // registered in init().
+  (void)doc;
 
-  // For now, we just indicate that the message will be handled by the
-  // registered callbacks In a future version, this could do additional
-  // validation or logging
+  if (!cmd) {
+    Logging::warn("VLA: Null command ignored");
+    return false;
+  }
 
-  Logging::debugf("VLA: Command routed: %s", cmd);
-  return true;
+  // Commands handled via UartJsonParser callbacks registered in init().
+  // Validate that the command is a known VLA-mode type; reject anything else
+  // so callers get an accurate return value.
+  if (strcmp(cmd, "MOTOR_TARGET") == 0 || strcmp(cmd, "SERVO_TARGET") == 0 ||
+      strcmp(cmd, "HEARTBEAT") == 0 || strcmp(cmd, "ENABLE_MOTORS") == 0 ||
+      strcmp(cmd, "HOME_ZERO") == 0 || strcmp(cmd, "HOME_STALLGUARD") == 0 ||
+      strcmp(cmd, "TUNE_PID") == 0) {
+    Logging::debugf("VLA: Command dispatched via parser: %s", cmd);
+    return true;
+  }
+
+  if (strcmp(cmd, "MODE_CHANGE") == 0) {
+    Logging::warn("VLA: MODE_CHANGE not supported at runtime (recompile with "
+                  "-DOPERATION_MODE=2 for teleoperation)");
+    return false;
+  }
+
+  Logging::warnf("VLA: Unknown command rejected: %s", cmd);
+  return false;
 }

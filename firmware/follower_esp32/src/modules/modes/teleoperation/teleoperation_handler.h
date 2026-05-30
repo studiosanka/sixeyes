@@ -27,14 +27,6 @@ public:
    */
   static void update();
 
-  /**
-   * Route a teleoperation command to the appropriate handler
-   *
-   * @param cmd Command name
-   * @param doc Full JSON document
-   * @return true if command was processed
-   */
-  static bool handleCommand(const char *cmd, const JsonDocument &doc);
 };
 
 #endif // TELEOPERATION_HANDLER_H

@@ -5,7 +5,6 @@
 
 #include "teleoperation_handler.h"
 #include "modules/comms/uart_json_parser/uart_json_parser.h"
-#include "modules/drivers/tmc2209/tmc2209_driver.h"
 #include "modules/motor_control/motor_controller.h"
 #include "modules/safety/fault_manager.h"
 #include "modules/servo_control/servo_manager.h"
@@ -259,27 +258,6 @@ void sendTelemetryState() {
   Serial.println();
   last_telemetry_ms = millis();
 }
-
-bool handleJointState(const JsonDocument &doc) {
-  if (!doc["leader_joints"].is<JsonArray>()) {
-    Logging::warn(
-        "TeleoperationHandler: JOINT_STATE missing leader_joints array");
-    return false;
-  }
-
-  const JsonArrayConst in_joints = doc["leader_joints"].as<JsonArrayConst>();
-  const JsonArrayConst valid_mask = doc["valid_mask"].is<JsonArray>()
-                                        ? doc["valid_mask"].as<JsonArrayConst>()
-                                        : JsonArrayConst();
-
-  const uint32_t seq = doc["seq"].is<uint32_t>() ? doc["seq"].as<uint32_t>()
-                                                 : (last_input_seq + 1);
-
-  updateLeaderStateCache(in_joints, valid_mask, seq);
-  applyJointState(in_joints, valid_mask);
-  sendTelemetryState();
-  return true;
-}
 } // namespace
 
 // File-scope callbacks for UartJsonParser (use anonymous-ns helpers via ADL)
@@ -338,85 +316,4 @@ void TeleoperationHandler::update() {
   }
 
   sendTelemetryState();
-}
-
-bool TeleoperationHandler::handleCommand(const char *cmd,
-                                         const JsonDocument &doc) {
-  (void)doc;
-
-  if (!cmd) {
-    Logging::warn("TeleoperationHandler: Null command ignored");
-    return false;
-  }
-
-  if (strcmp(cmd, "JOINT_STATE") == 0) {
-    return handleJointState(doc);
-  }
-
-  if (strcmp(cmd, "HOME_ZERO") == 0) {
-    MotorController::instance().setCurrentPositionAsZero();
-    Logging::info("TeleoperationHandler: HOME_ZERO applied");
-    return true;
-  }
-
-  if (strcmp(cmd, "HOME_STALLGUARD") == 0) {
-    const uint8_t motor_mask = doc["motor_mask"].is<uint8_t>()
-                                   ? doc["motor_mask"].as<uint8_t>()
-                                   : 0x0F;
-    const uint8_t sensitivity = doc["sensitivity"].is<uint8_t>()
-                                    ? doc["sensitivity"].as<uint8_t>()
-                                    : TMC2209_SGTHRS_DEFAULT;
-    if (!MotorController::instance().startStallGuardHoming(motor_mask,
-                                                           sensitivity)) {
-      Logging::warn("TeleoperationHandler: HOME_STALLGUARD failed to start");
-      return false;
-    }
-    Logging::infof("TeleoperationHandler: HOME_STALLGUARD started mask=0x%02X "
-                   "sensitivity=%u",
-                   motor_mask, sensitivity);
-    return true;
-  }
-
-  if (strcmp(cmd, "ENABLE_MOTORS") == 0) {
-    const bool enable =
-        doc["enable"].is<bool>() ? doc["enable"].as<bool>() : false;
-    if (enable) {
-      MotorController::instance().enableMotors();
-      Logging::info("TeleoperationHandler: ENABLE_MOTORS=true");
-    } else {
-      MotorController::instance().disableMotors();
-      Logging::info("TeleoperationHandler: ENABLE_MOTORS=false");
-    }
-    return true;
-  }
-
-  if (strcmp(cmd, "TELEMETRY_ENABLE") == 0) {
-    telemetry_enabled =
-        doc["enable"].is<bool>() ? doc["enable"].as<bool>() : true;
-    Logging::infof("TeleoperationHandler: TELEMETRY_ENABLE=%u",
-                   telemetry_enabled ? 1 : 0);
-    return true;
-  }
-
-  if (strcmp(cmd, "TELEMETRY_RATE") == 0) {
-    if (doc["hz"].is<uint16_t>()) {
-      telemetry_rate_hz = std::max<uint16_t>(
-          MIN_TELEMETRY_RATE_HZ,
-          std::min<uint16_t>(MAX_TELEMETRY_RATE_HZ, doc["hz"].as<uint16_t>()));
-    }
-    Logging::infof("TeleoperationHandler: TELEMETRY_RATE=%u Hz",
-                   telemetry_rate_hz);
-    return true;
-  }
-
-  if (strcmp(cmd, "RESET_FAULT") == 0) {
-    FaultManager::instance().clear();
-    Logging::info("TeleoperationHandler: RESET_FAULT applied");
-    return true;
-  }
-
-  Logging::warnf(
-      "TeleoperationHandler: Unsupported command in teleoperation mode: %s",
-      cmd);
-  return false;
 }

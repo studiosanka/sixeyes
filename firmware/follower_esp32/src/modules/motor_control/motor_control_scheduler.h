@@ -5,8 +5,8 @@
 /**
  * MotorControlScheduler: Deterministic control loop scheduler
  *
- * Runs motor control at exactly CONTROL_LOOP_HZ (400 Hz) using ESP32 hardware
- * timer Calls MotorController::update(), SafetyTask::update(), and
+ * Runs motor control at exactly CONTROL_LOOP_HZ (500 Hz) using FreeRTOS
+ * vTaskDelayUntil. Calls MotorController::update(), SafetyTask::update(), and
  * ServoManager::checkWatchdog() in strict priority order:
  *
  * 1. SafetyTask (check faults, EN pin control)
@@ -37,7 +37,7 @@ private:
 
   // Scheduler configuration
   static constexpr uint32_t CONTROL_PERIOD_US =
-      1000000 / CONTROL_LOOP_HZ; // µs per loop (2500 µs @ 400 Hz)
+      1000000 / CONTROL_LOOP_HZ; // µs per loop (2000 µs @ 500 Hz)
   static constexpr uint32_t TASK_STACK_SIZE =
       4096; // FreeRTOS task stack (bytes)
   static constexpr uint32_t TASK_PRIORITY =
