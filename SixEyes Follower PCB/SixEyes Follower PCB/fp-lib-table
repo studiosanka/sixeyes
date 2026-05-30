@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "SixEyes_Custom")(type "KiCad")(uri "${KIPRJMOD}/SixEyes_Custom.pretty")(options "")(descr "Local SixEyes custom footprints"))
+)

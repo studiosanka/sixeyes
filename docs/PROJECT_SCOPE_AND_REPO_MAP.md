@@ -69,9 +69,12 @@ What is included:
 
 From the workspace root:
 
-- nodemesh/ -> nodemesh repository
-- cyclocad/ -> cyclocad repository
-- docs/, sixeyes/, SixEyes Follower PCB/, README.md, CONTRIBUTING.md, LICENSE, and related root assets -> sixeyes repository
+- nodemesh/ → nodemesh repository
+- cyclocad/ → cyclocad repository
+- firmware/, ros2_ws/, tools/, simulation/, hardware_assets/, SixEyes Follower PCB/, docs/, README.md, CONTRIBUTING.md, LICENSE → sixeyes repository
+
+> **Note**: The `sixeyes/` wrapper folder has been removed. All SixEyes project code now lives directly at the repository root.  
+> If you cloned before June 2026 and had paths like `sixeyes/firmware/...`, update them to `firmware/...`.
 
 ## Documentation Simplification Rules
 

@@ -1,8 +1,8 @@
 # SixEyes Teleoperation Mode - Firmware Architecture
 
-**Status**: Active architecture + implementation guide for teleoperation firmware mode (Leader-Follower-Laptop)  
-**Current scope**: Dual-mode firmware is implemented with compile-time mode selection (`OPERATION_MODE`) and active teleoperation command path updates  
-**Next phase**: Complete follower telemetry/state streaming and end-to-end ROS2 teleoperation runtime
+**Status**: Architecture + implementation reference for teleoperation firmware mode (Leader-Follower-Laptop)  
+**Current scope**: Dual-mode firmware fully wired — compile-time mode selection (`OPERATION_MODE`), JOINT_STATE parsing via UartJsonParser callbacks, TELEMETRY_STATE streaming, 4 of 5 ROS2 nodes implemented  
+**Next phase**: Hardware bring-up on test bench; ROS2 launch file; vla_inference_node implementation
 
 ---
 
@@ -56,18 +56,19 @@ Follower Arm (mirror motions)
 │  │ └─ Control Loop: Apply target positions        │    │
 │  └──────────────────────────────────────────────────┘    │
 │                                                           │
-│  ┌─ Teleoperation Mode (In Progress) ──────────────┐    │
-│  │ ├─ Joint State RX (JSON: leader positions)     │    │
-│  │ ├─ Telemetry TX (JSON: follower positions)     │    │
-│  │ ├─ Acknowledgment (confirms receipt)            │    │
-│  │ └─ Control Loop: Mirror leader positions       │    │
-│  └──────────────────────────────────────────────────┘    │
-│                                                           │
-│  Common Control Loop (400 Hz FreeRTOS)                  │
-│  ├─ Safety Monitor (always active)                      │
-│  ├─ Motor Controller (PID for both modes)               │
-│  ├─ Servo Manager (same for both modes)                │
-│  └─ Telemetry Collector (collects feedback)             │
+  ├─ Teleoperation Mode (✅ Implemented) ──────────────────────────╼    │
+  │ ├─ JOINT_STATE RX (UartJsonParser callback)        │    │
+  │ ├─ 6-joint → 4-motor + 3-servo mapping              │    │
+  │ ├─ TELEMETRY_STATE TX (100 Hz feedback)            │    │
+  │ └─ Control Loop: Mirror leader positions            │    │
+  └──────────────────────────────────────────────────────╼    │
+                                                           │
+  Common Control Loop (500 Hz FreeRTOS)                  │
+  ├─ UartJsonParser.update() (drain serial, dispatch)   │
+  ├─ Safety Monitor (always active)                      │
+  ├─ Motor Controller (PID for both modes)               │
+  ├─ Servo Manager (same for both modes)                 │
+  └─ TeleoperationHandler.update() (telemetry TX timer)  │
 │                                                           │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -85,7 +86,7 @@ Follower Arm (mirror motions)
 | **Input Frequency** | 10-50 Hz (varies) | 100 Hz (real-time mirroring) |
 | **Latency Requirement** | Moderate (<100ms) | Strict (20-50ms for smooth mirroring) |
 | **Primary Use** | Task execution | Data collection, real-time control |
-| **Safety Timeout** | 500ms heartbeat | 100ms command timeout |
+| **Safety Timeout** | 500 ms heartbeat | 500 ms heartbeat (same constant: `SAFETY_HEARTBEAT_TIMEOUT_MS`) |
 | **Position Mapping** | Direct (leader frame) | Scaled (may differ between arms) |
 
 ---

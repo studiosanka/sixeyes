@@ -1,0 +1,19 @@
+RefDesPattern,Description,KiCadFootprint,Notes
+U1,ESP32-S3 DevKitC-1 dual-row socket,Connector_PinSocket_2.54mm:PinSocket_1x19_P2.54mm_Vertical x2,Use two rows and lock orientation
+U2-U5,TMC2209 StepStick socket rows,Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical x2 per driver,One pair per driver module
+J1_MOTOR-J4_MOTOR,Stepper connector 6-pin JST XH,Connector_JST:JST_XH_B6B-XH-A_1x06_P2.50mm_Vertical,Pins 5 and 6 are NC
+J_SERVO1-J_SERVO3,Servo connector 3-pin JST XH,Connector_JST:JST_XH_B3B-XH-A_1x03_P2.50mm_Vertical,Pin order GND +6V6 SIG
+H_UART1,Leader/follower UART header,Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical,Pin 4 optional +3V3
+H_SD1,MicroSD SPI board header,Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical,3.3V module only
+J_PWR1,Main 24V input,TerminalBlock:TerminalBlock_bornier-2_P5.08mm,Any equivalent 2-pin 5.08mm THT is okay
+TP1-TP7,Debug test pads,TestPoint:TestPoint_Pad_D1.5mm,Optional debug points
+MH1-MH4,Mounting holes,MountingHole:MountingHole_3.2mm_M3,Non-plated or plated per enclosure plan
+R1-R17,Through-hole resistors,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal,Includes pull-ups and optional series damping
+C1,24V bulk capacitor,Capacitor_THT:CP_Radial_D10.0mm_P5.00mm,470uF 35V minimum
+C2-C3,24V local decoupling,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,1uF and 100nF near TMC bank
+C4,Servo rail bulk capacitor,Capacitor_THT:CP_Radial_D10.0mm_P5.00mm,1000uF 16V minimum
+C5,Servo rail HF bypass,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,100nF near servo cluster
+C6,3V3 bulk capacitor,Capacitor_THT:CP_Radial_D8.0mm_P3.50mm,220uF 10V minimum
+C7-C10,TMC VIO decouplers,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,100nF each at U2-U5 VIO
+C11-C13,Logic and SD local decoupling,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,C12 can use radial electrolytic if preferred
+JP1-JPn,Wire jumpers for single-layer crossings,SixEyes_Custom:WireJumper_1x02_P2.54mm,Custom footprint in local pretty library

@@ -29,3 +29,8 @@ env/
 # Misc
 .DS_Store
 Thumbs.db
+
+# KiCad generated files
+**/.history/
+**/*-backups/
+

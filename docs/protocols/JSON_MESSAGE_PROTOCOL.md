@@ -88,6 +88,7 @@ Object:   "config": {"param1": 1.0, "param2": 2.0}
 | `RESET_FAULT` | ROS2 → ESP32 | Clear fault state | ✅ Implemented |
 | `HOME_ZERO` | ROS2/Laptop → ESP32 | Software zeroing (current pose as logical zero) | ✅ Implemented |
 | `HOME_STALLGUARD` | ROS2/Laptop → ESP32 | Hybrid StallGuard homing (seek stall, backoff, re-approach) | ✅ Implemented |
+| `JOINT_STATE` | Leader ESP32 → Follower/Laptop | Stream leader arm joint angles (teleoperation) | ✅ Implemented |
 | `TUNE_PID` | ROS2 → ESP32 | Update PID gains | ✅ Implemented |
 | `CONFIG_PARAM` | ROS2 → ESP32 | Set configuration parameter | ✅ Implemented |
 | `CONFIG_SAVE` | ROS2 → ESP32 | Save config to EEPROM | 🔲 Planned |
