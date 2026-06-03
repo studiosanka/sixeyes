@@ -1,0 +1,435 @@
+============================================================
+SixEyes – Follower PCB Beta
+Technical Design Specification
+============================================================
+
+Integrated High-Density Motion & Vision Controller
+Form Factor:  60 mm x 60 mm  Custom 4-Layer PCB
+Placement:    Single-Sided SMT (Top Layer Only)
+Target:       SixEyes NodeMesh VLA – Node0 (Orchestrator)
+
+
+============================================================
+1. System Overview & Architecture
+============================================================
+
+This specification defines the Follower PCB Beta, the physical
+carrier board for Node0 of the SixEyes NodeMesh VLA system.
+
+Node0 is the real-time orchestrator responsible for:
+
+  • 400 Hz deterministic stepper & servo control
+  • Inverse kinematics (2-link planar, upper/forearm = 140 mm each)
+  • Merging joint state data from Node1 (leader arm input via UART)
+  • Merging vision feature vectors from Node2/Node3 (ESP-NOW)
+  • MicroSD circular-buffer experience packet logging (~300 B/packet)
+  • Lightweight online VLA observation statistics
+
+The board architecture integrates:
+
+  • ESP32-S3-WROOM-1 (240 MHz dual-core, 8 MB Flash, PSRAM)
+  • 4x TMC2209 QFN-28 stepper drivers (direct IC, not modules)
+  • 3x MG996R/MG995 servo outputs on a dedicated 6.6V rail
+  • 2x ESP32-CAM header connectors (5V power + GND only; data
+    is exchanged wirelessly via ESP-NOW on channel 6)
+  • MicroSD slot (hardware SPI)
+  • Dual USB-C: Native USB-OTG (ROS2/telemetry) + UART debug
+    via CH340K (auto-reset flashing)
+  • Leader-arm UART interface (921600 baud, 8N1)
+
+Power topology:
+
+                         24V DC Input
+                              |
+         +--------------------+--------------------+
+         |                    |                    |
+         v                    v                    v
+  4x TMC2209 VM      6.6V Servo Buck        5.0V Logic Buck
+  (direct 24V)       (TPS54540/SY8205)      (LMR14030/XL1509-5.0)
+                            |                    |
+                            v                    +----------+
+                      3x Servos                  |          |
+                     (MG996R/MG995)              v          v
+                                          2x CAM Headers  3.3V LDO
+                                          (Node2, Node3)  (AP2112K-3.3)
+                                                                |
+                                                                v
+                                                         ESP32-S3 Logic
+                                                         TMC2209 VIO
+
+
+============================================================
+2. Component Layout & Edge Management
+============================================================
+
+All components are restricted to the Top Layer (Layer 1) for
+single-pass PCBA assembly.
+
+A concentric, ring-mapped layout architecture is mandated for
+the 60 mm x 60 mm form factor.
+
+------------------------------------------------------------
+2.1  Perimeter Edge Allocations
+------------------------------------------------------------
+
+NORTH EDGE – RF Zone
+  Reserved exclusively for the ESP32-S3-WROOM-1 module.
+  The onboard PCB antenna must overhang the board edge by
+  a minimum of 2.0 mm.
+  A copper keep-out zone across all 4 layers (15 mm x 10 mm)
+  must be enforced directly under and around the antenna
+  projection. No connectors, mounting holes, or any metallic
+  enclosure features may occupy this sector.
+
+WEST EDGE – Power & Comm
+  Hosts the right-angle XT30 main power connector (24V in)
+  and dual USB-C receptacles:
+    Port 1 – Native USB-OTG  (ROS2 bridge, telemetry, VLA logging)
+    Port 2 – CH340K UART     (firmware flashing, debug console)
+
+SOUTH & EAST EDGES – Actuators
+  Standardized with vertical (straight) Molex Micro-Fit 3.0
+  headers to eliminate right-angle horizontal clearance:
+    Steppers: 4-pin Micro-Fit 3.0 per channel (x4)
+    Servos:   3-pin 2.54 mm pitch header per channel (x3)
+  NodeMesh camera power headers (2x, 4-pin) located on South
+  edge adjacent to servo headers.
+
+------------------------------------------------------------
+2.2  Interior Real Estate Zoning
+------------------------------------------------------------
+
+POWER DOMAIN
+  Clustered immediately adjacent to the West Edge to minimize
+  high-current 24V loop area.
+
+DRIVER MATRIX
+  4x TMC2209 QFN-28 ICs arranged in a 2x2 compact matrix in
+  the eastern sector. Traces route directly outward to motor
+  headers. Thermal via farms are mandatory under each exposed
+  pad (see Section 6.2).
+
+LOGIC & MEMORY CORE
+  MicroSD slot (low-profile push-pull) and supporting passives
+  occupy the central-low quadrant, maximising distance from
+  switching inductors.
+
+
+============================================================
+3. 4-Layer Substrate Stackup
+============================================================
+
+Components populate Layer 1 only.
+
+Layer  | Type            | Cu Weight      | Primary Function
+-------|-----------------|----------------|------------------------------------------
+L1     | Signal/Component| 1.0 oz (35 um) | Component pads, decoupling, RF keep-out,
+       |                 |                | high-speed USB differential pairs
+L2     | Plane           | 1.0 oz (35 um) | Solid, unbroken GND plane. High-frequency
+       |                 |                | return shield under MCU and regulators.
+L3     | Plane/Trace     | 1.0 oz (35 um) | Split power plane: 24V Motor zone,
+       |                 |                | 6.6V Servo zone, 5.0V Camera zone,
+       |                 |                | 3.3V Logic zone.
+L4     | Signal          | 1.0 oz (35 um) | Signal escape & routing. Low-frequency
+       |                 |                | traces (STEP, DIR, PWM, SPI) trapped on
+       |                 |                | Layer 1. No components on this layer.
+
+
+============================================================
+4. Power Delivery Network (PDN) & Domain Architecture
+============================================================
+
+Three independent voltage domains isolate logic signals from
+inductive feedback generated by stepper phase chopping and
+servo stall events.
+
+------------------------------------------------------------
+4.1  High-Power Actuator Rail (24V Nominal)
+------------------------------------------------------------
+
+Application:  Direct feed to VM pins of all 4x TMC2209 ICs.
+              SixEyes uses NEMA23 bipolar steppers (2.8A rated)
+              on Base, Shoulder A, Shoulder B, and Elbow joints.
+
+Protection:   Each driver requires:
+                100 uF low-ESR electrolytic (bulk, parallel to VM)
+                0.1 uF ceramic (high-frequency, directly at pin)
+              placed at the power entry rails to suppress voltage
+              transients during motor deceleration and phase
+              chopping cycles.
+
+------------------------------------------------------------
+4.2  Dynamic Servo Domain (24V -> 6.6V)
+------------------------------------------------------------
+
+Application:  3x MG996R high-torque digital servos:
+                Wrist Pitch, Wrist Yaw, Gripper
+
+Voltage:      6.6V (confirmed operating range for MG996R/MG995)
+
+Regulator:    High-current synchronous buck IC
+              (TPS54540 or SY8205)
+              Output set via precision resistor divider to 6.6V.
+
+Transient:    Must support 5.0A continuous / 7.0A peak stall.
+              Inductor must be a shielded iron-powder compound,
+              10 mm x 10 mm minimum footprint,
+              saturation current (Isat) > 9.0A.
+
+Output cap:   >= 1000 uF electrolytic + ceramic bank near headers
+              (existing SixEyes hardware requirement retained).
+
+------------------------------------------------------------
+4.3  Clean Logic Domain (24V -> 5.0V -> 3.3V)
+------------------------------------------------------------
+
+First Stage – 5.0V Rail:
+  Regulator:  Asynchronous buck IC (LMR14030 or XL1509-5.0)
+  Loads:      Power pins of 2x NodeMesh ESP32-CAM headers
+              (Node2 global camera, Node3 wrist/eye-in-hand).
+              Each ESP32-CAM module requires up to 400 mA peak
+              during WiFi/ESP-NOW TX burst.
+
+Second Stage – 3.3V Rail:
+  Regulator:  AP2112K-3.3 LDO (600 mA max) fed from the 5.0V
+              buck output.
+  NOTE:       ESP32-S3 can peak near 500 mA during heavy RF
+              activity. ESP-NOW is burst-mode only; continuous
+              draw is significantly lower. Monitor thermal
+              headroom under sustained transmit workloads. If
+              margins are insufficient, substitute AP2112K for
+              a 1A LDO (e.g., MIC5219-3.3).
+  Loads:      ESP32-S3-WROOM-1 logic and RF circuitry,
+              TMC2209 VIO pins, pull-up resistor networks,
+              digital logic.
+  Capacitors: Input >= 10 uF ceramic
+              Output >= 22 uF ceramic + 0.1 uF HF decoupling
+
+
+============================================================
+5. Microcontroller & Communication Interface Mapping
+============================================================
+
+------------------------------------------------------------
+5.1  ESP32-S3 Boot Strapping & Configuration Constraints
+------------------------------------------------------------
+
+To prevent boot failures, the following are hardwired:
+
+  GPIO0  (BOOT):  10 kΩ pull-up to 3.3V  → Normal boot mode
+  GPIO46:         10 kΩ pull-down to GND  → Required strapping
+  GPIO45:         Floating                → Default OTP config
+
+Internal flash/PSRAM pins GPIO33–GPIO37 are locked.
+Do NOT route any user signal to these pins.
+
+------------------------------------------------------------
+5.2  GPIO Allocation Table (Beta PCB)
+------------------------------------------------------------
+
+This table supersedes the old DevKit through-hole wiring.
+All pin numbers refer to ESP32-S3-WROOM-1 GPIO numbering.
+
+  Signal             GPIO   Notes
+  -----------------  -----  ----------------------------------
+  USB D-             19     90Ω diff pair to USB-C Port 1
+  USB D+             20     90Ω diff pair to USB-C Port 1
+  CH340K TXD (RX)    44     UART0 RX, Port 2 debug
+  CH340K RXD (TX)    43     UART0 TX, Port 2 debug
+
+  SD_CS              10     SPI with 10kΩ pull-up
+  SD_MOSI            11     SPI with 10kΩ pull-up
+  SD_SCK             12     SPI
+  SD_MISO            13     SPI with 10kΩ pull-up
+
+  TMC2209 EN_ALL      4     Active-LOW, shared across all 4
+                            drivers; safety-gated in firmware
+  J1 Base STEP        5     
+  J1 Base DIR         6     
+  J1 Base PDN_UART    7     1kΩ series + 4.7kΩ pull-up to 3.3V
+  J2 Shoulder A STEP  8     
+  J2 Shoulder A DIR   9     
+  J2 Shoulder A PDN  14     1kΩ series + 4.7kΩ pull-up to 3.3V
+  J3 Shoulder B STEP 15     
+  J3 Shoulder B DIR  16     
+  J3 Shoulder B PDN  17     1kΩ series + 4.7kΩ pull-up to 3.3V
+  J4 Elbow STEP      18     
+  J4 Elbow DIR       21     
+  J4 Elbow PDN_UART  47     1kΩ series + 4.7kΩ pull-up to 3.3V
+
+  Servo Wrist Pitch  38     LEDC/MCPWM, 6.6V power rail
+  Servo Wrist Yaw    39     LEDC/MCPWM, 6.6V power rail
+  Servo Gripper      40     LEDC/MCPWM, 6.6V power rail
+
+  Leader UART TX     41     921600 baud, 8N1 → Node1 RX
+  Leader UART RX     42     921600 baud, 8N1 ← Node1 TX
+
+  BOOT               0      10kΩ pull-up; tactile switch to GND
+  (Reserved)         1,2,3  General purpose, no assignment
+  (Reserved)         48     General purpose, no assignment
+
+NOTE: GPIO26 is not routed (used internally by octal flash on
+WROOM-1). GPIO33–37 are not routed (internal flash/PSRAM).
+
+------------------------------------------------------------
+5.3  Peripheral Interface Details
+------------------------------------------------------------
+
+WIRELESS CAMERA NODES (ESP-NOW)
+  The two ESP32-CAM headers supply 5V power and GND only.
+  Data exchange is entirely wireless:
+    Node2 – Global perspective camera (mounted on arm base)
+    Node3 – Wrist/eye-in-hand camera (end effector mount)
+  Protocol:  ESP-NOW on channel 6, stateless packet send.
+  Payload:   128-byte brightness histogram feature vector
+             embedded in ExperiencePacket (magic 0x4E4D5650).
+  Freshness: Node0 gates on 300 ms timestamp window; stale
+             frames are discarded before IK merge.
+
+DUAL USB-C INTERFACE
+  Port 1 – Native USB-OTG:
+    90Ω differential pair directly on GPIO19 (D-) / GPIO20 (D+).
+    Used for ROS2 USB-CDC bridge, telemetry streaming to laptop,
+    VLA dataset logging, and ROS2 heartbeat integration.
+
+  Port 2 – UART Debug / Flash:
+    CH340K USB-to-UART bridge on GPIO43 (TXD0) / GPIO44 (RXD0).
+    Supports software DTR/RTS auto-reset for PlatformIO upload.
+    Eliminates need for separate USB-to-serial programmer during
+    development and field firmware updates.
+
+LEADER-ARM UART
+  Dedicated UART link to Node1 (ESP32-C6 SuperMini leader board).
+  Baud:      921600, 8N1, non-blocking async receive
+  Parser:    Magic-number scan + CRC-CCITT (poly 0x1021)
+             validation before packet consumption.
+  Packets:   Absolute joint target values (6 joints).
+
+MICROSSD CARD
+  Hardware SPI. FAT32, 32 KB clusters.
+  1 MB pre-allocated circular buffer for experience packets.
+  SD flush every 8 writes to reduce blocking.
+  10 kΩ pull-up resistors on all data lines (MOSI, MISO, CS).
+
+
+============================================================
+6. High-Density Layout & Thermal Rules
+============================================================
+
+All components share Layer 1. The following rules override
+default autorouter behaviour.
+
+------------------------------------------------------------
+6.1  In-Route Decoupling Rule
+------------------------------------------------------------
+
+Decoupling capacitors must be physically in-series with the
+power trace, not simply placed nearby:
+
+  Power Plane Via --> Capacitor Pad (0402/0603) --> IC Pin
+
+This applies to all TMC2209 VM bypass caps and all 3.3V/5V
+logic decoupling on the ESP32-S3 module supply pins.
+
+------------------------------------------------------------
+6.2  TMC2209 Thermal Via Farms
+------------------------------------------------------------
+
+Each TMC2209 QFN-28 dissipates heat entirely through the PCB.
+
+Requirement:
+  Inside the exposed centre ground pad of each driver, place
+  a 3x3 grid of thermal vias:
+    Drill: 0.3 mm
+    Pitch: 1.0 mm maximum
+
+These vias must connect L1 to L2 (solid GND plane) and to a
+large, fully exposed copper pour on L4 (Bottom).
+
+This converts the entire bottom of the PCB into a passive
+thermal radiator. No solder mask over the L4 copper pour.
+
+------------------------------------------------------------
+6.3  Switching Node Minimisation
+------------------------------------------------------------
+
+The SW nodes of both buck converters (6.6V and 5.0V), their
+freewheeling diodes, and inductor pads must be routed as
+ultra-wide, short polygons on Layer 1.
+
+No signal trace on Layer 1 or Layer 4 may pass underneath
+these switching node polygons. This prevents capacitive
+coupling of switching noise into:
+  • ESP-NOW wireless data packets (Node0 → Node2/3 timing)
+  • SPI MicroSD transactions (experience packet logging)
+  • Leader UART receive path (joint target data)
+
+------------------------------------------------------------
+6.4  Ground Stitching
+------------------------------------------------------------
+
+Via stitching between L1 and L2 (GND plane) must be placed:
+  • Around the perimeter of the board (every ~5 mm)
+  • Between each power domain zone boundary on L3
+  • Immediately adjacent to all switching regulator polygons
+  • Along the full length of the USB differential pair routes
+
+Servo high-current GND return must not share traces with
+the MCU signal GND; both terminate at the GND plane (L2) via
+separate vias before any common-mode coupling can occur.
+
+
+============================================================
+7. Connector Summary
+============================================================
+
+Ref   | Type                  | Signal         | Location
+------|-----------------------|----------------|----------
+J_PWR | XT30 right-angle      | 24V / GND      | West Edge
+J_USB1| USB-C receptacle      | Native USB-OTG | West Edge
+J_USB2| USB-C receptacle      | CH340K UART    | West Edge
+J_M1  | Molex Micro-Fit 3.0 4P| J1 Base stepper| East/South
+J_M2  | Molex Micro-Fit 3.0 4P| J2 Shoulder A  | East/South
+J_M3  | Molex Micro-Fit 3.0 4P| J3 Shoulder B  | East/South
+J_M4  | Molex Micro-Fit 3.0 4P| J4 Elbow       | East/South
+J_SV1 | 3-pin 2.54 mm         | Wrist Pitch    | South Edge
+J_SV2 | 3-pin 2.54 mm         | Wrist Yaw      | South Edge
+J_SV3 | 3-pin 2.54 mm         | Gripper        | South Edge
+J_CAM1| 4-pin 2.54 mm         | Node2 5V/GND   | South Edge
+J_CAM2| 4-pin 2.54 mm         | Node3 5V/GND   | South Edge
+J_SD  | MicroSD push-pull     | SPI SD         | Interior
+J_LDR | 4-pin 2.54 mm         | Leader UART    | South Edge
+
+
+============================================================
+8. Revision Notes
+============================================================
+
+Beta vs. v1 Prototype differences:
+
+  v1 Prototype
+    Form factor:    Through-hole DevKit carrier (no fixed size)
+    MCU mounting:   ESP32-S3 DevKitC-1 on 0.1" headers
+    Stepper driver: TMC2209 modules (not ICs)
+    Buck regulators: XL4016 (6.6V), MP1584 (3.3V) – modules
+    USB:            Single Native USB only
+    Cameras:        Not powered from board (USB direct to laptop)
+    Layers:         Single-layer protoboard
+
+  Beta PCB
+    Form factor:    60 mm x 60 mm 4-layer custom PCB
+    MCU mounting:   ESP32-S3-WROOM-1 direct SMD footprint
+    Stepper driver: TMC2209 QFN-28 direct IC x4
+    Buck regulators: TPS54540/SY8205 (6.6V),
+                     LMR14030/XL1509-5.0 (5.0V),
+                     AP2112K-3.3 LDO (3.3V) – all direct ICs
+    USB:            Dual USB-C (OTG + CH340K debug)
+    Cameras:        5V power headers for Node2/Node3 ESP32-CAM
+    Layers:         4-layer with solid GND plane and split
+                    power plane
+
+GPIO pin mapping has changed from v1. Firmware board_config.h
+and tmc2209_config.h must be updated to match Section 5.2
+before flashing to Beta hardware.
+
+============================================================
