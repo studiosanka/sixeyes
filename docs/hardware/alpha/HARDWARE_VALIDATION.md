@@ -45,7 +45,7 @@ Complete reference for hardware bring-up testing, validation, and qualification 
   - No loose connectors (pull test with 5 N force)
 
 - [ ] **Servo Connections**
-  - Three servos on GPIO 35/36/37 (verify with schematic)
+  - Three servos on GPIO 40/41/42 (verify with schematic)
   - Power and ground distributed with capacitors
   - Signal wires not crossing power lines
   - Connectors fully seated and confirmed with visual inspection
@@ -57,7 +57,7 @@ Complete reference for hardware bring-up testing, validation, and qualification 
   - Ground connections: Star topology verified
 
 - [ ] **Safety Circuit**
-  - EN pin (GPIO 6) connected to all TMC2209 EN lines
+  - EN pin (GPIO 14) connected to all TMC2209 EN lines (EN_ALL, active LOW)
   - FAULT pins daisy-chained correctly
   - Pull-up resistors present on FAULT
   - Watchdog timer circuit (if present) verified

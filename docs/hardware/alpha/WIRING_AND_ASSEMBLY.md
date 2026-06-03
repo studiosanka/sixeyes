@@ -149,7 +149,7 @@ Leader ESP32-C6 SuperMini (joint sensors) --USB--> Laptop Bridge --USB--> Follow
 │    GPIO6  ──→ Motor 3 PDN (Elbow pitch)              │
 │                                                         │
 │  Motor Enable (all steppers):                         │
-│    GPIO14 ──→ EN pin (active HIGH, drives all 4)    │
+│    GPIO14 ──→ EN pin (active LOW, drives all 4)     │
 │                                                         │
 └────────────────────────────────────────────────────────┘
 
@@ -959,7 +959,7 @@ GPIO13  = Motor 0 PDN (active LOW)
 GPIO10  = Motor 1 PDN (active LOW)
 GPIO16  = Motor 2 PDN (active LOW)
 GPIO6   = Motor 3 PDN (active LOW)
-GPIO14  = Motor EN (active HIGH)
+GPIO14  = Motor EN (active LOW)
 GPIO18  = UART_LEADER_RX
 GPIO17  = UART_LEADER_TX
 GPIO35  = SD_MOSI
