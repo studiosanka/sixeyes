@@ -145,7 +145,6 @@ docs/                        ← Documentation ⭐ START HERE
 ├── code-quality.yml
 └── release.yml
 
-context for new developers.md   (AI agent context — project map, GPIO tables, protocol summary)
 CONTRIBUTING.md
 LICENSE
 README.md                    (this file)
@@ -324,19 +323,44 @@ See [JSON Message Protocol](docs/protocols/JSON_MESSAGE_PROTOCOL.md) for full sp
 ## Development Workflow
 
 ```bash
-# Alpha — build and flash
+# Alpha follower — build, flash, monitor
 cd firmware/alpha/follower_esp32
-pio run -e alpha_follower
 pio run -e alpha_follower -t upload
 pio device monitor
 
-# Beta — build only (no hardware yet)
+# Alpha leader — build, flash
+cd firmware/alpha/leader_esp32
+pio run -e alpha_leader -t upload
+
+# Beta follower — build (hardware in progress)
 cd firmware/beta/follower_esp32
 pio run -e beta_follower
+
+# Beta leader — build (ESP32-C3-MINI-1 integrated PCB)
+cd firmware/beta/leader_esp32
+pio run -e beta_leader
 
 # Unit tests
 cd firmware/alpha/follower_esp32
 pio test
+```
+
+## Key Files
+
+```
+firmware/alpha/follower_esp32/src/modules/config/board_config.h        Alpha follower GPIO assignments
+firmware/alpha/leader_esp32/src/...                                     Alpha leader GPIO assignments
+firmware/beta/follower_esp32/src/modules/config/board_config.h         Beta follower GPIO assignments
+firmware/beta/follower_esp32/src/modules/drivers/tmc2209/tmc2209_config.h  Beta TMC2209 pins + DIAG
+firmware/beta/leader_esp32/src/...                                      Beta leader GPIO assignments (C3)
+
+docs/hardware/alpha/PINOUT_MATRIX.md                                   Alpha GPIO quick reference
+docs/hardware/beta/PINOUT_MATRIX.md                                    Beta follower GPIO quick reference
+docs/hardware/beta/LEADER_PCB_DESIGN.md                                Beta leader PCB design (ESP32-C3-MINI-1)
+docs/references/SixEyes Technical Reference June 2026.md               Authoritative system spec (Beta Rev2)
+
+hardware_assets/pcb_project_files/                                     KiCad PCB project (Beta follower)
+hardware_assets/pcb_latest_gerber/                                     Gerber files for fabrication
 ```
 
 ## Contributing
