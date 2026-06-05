@@ -1,26 +1,34 @@
-# Contributing to SixEyes
+# SixEyes — Usage & Contribution Policy
 
-Thank you for your interest in contributing to SixEyes. This project is safety-critical hardware and software; please follow the steps below.
+## Licences
 
-Before contributing
-- Read the authoritative system spec in `SixEyes Technical Reference.txt` and ensure your change does not change architectural decisions.
-- Ensure you have signed any required contributor license agreements for your organization (if applicable).
+SixEyes uses a dual licence structure:
 
-Code guidelines
-- Keep changes small and focused; open one PR per feature/bug.
-- Follow existing code style and keep firmware changes deterministic.
-- Add unit tests or simulation validations where possible.
+| Files | Licence |
+|---|---|
+| Firmware and software (`firmware/`, `ros2_ws/`, `tools/`) | Apache 2.0 — see `LICENSE` |
+| Hardware design files (`hardware_assets/`) | CERN OHL-S v2 — see `hardware_assets/LICENSE_HARDWARE` |
 
-Safety checklist (required for PRs touching firmware/hardware):
-- [ ] Run full simulation and document test setup in the PR.
-- [ ] Confirm motors are disabled by default and EN pins remain controlled by the safety task.
-- [ ] Verify heartbeat behavior (timeout ~500 ms) and include test logs.
-- [ ] Provide wiring/board changes in `electronics/` and update `docs/wiring.md`.
+## Using the Firmware
 
-Submitting a PR
-- Fork the repo and create a feature branch.
-- Create a clear commit history with focused commit messages.
-- Reference any issues and include testing steps in the PR description.
+The firmware is licensed under Apache 2.0. You are free to use, modify, and incorporate it into your own projects, including commercial and closed-source products, subject to the Apache 2.0 terms.
 
-Contact
-- For safety questions, open an issue with the `safety` label or email **sixeyesopensource@gmail.com**.
+## Using the Hardware Designs
+
+The hardware design files (KiCad schematics, PCB layouts, Gerbers, STL files) are licensed under CERN OHL-S v2 (Strongly Reciprocal). In plain terms:
+
+- You are free to build, modify, and manufacture hardware from these designs.
+- If you distribute or sell products based on these designs, you must:
+  - Make the complete design source files publicly available under the same licence.
+  - Retain all copyright and attribution notices — including the Studio Sanka copyright — in the design files and any accompanying documentation.
+- Derivative hardware designs must also be released under CERN OHL-S v2.
+
+We additionally ask — as a community norm — that any manufactured or sold product visibly credit **Studio Sanka** on the product, packaging, or product listing.
+
+## Contributions
+
+These repositories are maintained exclusively by Studio Sanka members. We are not accepting pull requests or external contributions at this time.
+
+## Feedback & Feature Requests
+
+If you have feedback, found a bug, or want to suggest a feature, find us via our Studio Sanka page. We read everything, though we cannot guarantee a response to every message.

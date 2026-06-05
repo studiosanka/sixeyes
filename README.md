@@ -372,6 +372,17 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for code style, PR process, commit conven
 - **Hardware not responding**: [Hardware Validation](docs/hardware/alpha/HARDWARE_VALIDATION.md#troubleshooting)
 - **ROS2 communication problems**: [ROS2 Integration](docs/ros2/ROS2_INTEGRATION.md)
 
+## Licence
+
+SixEyes uses a dual licence:
+
+| | Licence |
+|---|---|
+| Firmware & software | [Apache 2.0](LICENSE) |
+| Hardware design files (KiCad, Gerbers, STL) | [CERN OHL-S v2](hardware_assets/LICENSE_HARDWARE) |
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for full usage terms, including what is required if you manufacture or sell hardware based on these designs.
+
 ## Contact & Support
 
 - 🐛 Issues: https://github.com/studiosanka/sixeyes/issues
