@@ -1037,6 +1037,247 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Connector_USB:USB_C_Receptacle_USB2.0"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "J"
+				(at 0 17.78 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "USB_C_Receptacle_USB2.0"
+				(at 0 -17.78 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "USB 2.0 Type-C receptacle connector"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "USB_C_Receptacle_USB2.0_0_1"
+				(rectangle
+					(start -7.62 15.24)
+					(end 7.62 -15.24)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "USB_C_Receptacle_USB2.0_1_1"
+				(pin power_in line
+					(at 0 -17.78 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -10.16 12.7 0)
+					(length 2.54)
+					(name "VBUS"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -10.16 2.54 0)
+					(length 2.54)
+					(name "CC1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -10.16 5.08 0)
+					(length 2.54)
+					(name "D+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -10.16 7.62 0)
+					(length 2.54)
+					(name "D-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -10.16 -2.54 0)
+					(length 2.54)
+					(name "SBU1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -10.16 0 0)
+					(length 2.54)
+					(name "CC2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -10.16 -5.08 0)
+					(length 2.54)
+					(name "SBU2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 -7.62 180)
+					(length 2.54)
+					(name "SHIELD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "SH"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Driver_Motor:TMC2209-LA"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -1955,6 +2196,459 @@
 						(effects
 							(font
 								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "LMR14030SDDA:LMR14030SDDA"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at -12.7 13.7 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left bottom)
+				)
+			)
+			(property "Value" "LMR14030SDDA"
+				(at -12.7 -16.7 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left bottom)
+				)
+			)
+			(property "Footprint" "LMR14030SDDA:VREG_LM5017MR_NOPB"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "SIMPLE SWITCHER® 40-V, 3.5-A, 2.2-MHz step-down converter with 40-uA IQ"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "MF" "Texas Instruments"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "Package" "HSOIC-8 Texas Instruments"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "Price" "None"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "SnapEDA_Link" "https://www.snapeda.com/parts/LMR14030SDDA/Texas+Instruments/view-part/?ref=snap"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "MP" "LMR14030SDDA"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "Purchase-URL" "https://www.snapeda.com/api/url_track_click_mouser/?unipart_id=618122&manufacturer=Texas Instruments&part_name=LMR14030SDDA&search_term=lmr14030s"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "Availability" "In Stock"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "Check_prices" "https://www.snapeda.com/parts/LMR14030SDDA/Texas+Instruments/view-part/?ref=eda"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(symbol "LMR14030SDDA_0_0"
+				(rectangle
+					(start -12.7 -12.7)
+					(end 12.7 12.7)
+					(stroke
+						(width 0.41)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin output line
+					(at 17.78 10.16 180)
+					(length 5.08)
+					(name "BOOT"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -17.78 2.54 0)
+					(length 5.08)
+					(name "VIN"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -17.78 10.16 0)
+					(length 5.08)
+					(name "EN"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -17.78 5.08 0)
+					(length 5.08)
+					(name "RT/SYNC"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -17.78 7.62 0)
+					(length 5.08)
+					(name "FB"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 17.78 7.62 180)
+					(length 5.08)
+					(name "SS"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 17.78 -7.62 180)
+					(length 5.08)
+					(name "GND"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 17.78 5.08 180)
+					(length 5.08)
+					(name "SW"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 17.78 -5.08 180)
+					(length 5.08)
+					(name "EXP"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 17.78 -5.08 180)
+					(length 5.08)
+					(hide yes)
+					(name "EXP"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "V1"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 17.78 -5.08 180)
+					(length 5.08)
+					(hide yes)
+					(name "EXP"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "V2"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 17.78 -5.08 180)
+					(length 5.08)
+					(hide yes)
+					(name "EXP"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "V3"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 17.78 -5.08 180)
+					(length 5.08)
+					(hide yes)
+					(name "EXP"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "V4"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 17.78 -5.08 180)
+					(length 5.08)
+					(hide yes)
+					(name "EXP"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "V5"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 17.78 -5.08 180)
+					(length 5.08)
+					(hide yes)
+					(name "EXP"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "V6"
+						(effects
+							(font
+								(size 1.016 1.016)
 							)
 						)
 					)
@@ -3016,10 +3710,337 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "TPS54540BQDDARQ1:TPS54540BQDDARQ1"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at -12.7 16.24 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left bottom)
+				)
+			)
+			(property "Value" "TPS54540BQDDARQ1"
+				(at -12.7 -19.24 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left bottom)
+				)
+			)
+			(property "Footprint" "TPS54540BQDDARQ1:VREG_LM5017MR_NOPB"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "4.5-V to 42-V input, 5-A, step-down DC-DC converter with Eco-mode™"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "MF" "Texas Instruments"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "Package" "HSOIC-8 Texas Instruments"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "Price" "None"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "SnapEDA_Link" "https://www.snapeda.com/parts/TPS54540BQDDARQ1/Texas+Instruments/view-part/?ref=snap"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "MP" "TPS54540BQDDARQ1"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "Availability" "In Stock"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(property "Check_prices" "https://www.snapeda.com/parts/TPS54540BQDDARQ1/Texas+Instruments/view-part/?ref=eda"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+				)
+			)
+			(symbol "TPS54540BQDDARQ1_0_0"
+				(rectangle
+					(start -12.7 -15.24)
+					(end 12.7 15.24)
+					(stroke
+						(width 0.41)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at -17.78 7.62 0)
+					(length 5.08)
+					(name "BOOT"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -17.78 -5.08 0)
+					(length 5.08)
+					(name "VIN"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -17.78 2.54 0)
+					(length 5.08)
+					(name "EN"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin input clock
+					(at -17.78 -2.54 0)
+					(length 5.08)
+					(name "RT/CLK"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -17.78 0 0)
+					(length 5.08)
+					(name "FB"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -17.78 5.08 0)
+					(length 5.08)
+					(name "COMP"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 17.78 -12.7 180)
+					(length 5.08)
+					(name "GND"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 17.78 7.62 180)
+					(length 5.08)
+					(name "SW"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 17.78 12.7 180)
+					(length 5.08)
+					(name "POWERPAD"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(symbol
 		(lib_id "Driver_Motor:TMC2209-LA")
-		(at 121.92 54.61 0)
+		(at 106.68 43.18 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3030,7 +4051,7 @@
 		(fields_autoplaced yes)
 		(uuid "329252d1-68b3-4973-9302-3563d6e62c0d")
 		(property "Reference" "U2"
-			(at 126.6033 80.01 0)
+			(at 111.3633 68.58 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3041,7 +4062,7 @@
 			)
 		)
 		(property "Value" "TMC2209-LA"
-			(at 126.6033 82.55 0)
+			(at 111.3633 71.12 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3052,7 +4073,7 @@
 			)
 		)
 		(property "Footprint" "Package_DFN_QFN:VQFN-28-1EP_5x5mm_P0.5mm_EP3.7x3.7mm_ThermalVias"
-			(at 121.92 82.55 0)
+			(at 106.68 71.12 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3063,7 +4084,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2209_datasheet_rev1.09.pdf"
-			(at 121.92 84.582 0)
+			(at 106.68 73.152 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3074,7 +4095,7 @@
 			)
 		)
 		(property "Description" "2-phase stepper motor driver, 256 µSteps, 2.8A peak, 2.0A RMS, VS = 4.75..29V, STEP/DIR and UART interface, VQFN-28"
-			(at 121.92 86.614 0)
+			(at 106.68 75.184 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3182,7 +4203,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x03_Pin")
-		(at 151.13 137.16 0)
+		(at 138.43 100.33 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3193,7 +4214,7 @@
 		(fields_autoplaced yes)
 		(uuid "47ec47a1-0410-43bf-80e6-9ed204ec1a85")
 		(property "Reference" "J11"
-			(at 151.765 129.54 0)
+			(at 139.065 92.71 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3203,7 +4224,7 @@
 			)
 		)
 		(property "Value" "Conn_01x03_Pin"
-			(at 151.765 132.08 0)
+			(at 139.065 95.25 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3212,8 +4233,8 @@
 				)
 			)
 		)
-		(property "Footprint" ""
-			(at 151.13 137.16 0)
+		(property "Footprint" "Connector_JST:JST_XH_B3B-XH-A_1x03_P2.50mm_Vertical"
+			(at 138.43 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3224,7 +4245,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 151.13 137.16 0)
+			(at 138.43 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3235,7 +4256,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x03, script generated"
-			(at 151.13 137.16 0)
+			(at 138.43 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3265,7 +4286,7 @@
 	)
 	(symbol
 		(lib_id "RF_Module:ESP32-S3-WROOM-1")
-		(at 55.88 55.88 0)
+		(at 35.56 43.18 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3276,7 +4297,7 @@
 		(fields_autoplaced yes)
 		(uuid "52e47d62-cfbb-4fbd-af3a-2071f3f24d5e")
 		(property "Reference" "U1"
-			(at 58.0233 25.4 0)
+			(at 37.7033 12.7 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3287,7 +4308,7 @@
 			)
 		)
 		(property "Value" "ESP32-S3-WROOM-1"
-			(at 58.0233 27.94 0)
+			(at 37.7033 15.24 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3298,7 +4319,7 @@
 			)
 		)
 		(property "Footprint" "RF_Module:ESP32-S3-WROOM-1"
-			(at 55.88 53.34 0)
+			(at 35.56 40.64 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3309,7 +4330,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf"
-			(at 55.88 55.88 0)
+			(at 35.56 43.18 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3320,7 +4341,7 @@
 			)
 		)
 		(property "Description" "RF Module, ESP32-S3 SoC, Wi-Fi 802.11b/g/n, Bluetooth, BLE, 32-bit, 3.3V, onboard antenna, SMD"
-			(at 55.88 55.88 0)
+			(at 35.56 43.18 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3463,8 +4484,225 @@
 		)
 	)
 	(symbol
+		(lib_id "LMR14030SDDA:LMR14030SDDA")
+		(at 246.38 133.35 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "618ec4c3-82e4-4018-aa61-1fd1a77ef8a1")
+		(property "Reference" "U9"
+			(at 246.38 115.57 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "LMR14030SDDA"
+			(at 246.38 118.11 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "LMR14030SDDA:VREG_LM5017MR_NOPB"
+			(at 246.38 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Datasheet" ""
+			(at 246.38 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "SIMPLE SWITCHER® 40-V, 3.5-A, 2.2-MHz step-down converter with 40-uA IQ"
+			(at 246.38 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "MF" "Texas Instruments"
+			(at 246.38 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Package" "HSOIC-8 Texas Instruments"
+			(at 246.38 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Price" "None"
+			(at 246.38 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "SnapEDA_Link" "https://www.snapeda.com/parts/LMR14030SDDA/Texas+Instruments/view-part/?ref=snap"
+			(at 246.38 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "MP" "LMR14030SDDA"
+			(at 246.38 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Purchase-URL" "https://www.snapeda.com/api/url_track_click_mouser/?unipart_id=618122&manufacturer=Texas Instruments&part_name=LMR14030SDDA&search_term=lmr14030s"
+			(at 246.38 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Availability" "In Stock"
+			(at 246.38 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Check_prices" "https://www.snapeda.com/parts/LMR14030SDDA/Texas+Instruments/view-part/?ref=eda"
+			(at 246.38 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(pin "4"
+			(uuid "6927a03c-42aa-4c92-a962-9289561d5374")
+		)
+		(pin "1"
+			(uuid "c323a1b2-202f-48b6-bc66-051e7bbc95ad")
+		)
+		(pin "2"
+			(uuid "0637ae04-14de-4dd8-85e1-63b61fe87d79")
+		)
+		(pin "3"
+			(uuid "904d4caf-91f0-4ee3-b243-3f6ba93d03cf")
+		)
+		(pin "V4"
+			(uuid "d73d405a-c45e-409a-abc3-a8f6ad8d4235")
+		)
+		(pin "9"
+			(uuid "4052376b-7a12-4e7e-a782-f02591f1f7fc")
+		)
+		(pin "6"
+			(uuid "99977ebb-1e97-4e87-aa03-7e9b7fa43345")
+		)
+		(pin "V5"
+			(uuid "3f054676-eac4-4365-ad26-b6dbf9573d66")
+		)
+		(pin "V2"
+			(uuid "87f76975-fbaa-4d6b-a180-c2a083bb1fd3")
+		)
+		(pin "V3"
+			(uuid "a55f2461-96f5-4c26-8535-25e14201e060")
+		)
+		(pin "8"
+			(uuid "b2459ef2-08f3-4f7d-8213-85eed5561f8f")
+		)
+		(pin "5"
+			(uuid "9d26b66a-c587-42e4-995e-11b82144d1ff")
+		)
+		(pin "V1"
+			(uuid "9f4b3ca3-b81e-4441-a36e-6f854385ea40")
+		)
+		(pin "7"
+			(uuid "0caac557-7d2c-472d-b58b-a133d9e468df")
+		)
+		(pin "V6"
+			(uuid "0ae0b2f5-54ec-4311-8ffa-95bcfddeec4f")
+		)
+		(instances
+			(project "Sixeyes Follower PCB Beta"
+				(path "/171b0ff0-1fdb-4d5b-8f54-4545775d4353"
+					(reference "U9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Regulator_Linear:MIC5219-3.3YM5")
-		(at 264.16 152.4 0)
+		(at 46.99 133.35 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3475,7 +4713,7 @@
 		(fields_autoplaced yes)
 		(uuid "6738a0dc-449b-44ad-a469-11a37f0e7588")
 		(property "Reference" "U6"
-			(at 264.16 143.51 0)
+			(at 46.99 124.46 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3485,7 +4723,7 @@
 			)
 		)
 		(property "Value" "MIC5219-3.3YM5"
-			(at 264.16 146.05 0)
+			(at 46.99 127 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3495,7 +4733,7 @@
 			)
 		)
 		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5"
-			(at 264.16 144.145 0)
+			(at 46.99 125.095 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3506,7 +4744,7 @@
 			)
 		)
 		(property "Datasheet" "http://ww1.microchip.com/downloads/en/DeviceDoc/MIC5219-500mA-Peak-Output-LDO-Regulator-DS20006021A.pdf"
-			(at 264.16 152.4 0)
+			(at 46.99 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3517,7 +4755,7 @@
 			)
 		)
 		(property "Description" "500mA low dropout linear regulator, fixed 3.3V output, SOT-23-5"
-			(at 264.16 152.4 0)
+			(at 46.99 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3553,7 +4791,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x02_Pin")
-		(at 81.28 147.32 0)
+		(at 100.33 190.5 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3564,7 +4802,7 @@
 		(fields_autoplaced yes)
 		(uuid "67708e0b-63fc-49fb-9efb-bcd34842c01b")
 		(property "Reference" "J8"
-			(at 81.915 142.24 0)
+			(at 100.965 185.42 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3574,7 +4812,7 @@
 			)
 		)
 		(property "Value" "Conn_01x02_Pin"
-			(at 81.915 144.78 0)
+			(at 100.965 187.96 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3583,8 +4821,8 @@
 				)
 			)
 		)
-		(property "Footprint" ""
-			(at 81.28 147.32 0)
+		(property "Footprint" "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical"
+			(at 100.33 190.5 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3595,7 +4833,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 81.28 147.32 0)
+			(at 100.33 190.5 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3606,7 +4844,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x02, script generated"
-			(at 81.28 147.32 0)
+			(at 100.33 190.5 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3633,7 +4871,7 @@
 	)
 	(symbol
 		(lib_id "Driver_Motor:TMC2209-LA")
-		(at 255.27 57.15 0)
+		(at 252.73 43.18 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3644,7 +4882,7 @@
 		(fields_autoplaced yes)
 		(uuid "6b2495ae-66f7-4431-8690-d691287842bb")
 		(property "Reference" "U5"
-			(at 259.9533 82.55 0)
+			(at 257.4133 68.58 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3655,7 +4893,7 @@
 			)
 		)
 		(property "Value" "TMC2209-LA"
-			(at 259.9533 85.09 0)
+			(at 257.4133 71.12 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3666,7 +4904,7 @@
 			)
 		)
 		(property "Footprint" "Package_DFN_QFN:VQFN-28-1EP_5x5mm_P0.5mm_EP3.7x3.7mm_ThermalVias"
-			(at 255.27 85.09 0)
+			(at 252.73 71.12 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3677,7 +4915,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2209_datasheet_rev1.09.pdf"
-			(at 255.27 87.122 0)
+			(at 252.73 73.152 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3688,7 +4926,7 @@
 			)
 		)
 		(property "Description" "2-phase stepper motor driver, 256 µSteps, 2.8A peak, 2.0A RMS, VS = 4.75..29V, STEP/DIR and UART interface, VQFN-28"
-			(at 255.27 89.154 0)
+			(at 252.73 75.184 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3796,7 +5034,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x03_Pin")
-		(at 114.3 137.16 0)
+		(at 106.68 100.33 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3807,7 +5045,7 @@
 		(fields_autoplaced yes)
 		(uuid "7920e8e1-c851-4684-a7b0-12337c2d2211")
 		(property "Reference" "J9"
-			(at 114.935 129.54 0)
+			(at 107.315 92.71 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3817,7 +5055,7 @@
 			)
 		)
 		(property "Value" "Conn_01x03_Pin"
-			(at 114.935 132.08 0)
+			(at 107.315 95.25 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3826,8 +5064,8 @@
 				)
 			)
 		)
-		(property "Footprint" ""
-			(at 114.3 137.16 0)
+		(property "Footprint" "Connector_JST:JST_XH_B3B-XH-A_1x03_P2.50mm_Vertical"
+			(at 106.68 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3838,7 +5076,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 114.3 137.16 0)
+			(at 106.68 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3849,7 +5087,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x03, script generated"
-			(at 114.3 137.16 0)
+			(at 106.68 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3879,7 +5117,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Micro_SD_Card")
-		(at 215.9 144.78 0)
+		(at 40.64 177.8 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3890,7 +5128,7 @@
 		(fields_autoplaced yes)
 		(uuid "7d9e9ea0-21f6-40ca-97bd-2217e54463ba")
 		(property "Reference" "J1"
-			(at 216.535 125.73 0)
+			(at 41.275 158.75 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3900,7 +5138,7 @@
 			)
 		)
 		(property "Value" "Micro_SD_Card"
-			(at 216.535 128.27 0)
+			(at 41.275 161.29 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3910,7 +5148,7 @@
 			)
 		)
 		(property "Footprint" "Connector_Card:microSD_HC_Hirose_DM3D-SF"
-			(at 245.11 137.16 0)
+			(at 69.85 170.18 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3921,7 +5159,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.we-online.com/components/products/datasheet/693072010801.pdf"
-			(at 215.9 144.78 0)
+			(at 40.64 177.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3932,7 +5170,7 @@
 			)
 		)
 		(property "Description" "Micro SD Card Socket"
-			(at 215.9 144.78 0)
+			(at 40.64 177.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3980,7 +5218,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x04_Pin")
-		(at 168.91 95.25 0)
+		(at 153.67 81.28 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3991,7 +5229,7 @@
 		(fields_autoplaced yes)
 		(uuid "7f2d69bc-67eb-46f6-9354-f3c1f0e8f200")
 		(property "Reference" "J3"
-			(at 169.545 87.63 0)
+			(at 154.305 73.66 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4001,7 +5239,7 @@
 			)
 		)
 		(property "Value" "Conn_01x04_Pin"
-			(at 169.545 90.17 0)
+			(at 154.305 76.2 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4010,8 +5248,8 @@
 				)
 			)
 		)
-		(property "Footprint" ""
-			(at 168.91 95.25 0)
+		(property "Footprint" "Connector_JST:JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical"
+			(at 153.67 81.28 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4022,7 +5260,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 168.91 95.25 0)
+			(at 153.67 81.28 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4033,7 +5271,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x04, script generated"
-			(at 168.91 95.25 0)
+			(at 153.67 81.28 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4066,7 +5304,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x03_Pin")
-		(at 129.54 137.16 0)
+		(at 121.92 100.33 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4077,7 +5315,7 @@
 		(fields_autoplaced yes)
 		(uuid "8a2a5c07-9347-436d-aa17-1e5fc2085cff")
 		(property "Reference" "J10"
-			(at 130.175 129.54 0)
+			(at 122.555 92.71 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4087,7 +5325,7 @@
 			)
 		)
 		(property "Value" "Conn_01x03_Pin"
-			(at 130.175 132.08 0)
+			(at 122.555 95.25 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4096,8 +5334,8 @@
 				)
 			)
 		)
-		(property "Footprint" ""
-			(at 129.54 137.16 0)
+		(property "Footprint" "Connector_JST:JST_XH_B3B-XH-A_1x03_P2.50mm_Vertical"
+			(at 121.92 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4108,7 +5346,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 129.54 137.16 0)
+			(at 121.92 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4119,7 +5357,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x03, script generated"
-			(at 129.54 137.16 0)
+			(at 121.92 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4149,7 +5387,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x04_Pin")
-		(at 43.18 146.05 0)
+		(at 62.23 62.23 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4157,10 +5395,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "9cf3f3bf-638a-414b-a628-10cc2b75bda3")
 		(property "Reference" "J6"
-			(at 43.815 138.43 0)
+			(at 63.246 54.356 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4170,7 +5407,7 @@
 			)
 		)
 		(property "Value" "Conn_01x04_Pin"
-			(at 43.815 140.97 0)
+			(at 62.865 57.15 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4179,8 +5416,8 @@
 				)
 			)
 		)
-		(property "Footprint" ""
-			(at 43.18 146.05 0)
+		(property "Footprint" "Connector_JST:JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical"
+			(at 62.23 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4191,7 +5428,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 43.18 146.05 0)
+			(at 62.23 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4202,7 +5439,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x04, script generated"
-			(at 43.18 146.05 0)
+			(at 62.23 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4234,8 +5471,401 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector_USB:USB_C_Receptacle_USB2.0")
+		(at 29.21 100.33 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a1b2c3d4-0003-4001-8001-000000000003")
+		(property "Reference" "J13"
+			(at 33.21 80.33 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "USB_C_Receptacle_USB2.0"
+			(at 33.21 82.87 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12"
+			(at 29.21 100.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 29.21 100.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "J_USB1 -- Native USB-OTG (GPIO19/20), ROS2 bridge / telemetry"
+			(at 29.21 100.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "A4"
+			(uuid "a1b2c3d4-0003-4001-8001-000000000031")
+		)
+		(pin "A6"
+			(uuid "a1b2c3d4-0003-4001-8001-000000000032")
+		)
+		(pin "A7"
+			(uuid "a1b2c3d4-0003-4001-8001-000000000033")
+		)
+		(pin "A5"
+			(uuid "a1b2c3d4-0003-4001-8001-000000000034")
+		)
+		(pin "B5"
+			(uuid "a1b2c3d4-0003-4001-8001-000000000035")
+		)
+		(pin "A8"
+			(uuid "a1b2c3d4-0003-4001-8001-000000000036")
+		)
+		(pin "B8"
+			(uuid "a1b2c3d4-0003-4001-8001-000000000037")
+		)
+		(pin "A1"
+			(uuid "a1b2c3d4-0003-4001-8001-000000000038")
+		)
+		(pin "SH"
+			(uuid "a1b2c3d4-0003-4001-8001-000000000039")
+		)
+		(instances
+			(project "Sixeyes Follower PCB Beta"
+				(path "/171b0ff0-1fdb-4d5b-8f54-4545775d4353"
+					(reference "J13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_USB:USB_C_Receptacle_USB2.0")
+		(at 28.46 139.39 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a1b2c3d4-0004-4001-8001-000000000004")
+		(property "Reference" "J14"
+			(at 32.46 119.39 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "USB_C_Receptacle_USB2.0"
+			(at 32.46 121.93 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12"
+			(at 28.46 139.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 28.46 139.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "J_USB2 -- CH340K UART debug/flash (GPIO43/44), DTR/RTS auto-reset"
+			(at 28.46 139.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "A4"
+			(uuid "a1b2c3d4-0004-4001-8001-000000000041")
+		)
+		(pin "A6"
+			(uuid "a1b2c3d4-0004-4001-8001-000000000042")
+		)
+		(pin "A7"
+			(uuid "a1b2c3d4-0004-4001-8001-000000000043")
+		)
+		(pin "A5"
+			(uuid "a1b2c3d4-0004-4001-8001-000000000044")
+		)
+		(pin "B5"
+			(uuid "a1b2c3d4-0004-4001-8001-000000000045")
+		)
+		(pin "A8"
+			(uuid "a1b2c3d4-0004-4001-8001-000000000046")
+		)
+		(pin "B8"
+			(uuid "a1b2c3d4-0004-4001-8001-000000000047")
+		)
+		(pin "A1"
+			(uuid "a1b2c3d4-0004-4001-8001-000000000048")
+		)
+		(pin "SH"
+			(uuid "a1b2c3d4-0004-4001-8001-000000000049")
+		)
+		(instances
+			(project "Sixeyes Follower PCB Beta"
+				(path "/171b0ff0-1fdb-4d5b-8f54-4545775d4353"
+					(reference "J14")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "TPS54540BQDDARQ1:TPS54540BQDDARQ1")
+		(at 198.12 134.62 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a2cef4fa-48a6-4849-930b-2ce679ed4872")
+		(property "Reference" "U8"
+			(at 198.12 114.3 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TPS54540BQDDARQ1"
+			(at 198.12 116.84 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TPS54540BQDDARQ1:VREG_LM5017MR_NOPB"
+			(at 198.12 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Datasheet" ""
+			(at 198.12 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "4.5-V to 42-V input, 5-A, step-down DC-DC converter with Eco-mode™"
+			(at 198.12 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "MF" "Texas Instruments"
+			(at 198.12 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Package" "HSOIC-8 Texas Instruments"
+			(at 198.12 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Price" "None"
+			(at 198.12 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "SnapEDA_Link" "https://www.snapeda.com/parts/TPS54540BQDDARQ1/Texas+Instruments/view-part/?ref=snap"
+			(at 198.12 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "MP" "TPS54540BQDDARQ1"
+			(at 198.12 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Availability" "In Stock"
+			(at 198.12 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Check_prices" "https://www.snapeda.com/parts/TPS54540BQDDARQ1/Texas+Instruments/view-part/?ref=eda"
+			(at 198.12 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(pin "1"
+			(uuid "002938b8-273d-462a-80f3-be808b1a114b")
+		)
+		(pin "2"
+			(uuid "4b06fde8-d2c3-41ef-b687-8b13ade1b4c1")
+		)
+		(pin "4"
+			(uuid "74613054-549a-4cba-beaf-682fe959c7ba")
+		)
+		(pin "8"
+			(uuid "e22262c1-2102-4965-ba7b-46ee35407f94")
+		)
+		(pin "5"
+			(uuid "d757a5d1-ba0b-4f8e-9c0f-9e706fdd8a69")
+		)
+		(pin "3"
+			(uuid "48ab4466-80cb-4fd3-a3a8-a153f83d2945")
+		)
+		(pin "6"
+			(uuid "f46dc3c5-b9bf-4444-96ff-30387765a52e")
+		)
+		(pin "9"
+			(uuid "75205444-f16b-49c9-be77-4c343441c881")
+		)
+		(pin "7"
+			(uuid "a4d588d8-b012-4688-86fc-ed6f04702f28")
+		)
+		(instances
+			(project "Sixeyes Follower PCB Beta"
+				(path "/171b0ff0-1fdb-4d5b-8f54-4545775d4353"
+					(reference "U8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Driver_Motor:TMC2209-LA")
-		(at 214.63 57.15 0)
+		(at 204.47 43.18 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4246,7 +5876,7 @@
 		(fields_autoplaced yes)
 		(uuid "ba56bc52-b9a8-4486-b57f-423d5b29f29b")
 		(property "Reference" "U4"
-			(at 219.3133 82.55 0)
+			(at 209.1533 68.58 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4257,7 +5887,7 @@
 			)
 		)
 		(property "Value" "TMC2209-LA"
-			(at 219.3133 85.09 0)
+			(at 209.1533 71.12 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4268,7 +5898,7 @@
 			)
 		)
 		(property "Footprint" "Package_DFN_QFN:VQFN-28-1EP_5x5mm_P0.5mm_EP3.7x3.7mm_ThermalVias"
-			(at 214.63 85.09 0)
+			(at 204.47 71.12 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4279,7 +5909,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2209_datasheet_rev1.09.pdf"
-			(at 214.63 87.122 0)
+			(at 204.47 73.152 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4290,7 +5920,7 @@
 			)
 		)
 		(property "Description" "2-phase stepper motor driver, 256 µSteps, 2.8A peak, 2.0A RMS, VS = 4.75..29V, STEP/DIR and UART interface, VQFN-28"
-			(at 214.63 89.154 0)
+			(at 204.47 75.184 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4398,7 +6028,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x02_Pin")
-		(at 64.77 147.32 0)
+		(at 83.82 190.5 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4409,7 +6039,7 @@
 		(fields_autoplaced yes)
 		(uuid "c4d01ce6-d5cf-4c3a-846e-eb32641e02b4")
 		(property "Reference" "J7"
-			(at 65.405 142.24 0)
+			(at 84.455 185.42 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4419,7 +6049,7 @@
 			)
 		)
 		(property "Value" "Conn_01x02_Pin"
-			(at 65.405 144.78 0)
+			(at 84.455 187.96 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4428,8 +6058,8 @@
 				)
 			)
 		)
-		(property "Footprint" ""
-			(at 64.77 147.32 0)
+		(property "Footprint" "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical"
+			(at 83.82 190.5 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4440,7 +6070,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 64.77 147.32 0)
+			(at 83.82 190.5 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4451,7 +6081,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x02, script generated"
-			(at 64.77 147.32 0)
+			(at 83.82 190.5 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4478,7 +6108,7 @@
 	)
 	(symbol
 		(lib_id "Interface_USB:CH340K")
-		(at 49.53 105.41 0)
+		(at 49.53 99.06 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4489,7 +6119,7 @@
 		(fields_autoplaced yes)
 		(uuid "cd27f876-048d-4ba9-b40e-1f6a43704a52")
 		(property "Reference" "U7"
-			(at 51.6733 120.65 0)
+			(at 51.6733 114.3 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4500,7 +6130,7 @@
 			)
 		)
 		(property "Value" "CH340K"
-			(at 51.6733 123.19 0)
+			(at 51.6733 116.84 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4511,7 +6141,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SSOP-10-1EP_3.9x4.9mm_P1mm_EP2.1x3.3mm"
-			(at 50.8 119.38 0)
+			(at 50.8 113.03 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4523,7 +6153,7 @@
 			)
 		)
 		(property "Datasheet" "https://cdn.sparkfun.com/assets/5/0/a/8/5/CH340DS1.PDF"
-			(at 40.64 85.09 0)
+			(at 40.64 78.74 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4534,7 +6164,7 @@
 			)
 		)
 		(property "Description" "USB serial converter, UART, SSOP-10"
-			(at 49.53 105.41 0)
+			(at 49.53 99.06 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4588,7 +6218,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x04_Pin")
-		(at 210.82 95.25 0)
+		(at 201.93 81.28 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4599,7 +6229,7 @@
 		(fields_autoplaced yes)
 		(uuid "d3efe4c7-9efc-4837-bdf4-24c3f91555b4")
 		(property "Reference" "J4"
-			(at 211.455 87.63 0)
+			(at 202.565 73.66 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4609,7 +6239,7 @@
 			)
 		)
 		(property "Value" "Conn_01x04_Pin"
-			(at 211.455 90.17 0)
+			(at 202.565 76.2 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4618,8 +6248,8 @@
 				)
 			)
 		)
-		(property "Footprint" ""
-			(at 210.82 95.25 0)
+		(property "Footprint" "Connector_JST:JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical"
+			(at 201.93 81.28 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4630,7 +6260,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 210.82 95.25 0)
+			(at 201.93 81.28 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4641,7 +6271,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x04, script generated"
-			(at 210.82 95.25 0)
+			(at 201.93 81.28 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4674,7 +6304,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x04_Pin")
-		(at 120.65 95.25 0)
+		(at 105.41 81.28 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4685,7 +6315,7 @@
 		(fields_autoplaced yes)
 		(uuid "d849799c-a0f2-43b8-ae5f-4bd6b54baa67")
 		(property "Reference" "J2"
-			(at 121.285 87.63 0)
+			(at 106.045 73.66 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4695,7 +6325,7 @@
 			)
 		)
 		(property "Value" "Conn_01x04_Pin"
-			(at 121.285 90.17 0)
+			(at 106.045 76.2 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4704,8 +6334,8 @@
 				)
 			)
 		)
-		(property "Footprint" ""
-			(at 120.65 95.25 0)
+		(property "Footprint" "Connector_JST:JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical"
+			(at 105.41 81.28 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4716,7 +6346,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 120.65 95.25 0)
+			(at 105.41 81.28 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4727,7 +6357,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x04, script generated"
-			(at 120.65 95.25 0)
+			(at 105.41 81.28 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4760,7 +6390,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x02_Pin")
-		(at 115.57 179.07 0)
+		(at 254 100.33 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4771,7 +6401,7 @@
 		(fields_autoplaced yes)
 		(uuid "d9450a6e-66fa-4624-aaf0-3ee413232edb")
 		(property "Reference" "J12"
-			(at 116.205 173.99 0)
+			(at 254.635 95.25 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4781,7 +6411,7 @@
 			)
 		)
 		(property "Value" "Conn_01x02_Pin"
-			(at 116.205 176.53 0)
+			(at 254.635 97.79 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4791,7 +6421,7 @@
 			)
 		)
 		(property "Footprint" "Connector_AMASS:AMASS_XT30U-M_1x02_P5.0mm_Vertical"
-			(at 115.57 179.07 0)
+			(at 254 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4802,7 +6432,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 115.57 179.07 0)
+			(at 254 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4813,7 +6443,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x02, script generated"
-			(at 115.57 179.07 0)
+			(at 254 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4840,7 +6470,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x04_Pin")
-		(at 252.73 96.52 0)
+		(at 248.92 80.01 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4851,7 +6481,7 @@
 		(fields_autoplaced yes)
 		(uuid "e9b93f1d-16fa-4913-9f71-a432a6f6e6dd")
 		(property "Reference" "J5"
-			(at 253.365 88.9 0)
+			(at 249.555 72.39 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4861,7 +6491,7 @@
 			)
 		)
 		(property "Value" "Conn_01x04_Pin"
-			(at 253.365 91.44 0)
+			(at 249.555 74.93 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4870,8 +6500,8 @@
 				)
 			)
 		)
-		(property "Footprint" ""
-			(at 252.73 96.52 0)
+		(property "Footprint" "Connector_JST:JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical"
+			(at 248.92 80.01 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4882,7 +6512,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 252.73 96.52 0)
+			(at 248.92 80.01 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4893,7 +6523,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x04, script generated"
-			(at 252.73 96.52 0)
+			(at 248.92 80.01 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4926,7 +6556,7 @@
 	)
 	(symbol
 		(lib_id "Driver_Motor:TMC2209-LA")
-		(at 171.45 55.88 0)
+		(at 156.21 43.18 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4937,7 +6567,7 @@
 		(fields_autoplaced yes)
 		(uuid "ff279e8a-aeaf-4a76-99c2-34c291cd1a8f")
 		(property "Reference" "U3"
-			(at 176.1333 81.28 0)
+			(at 160.8933 68.58 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4948,7 +6578,7 @@
 			)
 		)
 		(property "Value" "TMC2209-LA"
-			(at 176.1333 83.82 0)
+			(at 160.8933 71.12 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4959,7 +6589,7 @@
 			)
 		)
 		(property "Footprint" "Package_DFN_QFN:VQFN-28-1EP_5x5mm_P0.5mm_EP3.7x3.7mm_ThermalVias"
-			(at 171.45 83.82 0)
+			(at 156.21 71.12 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4970,7 +6600,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2209_datasheet_rev1.09.pdf"
-			(at 171.45 85.852 0)
+			(at 156.21 73.152 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4981,7 +6611,7 @@
 			)
 		)
 		(property "Description" "2-phase stepper motor driver, 256 µSteps, 2.8A peak, 2.0A RMS, VS = 4.75..29V, STEP/DIR and UART interface, VQFN-28"
-			(at 171.45 87.884 0)
+			(at 156.21 75.184 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)

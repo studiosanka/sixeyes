@@ -1,0 +1,722 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{enumitem}
+
+% ── Document Styling ──────────────────────────────────────────────────────────
+\definecolor{darkblue}{rgb}{0.0, 0.0, 0.55}
+\definecolor{lightgray}{rgb}{0.95, 0.95, 0.95}
+\definecolor{warnred}{rgb}{0.75, 0.10, 0.10}
+
+\titleformat{\section}{\large\bfseries\color{darkblue}}{\thesection}{1em}{}[{\titlerule[0.8pt]}]
+\titleformat{\subsection}{\normalsize\bfseries\color{darkblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+\hypersetup{colorlinks=true, linkcolor=darkblue, urlcolor=darkblue}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\lstset{
+    backgroundcolor=\color{lightgray},
+    basicstyle=\small\ttfamily,
+    breaklines=true,
+    frame=single,
+    frameround=tttt,
+    framesep=4pt
+}
+
+% ── Helpers ───────────────────────────────────────────────────────────────────
+\newcommand{\warn}[1]{\textcolor{warnred}{\textbf{#1}}}
+\newcommand{\net}[1]{\lstinline|#1|}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+
+% ── Title Block ───────────────────────────────────────────────────────────────
+\begin{center}
+    {\LARGE \bfseries SixEyes -- Follower PCB Beta (Rev 2)} \\
+    \vspace{0.2cm}
+    {\Large \bfseries Technical Design Specification \& KiCad Layout Manual} \\
+    \vspace{0.4cm}
+    \textbf{Target System:} SixEyes NodeMesh VLA -- Node0 (Orchestrator) \\
+    \textbf{Module:}        ESP32-S3-WROOM-1-N16R8 (16\,MB Flash, 8\,MB Octal PSRAM) \\
+    \textbf{Form Factor:}   $60\,\text{mm} \times 60\,\text{mm}$ Custom 4-Layer PCB \\
+    \textbf{Placement Rule:} Single-Sided SMT (Top Layer Only) \\
+    \vspace{0.2cm}
+    \hrule
+    \vspace{0.1cm}
+    {\small \textit{Rev\,2 changes: LDO upgraded to 1\,A; bulk caps changed to low-ESR electrolytic;
+    TMC2209 DIAG/StallGuard pins routed; full connector edge map added; CH340K decoupling added;
+    5\,V buck load budget revised for Node1 (ESP32-C6 offboard); octal-PSRAM locked GPIO
+    exclusions enforced.}}
+\end{center}
+
+\tableofcontents
+\newpage
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{System Overview \& Architecture}
+% ─────────────────────────────────────────────────────────────────────────────
+
+The Follower PCB Beta (Rev\,2) is the physical carrier board for \textbf{Node0} of the
+SixEyes NodeMesh VLA system. Node0 is the real-time orchestrator providing:
+
+\begin{itemize}[noitemsep]
+    \item \textbf{400\,Hz deterministic control} -- trajectory profiling for four stepper joints
+          and three servo joints simultaneously.
+    \item \textbf{2-link planar inverse kinematics} -- upper arm / forearm link length
+          $= 140\,\text{mm}$ each.
+    \item \textbf{Data aggregation} -- synchronous merging of joint-state frames from Node1
+          (ESP32-C6 leader board, offboard, connected via hardware UART at 921\,600\,baud)
+          and vision feature vectors from Node2 / Node3 (ESP32-CAM modules, wireless
+          ESP-NOW on channel\,6).
+    \item \textbf{Full TMC2209 feature utilisation} -- StallGuard2 sensorless homing,
+          CoolStep adaptive current scaling, SpreadCycle / StealthChop2 mode switching,
+          and per-driver UART configuration via PDN\_UART single-wire bus.
+    \item \textbf{Telemetry logging} -- MicroSD circular-buffer experience packet logging
+          ($\approx 300\,\text{B/packet}$, FAT32).
+\end{itemize}
+
+\subsection{Module Selection Note -- Octal PSRAM Variant}
+
+The \textbf{ESP32-S3-WROOM-1-N16R8} is the required module variant (16\,MB Flash,
+8\,MB Octal PSRAM). The octal-PSRAM interface permanently commits the following
+GPIO lines to internal silicon use. \warn{These pins must not be routed to any
+external pad, via, connector, or pull resistor on the PCB:}
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{GPIO} & \textbf{Internal Function (N16R8 variant)} \\
+\midrule
+GPIO33 & Flash D4 \\
+GPIO34 & Flash D5 \\
+GPIO35 & Octal PSRAM D6 / WP \\
+GPIO36 & Octal PSRAM D7 / HOLD \\
+GPIO37 & Octal PSRAM CLK \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+GPIO26 is additionally used by the internal octal flash clock and must not be routed.
+
+\subsection{Power Topology}
+
+\begin{align*}
+    24\,\text{V DC Input}
+        &\longrightarrow \text{4$\times$ TMC2209 } V_M \text{ rails (direct, fused)} \\
+        &\longrightarrow \text{6.6\,V sync buck (TPS54540B)} \longrightarrow
+              \text{3$\times$ MG996R/MG995 servos} \\
+        &\longrightarrow \text{5.0\,V async buck (LMR14030S)} \longrightarrow
+              \text{2$\times$ ESP32-CAM headers (Node2, Node3)} \\
+        &\phantom{\longrightarrow \text{5.0\,V async buck}} \longrightarrow
+              \text{ESP32-C6 offboard header (Node1 leader board)} \\
+        &\phantom{\longrightarrow \text{5.0\,V async buck}} \longrightarrow
+              \text{3.3\,V LDO (MIC5219-3.3)} \longrightarrow
+              \text{ESP32-S3 core logic, TMC2209 } V_{IO}
+\end{align*}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Power Delivery Network (PDN) \& Domain Architecture}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{24\,V Motor Rail}
+
+The four TMC2209 \texttt{VM} pins are fed directly from the 24\,V input bus.
+Each driver requires the following filtering placed within $2\,\text{mm}$ of the IC body:
+
+\begin{itemize}[noitemsep]
+    \item $100\,\mu\text{F}$ / 35\,V \textbf{low-ESR SMD electrolytic} (Panasonic FR or
+          Nichicon UWX series, case size D / $7.3\,\text{mm}$ diameter) -- bulk transient
+          reservoir per driver. \warn{Do not substitute tantalum; polarity reversal or
+          inrush spikes from motor back-EMF cause catastrophic tantalum failure.}
+    \item $100\,\text{nF}$ X7R ceramic, 50\,V (0603) -- high-frequency bypass, trace
+          length to pin $\le 1\,\text{mm}$.
+\end{itemize}
+
+\subsection{6.6\,V Servo Domain}
+
+\begin{description}[noitemsep]
+    \item[Regulator:] TPS54540B -- 5.5\,A synchronous buck, HSOP-8-EP package. Readily
+          available, comprehensive datasheet, budget-friendly.
+    \item[Loads:] 3$\times$ MG996R/MG995 digital servos (Wrist Pitch, Wrist Yaw, Gripper).
+    \item[Continuous / peak:] 5.0\,A / 7.0\,A stall.
+    \item[Inductor:] Shielded iron-powder / metal composite, $L = 4.7\,\mu\text{H}$,
+          $I_{\text{sat}} > 9.0\,\text{A}$, footprint $\ge 10\,\text{mm} \times 10\,\text{mm}$
+          (e.g.\ Bourns SRR1260 or Sumida CDEP134).
+    \item[Output capacitor:] $\ge 1000\,\mu\text{F}$ low-ESR SMD electrolytic (2$\times$
+          $470\,\mu\text{F}$ / 16\,V in parallel acceptable) plus $10\,\mu\text{F}$ ceramic bank
+          at servo headers.
+    \item[Feedback resistors (1\% tolerance, 0603):]
+          \begin{equation}
+              V_{\text{out}} = V_{\text{ref}} \times \left(1 + \frac{R_{\text{top}}}{R_{\text{bot}}}\right)
+              = 0.8\,\text{V} \times \left(1 + \frac{102\,\text{k}\Omega}{14\,\text{k}\Omega}\right)
+              \approx 6.63\,\text{V}
+          \end{equation}
+          Use $R_{\text{top}} = 102\,\text{k}\Omega$, $R_{\text{bot}} = 14\,\text{k}\Omega$
+          (0.1\% preferred for tighter setpoint).
+\end{description}
+
+\subsection{5.0\,V Logic \& Peripheral Domain}
+
+\subsubsection{Regulator}
+
+\textbf{LMR14030S} -- 3\,A asynchronous buck, HSOP-8-EP package. Common, inexpensive,
+well-stocked.
+
+\subsubsection{Load Budget (Worst-Case Simultaneous)}
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Load} & \textbf{Typical (mA)} & \textbf{Peak (mA)} \\
+\midrule
+Node2 ESP32-CAM (global camera, ESP-NOW TX burst) & 200 & 400 \\
+Node3 ESP32-CAM (wrist camera, ESP-NOW TX burst)  & 200 & 400 \\
+Node1 ESP32-C6 offboard (leader board, UART + RF)  & 100 & 250 \\
+MIC5219-3.3 LDO input (feeds ESP32-S3 + TMC VIO)  & 400 & 620 \\
+\midrule
+\textbf{Total 5.0\,V rail}                         & \textbf{900} & \textbf{1\,670} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The LMR14030S 3\,A rating provides $>1.3\times$ headroom over worst-case peak.
+Inductor: $4.7\,\mu\text{H}$, $I_{\text{sat}} > 3.5\,\text{A}$.
+Output: $\ge 100\,\mu\text{F}$ SMD electrolytic + ceramic bank.
+
+\subsubsection{Node1 Leader Board Power Header (J\_LDR)}
+
+Node1 (ESP32-C6 SuperMini, offboard) is powered from the 5.0\,V rail via a 
+4-pin Molex Micro-Fit 3.0 connector (\texttt{J\_LDR}) on the South Edge.
+A $10\,\mu\text{F}$ ceramic bypass cap must be placed at the header pins. This header
+is \textit{separate} from the UART signal connector (\texttt{J\_LDR}); see
+Section~\ref{sec:connectors}.
+
+\subsection{3.3\,V Logic Domain}
+
+\begin{description}[noitemsep]
+    \item[Regulator:] \textbf{MIC5219-3.3YM5} (1\,A, SOT-23-5). Replaces the AP2112K-3.3
+          (600\,mA) to provide safe headroom. Same SOT-23-5 footprint; drop-in on schematic.
+          Available from all major distributors at low cost.
+    \item[Input capacitor:] $\ge 10\,\mu\text{F}$ ceramic (0805) on \texttt{+5V} input pin.
+    \item[Output capacitor:] $22\,\mu\text{F}$ ceramic (0805) + $100\,\text{nF}$ X7R (0603)
+          on \texttt{+3.3V} output pin.
+    \item[Loads and peak current budget:]
+\end{description}
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+\textbf{Load on 3.3\,V rail} & \textbf{Peak (mA)} \\
+\midrule
+ESP32-S3-WROOM-1 core + RF              & 500 \\
+4$\times$ TMC2209 $V_{IO}$ pin (each $\approx$ 15\,mA) & 60 \\
+Pull-up resistor networks (10 nets)     & 20 \\
+\midrule
+\textbf{Total}                          & \textbf{580} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The MIC5219-3.3 1\,A rating provides $\approx 420\,\text{mA}$ of headroom.
+Monitor LDO junction temperature ($T_J$) under sustained ESP-NOW burst transmit;
+worst-case dissipation $P_D = (5.0 - 3.3)\,\text{V} \times 0.58\,\text{A} \approx 1.0\,\text{W}$.
+Ensure adequate copper spreading under the SOT-23-5 pad.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{4-Layer Substrate Stackup}
+% ─────────────────────────────────────────────────────────────────────────────
+
+All SMD components are restricted to \textbf{Layer 1 (Top)} for single-pass PCBA.
+Layer 4 carries no components; its copper is used for thermal spreading and signal escape only.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\textwidth}{llll X}
+\toprule
+\textbf{Layer} & \textbf{Type} & \textbf{Cu Weight} & \textbf{Thickness} & \textbf{Primary Function} \\
+\midrule
+L1 (Top)   & Signal/Component & 1.0\,oz (35\,$\mu$m) & -- &
+    Component pads; 90\,$\Omega$ USB differential pairs; buck switching node polygons;
+    in-route decoupling. \\
+L2         & Ground Plane     & 1.0\,oz (35\,$\mu$m) & -- &
+    \textbf{Solid, unbroken GND.} RF return shield. Thermal via landing plane for
+    TMC2209 farms. \\
+L3         & Power Plane      & 1.0\,oz (35\,$\mu$m) & -- &
+    Split power matrix: isolated copper polygons for \texttt{+24V\_MOTOR},
+    \texttt{+6.6V\_SERVO}, \texttt{+5.0V}, \texttt{+3.3V}. \\
+L4 (Bottom) & Signal / Thermal & 1.0\,oz (35\,$\mu$m) & -- &
+    Trapped signal escape (\texttt{STEP}, \texttt{DIR}, \texttt{SPI}, \texttt{DIAG}).
+    Large exposed copper pour under TMC2209 thermal via farms (no solder mask). \\
+\bottomrule
+\end{tabularx}
+\caption{Substrate Layer Architecture}
+\end{table}
+
+Standard JLC4L stackup (or equivalent): L1--prepreg--L2--core--L3--prepreg--L4.
+Request controlled impedance: $90\,\Omega$ differential for USB pairs on L1.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Component Layout \& Edge Zone Management}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Perimeter Edge Allocations}
+
+\subsubsection{North Edge -- RF Keep-Out Zone}
+
+Reserved exclusively for the \textbf{ESP32-S3-WROOM-1-N16R8} module.
+The onboard PCB antenna must overhang the board edge by $\ge 2\,\text{mm}$.
+A copper keep-out zone across \textbf{all four layers} ($15\,\text{mm} \times 10\,\text{mm}$)
+is mandatory directly below and around the antenna projection.
+\warn{No connectors, mounting holes, vias, copper pours, or metallic enclosure features
+may occupy this zone.}
+
+\subsubsection{West Edge -- Power \& Communications}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{J\_PWR} -- XT30 right-angle connector, 24\,V DC input / GND.
+    \item \textbf{J\_USB1} -- USB-C receptacle, Native USB-OTG (ROS2 bridge / telemetry).
+    \item \textbf{J\_USB2} -- USB-C receptacle, CH340K UART debug / firmware flash.
+\end{itemize}
+
+Power entry components (bulk electrolytic caps, TVS diode, reverse-polarity MOSFET if fitted)
+cluster immediately inboard of the West Edge to minimise high-current 24\,V loop area.
+
+\subsubsection{South Edge -- Actuators, Cameras, \& Leader Link}
+
+All connectors use \textbf{vertical (straight)} orientation to eliminate right-angle
+horizontal clearance overhang.
+
+\begin{itemize}[noitemsep]
+    \item \textbf{J\_M1 -- J\_M4} -- Molex Micro-Fit 3.0, 4-pin, stepper motor phases
+          (one per driver). May wrap to East Edge if South space is insufficient.
+    \item \textbf{J\_SV1 -- J\_SV3} -- 3-pin 2.54\,mm header, servo PWM / power / GND
+          (Wrist Pitch, Wrist Yaw, Gripper).
+    \item \textbf{J\_CAM1} -- 2-pin Molex Micro-Fit 3.0, 5\,V / GND for Node2
+          (global perspective ESP32-CAM).
+    \item \textbf{J\_CAM2} -- 2-pin Molex Micro-Fit 3.0, 5\,V / GND for Node3
+          (wrist / eye-in-hand ESP32-CAM).
+    \item \textbf{J\_LDR} -- 4-pin 2.54\,mm header, Leader UART signals
+          (TX, RX, GND, 5\,V) to Node1 ESP32-C6.
+\end{itemize}
+
+\subsubsection{East Edge -- Overflow Stepper Headers}
+
+If stepper headers J\_M3 and J\_M4 cannot fit on the South Edge alongside the servo and camera
+connectors, they relocate to the East Edge in the same vertical orientation.
+
+\subsubsection{Interior Zones}
+
+\begin{description}[noitemsep]
+    \item[Power Domain (West-Centre):] 6.6\,V and 5.0\,V bucks, MIC5219-3.3 LDO, all bulk
+          electrolytic capacitors. Clustered adjacent to the West Edge.
+    \item[Driver Matrix (East-Centre):] 4$\times$ TMC2209 QFN-28 in a 2$\times$2 grid.
+          Thermal via farms mandatory. Motor phase traces route directly outward to edge headers.
+    \item[Logic \& Memory Core (Centre-South):] MicroSD slot and critical decoupling
+          passives. Maximises isolation from buck switching nodes.
+\end{description}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Full Connector Reference}
+\label{sec:connectors}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\textwidth}{llXll}
+\toprule
+\textbf{Ref} & \textbf{Type} & \textbf{Signal / Net} & \textbf{Edge} & \textbf{Power Rail} \\
+\midrule
+J\_PWR      & XT30 RA 2-pin      & 24\,V DC in / GND              & West   & 24\,V \\
+J\_USB1     & USB-C receptacle   & Native USB-OTG (D$-$/D$+$)     & West   & -- \\
+J\_USB2     & USB-C receptacle   & CH340K UART debug/flash         & West   & -- \\
+J\_M1       & Micro-Fit 3.0 4-pin & J1 Base stepper phases A1/A2/B1/B2 & South/East & 24\,V \\
+J\_M2       & Micro-Fit 3.0 4-pin & J2 Shoulder A phases           & South/East & 24\,V \\
+J\_M3       & Micro-Fit 3.0 4-pin & J3 Shoulder B phases           & South/East & 24\,V \\
+J\_M4       & Micro-Fit 3.0 4-pin & J4 Elbow phases                & South/East & 24\,V \\
+J\_SV1      & 2.54\,mm 3-pin     & Wrist Pitch PWM / 6.6\,V / GND & South  & 6.6\,V \\
+J\_SV2      & 2.54\,mm 3-pin     & Wrist Yaw PWM / 6.6\,V / GND  & South  & 6.6\,V \\
+J\_SV3      & 2.54\,mm 3-pin     & Gripper PWM / 6.6\,V / GND    & South  & 6.6\,V \\
+J\_CAM1     & Micro-Fit 3.0 2-pin & Node2 5\,V / GND               & South  & 5.0\,V \\
+J\_CAM2     & Micro-Fit 3.0 2-pin & Node3 5\,V / GND               & South  & 5.0\,V \\
+J\_LDR      & 2.54\,mm 4-pin     & Node1 UART TX, RX, GND, 5\,V  & South  & -- \\
+J\_SD       & MicroSD push-pull  & SPI: CS / MOSI / SCK / MISO    & Interior & 3.3\,V \\
+\bottomrule
+\end{tabularx}
+\caption{Complete Connector Directory}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Active Component Directory (KiCad Symbol \& Footprint)}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Component} & \textbf{KiCad Symbol} & \textbf{KiCad Footprint} \\
+\midrule
+ESP32-S3-WROOM-1-N16R8 & \texttt{MCU\_Espressif:ESP32-S3-WROOM-1} &
+    \texttt{RF\_Module:ESP32-S3-WROOM-1} \\
+4$\times$ TMC2209-LA   & \texttt{Driver\_Motor:TMC2209} &
+    \texttt{Package\_DFN\_QFN:QFN-28-1EP\_5x5mm\_P0.5mm} \\
+TPS54540B (6.6\,V buck) & \texttt{Regulator\_Switching:TPS54540B} &
+    \texttt{Package\_SO:HSOP-8-1EP\_3.89x4.89mm\_P1.27mm} \\
+LMR14030S (5.0\,V buck) & \texttt{Regulator\_Switching:LMR14030S} &
+    \texttt{Package\_SO:HSOP-8-1EP\_3.89x4.89mm\_P1.27mm} \\
+MIC5219-3.3YM5 (LDO)   & \texttt{Regulator\_Linear:MIC5219-3.3YM5} &
+    \texttt{Package\_TO\_SOT\_SMD:SOT-23-5} \\
+CH340K UART Bridge      & \texttt{Interface\_USB:CH340K} &
+    \texttt{Package\_SO:ESSOP-10\_3.9x4.9mm\_P1.0mm} \\
+MicroSD Card Holder     & \texttt{Connector:MicroSD\_Card\_Kit} &
+    \texttt{Connector\_Card:MicroSD\_Hirose\_DM3D-SF} \\
+\bottomrule
+\end{tabularx}
+\caption{Symbol and Footprint Directory}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{GPIO Allocation \& Net Assignment}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Locked / Forbidden GPIO Lines}
+
+\warn{The following GPIOs are consumed by the N16R8 internal silicon and must
+not appear on any net, pad, pull resistor, or via on this PCB:}
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+GPIO & Reason \\
+\midrule
+GPIO26 & Internal octal flash clock \\
+GPIO33 & Flash D4 \\
+GPIO34 & Flash D5 \\
+GPIO35 & Octal PSRAM D6 / WP \\
+GPIO36 & Octal PSRAM D7 / HOLD \\
+GPIO37 & Octal PSRAM CLK \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Boot Strapping}
+
+\begin{itemize}[noitemsep]
+    \item \net{GPIO0} $\to$ \net{MCU\_BOOT}: $10\,\text{k}\Omega$ pull-up to 3.3\,V.
+          Tactile switch to GND for manual boot-mode override.
+    \item \net{GPIO46} $\to$ \net{MCU\_STRAP\_LOW}: $10\,\text{k}\Omega$ pull-down to GND.
+          Required by ESP32-S3 strapping specification.
+    \item \net{GPIO45}: Leave floating (internal OTP default).
+\end{itemize}
+
+\subsection{Full GPIO Allocation Table}
+
+\begin{longtable}{llp{7cm}}
+\toprule
+\textbf{GPIO} & \textbf{Net Name} & \textbf{Notes} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{GPIO} & \textbf{Net Name} & \textbf{Notes} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\small\itshape continued\ldots} \\
+\endfoot
+\bottomrule
+\endlastfoot
+
+% USB
+19 & \net{USB\_D-}          & 90\,$\Omega$ diff pair $\to$ J\_USB1. Route on L1 only. \\
+20 & \net{USB\_D+}          & 90\,$\Omega$ diff pair $\to$ J\_USB1. Route on L1 only. \\
+
+% CH340K
+43 & \net{UART0\_TXD}       & UART0 TX $\to$ CH340K RXD (Pin\,3). \\
+44 & \net{UART0\_RXD}       & UART0 RX $\leftarrow$ CH340K TXD (Pin\,4). \\
+
+% MicroSD
+10 & \net{SD\_CS}           & SPI chip select; $10\,\text{k}\Omega$ pull-up to 3.3\,V. \\
+11 & \net{SD\_MOSI}         & SPI MOSI; $10\,\text{k}\Omega$ pull-up to 3.3\,V. \\
+12 & \net{SD\_SCK}          & SPI clock. \\
+13 & \net{SD\_MISO}         & SPI MISO; $10\,\text{k}\Omega$ pull-up to 3.3\,V. \\
+
+% TMC2209 global
+4  & \net{DRV\_EN\_ALL}     & Active-LOW; shared EN bus $\to$ Pin\,18 of all 4$\times$ TMC2209. \\
+
+% J1 Base
+5  & \net{J1\_BASE\_STEP}   & $\to$ TMC2209-1 Pin\,16 (STEP). \\
+6  & \net{J1\_BASE\_DIR}    & $\to$ TMC2209-1 Pin\,17 (DIR). \\
+7  & \net{J1\_BASE\_PDN}    & Single-wire UART. $1\,\text{k}\Omega$ series + $4.7\,\text{k}\Omega$
+                              pull-up to 3.3\,V. $\to$ TMC2209-1 Pin\,9 (PDN\_UART). \\
+1  & \net{J1\_BASE\_DIAG}   & StallGuard / fault flag. $47\,\text{k}\Omega$ pull-up to 3.3\,V.
+                              $\leftarrow$ TMC2209-1 Pin\,26 (DIAG). \\
+
+% J2 Shoulder A
+8  & \net{J2\_SHLDA\_STEP}  & $\to$ TMC2209-2 Pin\,16 (STEP). \\
+9  & \net{J2\_SHLDA\_DIR}   & $\to$ TMC2209-2 Pin\,17 (DIR). \\
+14 & \net{J2\_SHLDA\_PDN}   & Single-wire UART. $1\,\text{k}\Omega$ series + $4.7\,\text{k}\Omega$
+                              pull-up to 3.3\,V. $\to$ TMC2209-2 Pin\,9. \\
+2  & \net{J2\_SHLDA\_DIAG}  & StallGuard / fault flag. $47\,\text{k}\Omega$ pull-up to 3.3\,V.
+                              $\leftarrow$ TMC2209-2 Pin\,26 (DIAG). \\
+
+% J3 Shoulder B
+15 & \net{J3\_SHLDB\_STEP}  & $\to$ TMC2209-3 Pin\,16 (STEP). \\
+16 & \net{J3\_SHLDB\_DIR}   & $\to$ TMC2209-3 Pin\,17 (DIR). \\
+17 & \net{J3\_SHLDB\_PDN}   & Single-wire UART. $1\,\text{k}\Omega$ series + $4.7\,\text{k}\Omega$
+                              pull-up to 3.3\,V. $\to$ TMC2209-3 Pin\,9. \\
+3  & \net{J3\_SHLDB\_DIAG}  & StallGuard / fault flag. $47\,\text{k}\Omega$ pull-up to 3.3\,V.
+                              $\leftarrow$ TMC2209-3 Pin\,26 (DIAG). \\
+
+% J4 Elbow
+18 & \net{J4\_ELBOW\_STEP}  & $\to$ TMC2209-4 Pin\,16 (STEP). \\
+21 & \net{J4\_ELBOW\_DIR}   & $\to$ TMC2209-4 Pin\,17 (DIR). \\
+47 & \net{J4\_ELBOW\_PDN}   & Single-wire UART. $1\,\text{k}\Omega$ series + $4.7\,\text{k}\Omega$
+                              pull-up to 3.3\,V. $\to$ TMC2209-4 Pin\,9. \\
+48 & \net{J4\_ELBOW\_DIAG}  & StallGuard / fault flag. $47\,\text{k}\Omega$ pull-up to 3.3\,V.
+                              $\leftarrow$ TMC2209-4 Pin\,26 (DIAG). \\
+
+% Servos
+38 & \net{SRV\_WRIST\_PITCH} & LEDC/MCPWM PWM $\to$ J\_SV1 signal pin. \\
+39 & \net{SRV\_WRIST\_YAW}   & LEDC/MCPWM PWM $\to$ J\_SV2 signal pin. \\
+40 & \net{SRV\_GRIPPER}      & LEDC/MCPWM PWM $\to$ J\_SV3 signal pin. \\
+
+% Leader UART
+41 & \net{LDR\_UART\_TX}    & 921\,600 baud, 8N1 $\to$ Node1 ESP32-C6 RX (J\_LDR Pin\,1). \\
+42 & \net{LDR\_UART\_RX}    & 921\,600 baud, 8N1 $\leftarrow$ Node1 ESP32-C6 TX (J\_LDR Pin\,2). \\
+
+% Unassigned
+0  & \net{MCU\_BOOT}        & $10\,\text{k}\Omega$ pull-up; tactile switch to GND. \\
+\end{longtable}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Passive Decoupling \& Filtering Networks}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{TMC2209 Per-Driver Filtering (Repeat $\times$4)}
+
+All capacitors placed within $2\,\text{mm}$ of IC package edge. Reference TMC2209 datasheet
+application circuit throughout.
+
+\begin{itemize}[noitemsep]
+    \item \textbf{VM bulk:} $100\,\mu\text{F}$ / 35\,V low-ESR SMD electrolytic (Panasonic FR /
+          Nichicon UWX, case\,D). \warn{Electrolytic only -- no tantalum.}
+          Between \net{+24V\_MOTOR} and \net{GND\_D}.
+    \item \textbf{VM HF bypass:} $100\,\text{nF}$ X7R 50\,V (0603). Trace to
+          Pin\,27 (\texttt{VM}) $\le 1\,\text{mm}$.
+    \item \textbf{VIO filter:} $1.0\,\mu\text{F}$ X7R (0603) from \net{+3.3V} to
+          Pin\,12 (\texttt{VIO}).
+    \item \textbf{Charge pump:} $100\,\text{nF}$ X7R 50\,V (0603) between Pin\,22
+          (\texttt{VCP}) and Pin\,24 (\texttt{CPI}).
+    \item \textbf{Internal regulator:} $4.7\,\mu\text{F}$ X5R (0603) from Pin\,25
+          (\texttt{VOUT}) to GND.
+    \item \textbf{DIAG pull-up:} $47\,\text{k}\Omega$ (0402) from Pin\,26 (\texttt{DIAG})
+          to \net{+3.3V}. DIAG is open-drain; pull-up is mandatory for valid logic level.
+\end{itemize}
+
+\subsection{CH340K Decoupling}
+
+\begin{itemize}[noitemsep]
+    \item $100\,\text{nF}$ X7R 10\,V (0402) on \texttt{VCC} supply pin to GND,
+          placed $\le 1\,\text{mm}$ from IC.
+    \item $100\,\text{nF}$ X7R 10\,V (0402) on \texttt{V3} (internal 3.3\,V reference
+          pin) to GND.
+    \item $100\,\text{nF}$ X7R (0402) on \texttt{XI} USB signal conditioning pin
+          per CH340K datasheet recommendation.
+\end{itemize}
+
+\subsection{ESP32-S3-WROOM-1 Module Decoupling}
+
+Per Espressif hardware design guidelines for the WROOM-1 module:
+
+\begin{itemize}[noitemsep]
+    \item $10\,\mu\text{F}$ + $100\,\text{nF}$ ceramic on the \texttt{3V3} module supply pin
+          cluster to GND, placed directly adjacent to the module pad row.
+    \item Place decoupling capacitors \textit{in-route}: power plane via $\to$ capacitor
+          pad $\to$ IC supply pin. Do not branch off a parallel stub.
+\end{itemize}
+
+\subsection{MicroSD Card Slot}
+
+\begin{itemize}[noitemsep]
+    \item $10\,\text{k}\Omega$ pull-up resistors on \net{SD\_CS}, \net{SD\_MOSI},
+          \net{SD\_MISO} to \net{+3.3V}.
+    \item $100\,\text{nF}$ bypass cap on VCC supply rail of card slot to GND.
+\end{itemize}
+
+\subsection{Node1 / Node2 / Node3 Power Header Bypass}
+
+\begin{itemize}[noitemsep]
+    \item $10\,\mu\text{F}$ ceramic cap on 5\,V at each of J\_CAM1, J\_CAM2, J\_LDR\_PWR
+          headers to absorb ESP-NOW TX current burst ($\approx 200\,\text{mA}$ step).
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{High-Density Layout \& Thermal Rules}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{In-Route Decoupling Rule}
+
+Decoupling capacitors must be placed \textit{in-series} with the power trace,
+not tapped off a stub:
+
+\[
+  \text{Power Plane Via} \;\longrightarrow\; \text{Cap pad (0402/0603)} \;\longrightarrow\; \text{IC supply pin}
+\]
+
+This eliminates the inductance of a parallel stub branch. Applies to all TMC2209 VM
+caps, all 3.3\,V / 5\,V decoupling on the ESP32-S3 module pads, and the CH340K VCC cap.
+
+\subsection{TMC2209 Thermal Via Farms}
+
+Each TMC2209 QFN-28 must dump its entire thermal load through the PCB substrate.
+
+\begin{enumerate}[noitemsep]
+    \item Place a $3 \times 3$ via farm inside the exposed centre ground pad
+          (\texttt{EP}) of each driver footprint.
+    \item Drill diameter: $0.3\,\text{mm}$. Grid pitch: $\le 1.0\,\text{mm}$.
+    \item Vias must connect L1 $\to$ L2 (solid GND plane) and extend to L4.
+    \item On Layer 4, draw a solid copper pour matching the TMC2209 driver grid
+          footprint area with no solder mask (\texttt{B.Mask} cutout in KiCad).
+    \item This converts the PCB bottom surface into a passive thermal radiator.
+\end{enumerate}
+
+\subsection{Buck Switching Node Isolation}
+
+The \texttt{SW} nodes of both buck converters, their freewheeling diodes, and
+inductor pads must be routed as ultra-wide, short copper polygons on Layer 1.
+
+\warn{No signal trace on L1 or L4 may pass beneath these switching node polygons.}
+Affected critical nets: ESP-NOW RF path (Node2/Node3 timing), SPI MicroSD transactions,
+Leader UART receive path (\net{LDR\_UART\_RX}).
+
+\subsection{Ground Stitching}
+
+Place GND stitching vias (L1 $\to$ L2):
+\begin{itemize}[noitemsep]
+    \item Board perimeter: every $\approx 5\,\text{mm}$.
+    \item Along the full length of both USB differential pair routes.
+    \item Immediately adjacent to all buck regulator switching polygons.
+    \item Between each power domain zone boundary on L3.
+\end{itemize}
+
+Servo high-current GND return must not share any trace segment with MCU signal GND.
+Both must terminate at the L2 GND plane via \textit{separate} vias before any
+common-mode coupling path can form.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Net Class Trace Width \& Via Rules}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Enter the following parameters into the KiCad \textbf{Board Setup $\to$ Net Classes} manager.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\textwidth}{llXXl}
+\toprule
+\textbf{Net Class} & \textbf{Member Nets} & \textbf{Min Width} & \textbf{Min Gap} & \textbf{Via (drill/pad)} \\
+\midrule
+\texttt{Power\_24V}    & \net{+24V}, \net{+24V\_MOTOR}      & 1.20\,mm & 0.40\,mm & 0.4/0.7\,mm stitched \\
+\texttt{Power\_Servo}  & \net{+6.6V\_SERVO}                 & 1.50\,mm & 0.30\,mm & 0.4/0.7\,mm stitched \\
+\texttt{Power\_Logic}  & \net{+5.0V}, \net{+3.3V}           & 0.50\,mm & 0.20\,mm & 0.3/0.6\,mm standard \\
+\texttt{Motor\_Phase}  & \net{J1\_A1}\ldots\net{J4\_B2}     & 0.80\,mm & 0.35\,mm & 0.4/0.7\,mm standard \\
+\texttt{USB\_Diff}     & \net{USB\_D+}, \net{USB\_D-}       & 0.25\,mm & 0.20\,mm & 0.25/0.5\,mm micro \\
+\texttt{Default\_Sig}  & \net{STEP}, \net{DIR}, \net{SPI}\ldots & 0.15\,mm & 0.15\,mm & 0.3/0.6\,mm standard \\
+\bottomrule
+\end{tabularx}
+\caption{Net Class Routing Parameters}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Peripheral Interface Notes}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Wireless Camera Nodes (Node2 / Node3 via ESP-NOW)}
+
+J\_CAM1 and J\_CAM2 supply \textbf{5\,V power and GND only}. All data is exchanged
+wirelessly:
+\begin{itemize}[noitemsep]
+    \item Protocol: ESP-NOW, channel\,6, stateless packet send.
+    \item Payload: 128-byte brightness histogram feature vector embedded in
+          \texttt{ExperiencePacket} (magic \texttt{0x4E4D5650}).
+    \item Freshness gate: Node0 discards frames older than 300\,ms before IK merge.
+\end{itemize}
+
+\subsection{Leader UART -- Node1 ESP32-C6 (Offboard)}
+
+Node1 is an ESP32-C6 SuperMini board connected via two separate connectors:
+\begin{itemize}[noitemsep]
+    \item \textbf{J\_LDR\_PWR}: 5\,V / GND power (Micro-Fit 3.0, 2-pin, South Edge).
+    \item \textbf{J\_LDR}: UART signals TX / RX / GND / spare (2.54\,mm 4-pin, South Edge).
+\end{itemize}
+Baud: 921\,600, 8N1, non-blocking async receive. Parser uses magic-number scan +
+CRC-CCITT (poly \texttt{0x1021}) before packet consumption. Packets carry absolute
+joint target values for all 6 joints.
+
+\subsection{Dual USB-C Interface}
+
+\begin{description}[noitemsep]
+    \item[Port 1 -- J\_USB1:] Native USB-OTG. $90\,\Omega$ differential pair directly
+          on GPIO19 (D$-$) / GPIO20 (D$+$). Used for ROS2 USB-CDC bridge, telemetry
+          streaming, VLA dataset logging.
+    \item[Port 2 -- J\_USB2:] CH340K UART bridge. GPIO43 (TXD) / GPIO44 (RXD).
+          DTR/RTS auto-reset for PlatformIO upload. Eliminates need for external
+          USB-to-serial programmer during development.
+\end{description}
+
+\subsection{MicroSD Card}
+
+Hardware SPI. FAT32, 32\,kB clusters. 1\,MB pre-allocated circular buffer for
+experience packets. SD flush every 8 writes to reduce blocking.
+Pull-ups: $10\,\text{k}\Omega$ on MOSI, MISO, CS lines.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Revision History}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Rev} & \textbf{Change} & \textbf{Detail} \\
+\midrule
+Alpha Proto  & Baseline & Through-hole DevKit carrier; TMC2209 modules; single-layer protoboard. \\
+Beta Rev1 & First custom PCB & 60$\times$60\,mm 4-layer; TMC2209 QFN direct IC; dual USB-C;
+             single-sided SMT; AP2112K-3.3 LDO (600\,mA). \\
+Beta Rev2 & \textbf{This document} &
+    LDO upgraded to MIC5219-3.3 (1\,A);
+    TMC2209 DIAG pins routed (GPIO1/2/3/48) for StallGuard2 / CoolStep;
+    Bulk caps changed to low-ESR SMD electrolytic (tantalum removed);
+    5\,V load budget revised for Node1 ESP32-C6 offboard;
+    Node1 split into J\_LDR (UART) + J\_LDR\_PWR (5\,V power) connectors;
+    ESP32-CAM headers changed to 2-pin Micro-Fit 3.0;
+    Module variant locked to N16R8 (octal PSRAM); GPIO35/36/37/33/34/26 exclusions enforced;
+    CH340K decoupling added (3$\times$ 100\,nF);
+    Full connector edge-zone map added to Section~4 and connector table in Section~5. \\
+\bottomrule
+\end{tabularx}
+\caption{Revision History}
+\end{table}
+
+\warn{Firmware note:} \texttt{board\_config.h} and \texttt{tmc2209\_config.h} must be
+updated to reflect the Rev\,2 GPIO mapping (specifically DIAG pin additions on
+GPIO1, 2, 3, 48) before flashing to Beta Rev\,2 hardware.
+
+\end{document}
