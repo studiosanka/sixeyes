@@ -7,8 +7,6 @@
 | `cyclocad/` | https://github.com/studiosanka/cyclocad |
 | everything else | https://github.com/studiosanka/sixeyes |
 
-**Pending push**: PCB files moved to `hardware_assets/`. Old paths under `SixEyes Follower PCB/` are deleted. New paths are `hardware_assets/pcb_project_files/` and `hardware_assets/pcb_latest_gerber/`. Verify git status reflects this before pushing.
-
 ---
 
 ## Project
@@ -31,7 +29,9 @@ firmware/
     leader_esp32/     env: alpha_leader    (ESP32-C6 SuperMini, 100 Hz ADC)
   beta/
     follower_esp32/   env: beta_follower   (ESP32-S3-WROOM-1-N16R8, 400 Hz)
-    leader_esp32/     env: alpha_leader    (shared leader, same hardware as Alpha)
+    leader_esp32/     env: beta_leader     (ESP32-C3-MINI-1, 100 Hz ADC)
+                      NOTE: GPIO map differs from alpha leader. GPIO0–5 for ADC,
+                      GPIO6 RX / GPIO7 TX for UART1. Update board_config before flashing.
 ```
 
 Build:
@@ -48,16 +48,21 @@ cd firmware/beta/follower_esp32  && pio run -e beta_follower
 
 | Item | Alpha | Beta Rev2 |
 |---|---|---|
-| MCU | ESP32-S3 DevKit | ESP32-S3-WROOM-1-N16R8 on PCB |
+| Follower MCU | ESP32-S3 DevKit | ESP32-S3-WROOM-1-N16R8 on PCB |
+| Leader MCU | ESP32-C6 SuperMini (devkit) | ESP32-C3-MINI-1 (integrated beta leader PCB) |
 | PSRAM | None | 8 MB Octal (GPIO26/33/34/35/36/37 forbidden) |
 | TMC2209 | Carrier modules | Direct QFN-28 on PCB |
 | DIAG pins | Not routed | GPIO1/2/3/48 (StallGuard2) |
 | EN pin | GPIO14, active LOW | GPIO4 (DRV_EN_ALL), active LOW |
 | Servo GPIO | 40, 41, 42 | 38, 39, 40 |
-| Leader UART | GPIO17/18, 115200 baud | GPIO41/42, 921600 baud |
+| Leader ADC GPIO | GPIO0,1,2,3,4,6 | GPIO0,1,2,3,4,5 (all ADC1_CH0–5) |
+| Leader UART (Node1 side) | GPIO17 TX / GPIO18 RX, 115200 baud | GPIO7 TX / GPIO6 RX, 921600 baud |
+| Leader UART (Node0 side) | GPIO17/18, 115200 baud | GPIO41/42, 921600 baud |
+| Leader power | Via J_LDR_PWR (follower 5V rail) | Self-powered USB-C on leader PCB |
 | SD card | MOSI=35,SCK=36,MISO=37,CS=38,CD=39 | CS=10,MOSI=11,SCK=12,MISO=13 |
 | Control loop | 500 Hz | 400 Hz |
-| USB | 1× micro-USB | 2× USB-C (native OTG + CH340K) |
+| Follower USB | 1× micro-USB | 2× USB-C (native OTG + CH340K) |
+| Leader USB | Via devkit USB | USB-C on leader PCB (native USB JTAG, GPIO18/19) |
 
 ---
 
@@ -143,7 +148,7 @@ docs/
   hardware/
     alpha/    WIRING_AND_ASSEMBLY, HARDWARE_VALIDATION, PINOUT_MATRIX,
               LEADER_PCB_DESIGN, FOLLOWER_PCB_DESIGN
-    beta/     WIRING_AND_ASSEMBLY, PINOUT_MATRIX  (from SixEyes_Node0.pdf)
+    beta/     WIRING_AND_ASSEMBLY, PINOUT_MATRIX, LEADER_PCB_DESIGN
   firmware/   TELEOPERATION_MODE_ARCHITECTURE
   ros2/       ROS2_INTEGRATION (merged)
   protocols/  JSON_MESSAGE_PROTOCOL

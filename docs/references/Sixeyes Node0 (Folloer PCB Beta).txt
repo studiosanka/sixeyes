@@ -46,13 +46,13 @@
 
 % ── Title Block ───────────────────────────────────────────────────────────────
 \begin{center}
-    {\LARGE \bfseries SixEyes -- Follower PCB Beta (Rev 2)} \\
+    {\LARGE \bfseries SixEyes -- Follower PCB v.beta} \\
     \vspace{0.2cm}
     {\Large \bfseries Technical Design Specification \& KiCad Layout Manual} \\
     \vspace{0.4cm}
-    \textbf{Target System:} SixEyes NodeMesh VLA -- Node0 (Orchestrator) \\
+    \textbf{Target System:} SixEyes (+NodeMesh) -- Node0 (Orchestrator) \\
     \textbf{Module:}        ESP32-S3-WROOM-1-N16R8 (16\,MB Flash, 8\,MB Octal PSRAM) \\
-    \textbf{Form Factor:}   $60\,\text{mm} \times 60\,\text{mm}$ Custom 4-Layer PCB \\
+    \textbf{Form Factor:}   $55\,\text{mm} \times 55\,\text{mm}$ Custom 4-Layer PCB \\
     \textbf{Placement Rule:} Single-Sided SMT (Top Layer Only) \\
     \vspace{0.2cm}
     \hrule
@@ -200,7 +200,7 @@ Output: $\ge 100\,\mu\text{F}$ SMD electrolytic + ceramic bank.
 \subsubsection{Node1 Leader Board Power Header (J\_LDR)}
 
 Node1 (ESP32-C6 SuperMini, offboard) is powered from the 5.0\,V rail via a 
-4-pin Molex Micro-Fit 3.0 connector (\texttt{J\_LDR}) on the South Edge.
+4-pin JST XH 2.5mm connector (\texttt{J\_LDR}) on the South Edge.
 A $10\,\mu\text{F}$ ceramic bypass cap must be placed at the header pins. This header
 is \textit{separate} from the UART signal connector (\texttt{J\_LDR}); see
 Section~\ref{sec:connectors}.
@@ -302,13 +302,13 @@ All connectors use \textbf{vertical (straight)} orientation to eliminate right-a
 horizontal clearance overhang.
 
 \begin{itemize}[noitemsep]
-    \item \textbf{J\_M1 -- J\_M4} -- Molex Micro-Fit 3.0, 4-pin, stepper motor phases
+    \item \textbf{J\_M1 -- J\_M4} -- JST XH 2.5mm, 4-pin, stepper motor phases
           (one per driver). May wrap to East Edge if South space is insufficient.
     \item \textbf{J\_SV1 -- J\_SV3} -- 3-pin 2.54\,mm header, servo PWM / power / GND
           (Wrist Pitch, Wrist Yaw, Gripper).
-    \item \textbf{J\_CAM1} -- 2-pin Molex Micro-Fit 3.0, 5\,V / GND for Node2
+    \item \textbf{J\_CAM1} -- 2-pin JST XH 2.5mm, 5\,V / GND for Node2
           (global perspective ESP32-CAM).
-    \item \textbf{J\_CAM2} -- 2-pin Molex Micro-Fit 3.0, 5\,V / GND for Node3
+    \item \textbf{J\_CAM2} -- 2-pin JST XH 2.5mm, 5\,V / GND for Node3
           (wrist / eye-in-hand ESP32-CAM).
     \item \textbf{J\_LDR} -- 4-pin 2.54\,mm header, Leader UART signals
           (TX, RX, GND, 5\,V) to Node1 ESP32-C6.
@@ -345,15 +345,15 @@ connectors, they relocate to the East Edge in the same vertical orientation.
 J\_PWR      & XT30 RA 2-pin      & 24\,V DC in / GND              & West   & 24\,V \\
 J\_USB1     & USB-C receptacle   & Native USB-OTG (D$-$/D$+$)     & West   & -- \\
 J\_USB2     & USB-C receptacle   & CH340K UART debug/flash         & West   & -- \\
-J\_M1       & Micro-Fit 3.0 4-pin & J1 Base stepper phases A1/A2/B1/B2 & South/East & 24\,V \\
-J\_M2       & Micro-Fit 3.0 4-pin & J2 Shoulder A phases           & South/East & 24\,V \\
-J\_M3       & Micro-Fit 3.0 4-pin & J3 Shoulder B phases           & South/East & 24\,V \\
-J\_M4       & Micro-Fit 3.0 4-pin & J4 Elbow phases                & South/East & 24\,V \\
+J\_M1       & JST XH 2.5mm 4-pin & J1 Base stepper phases A1/A2/B1/B2 & South/East & 24\,V \\
+J\_M2       & JST XH 2.5mm 4-pin & J2 Shoulder A phases           & South/East & 24\,V \\
+J\_M3       & JST XH 2.5mm 4-pin & J3 Shoulder B phases           & South/East & 24\,V \\
+J\_M4       & JST XH 2.5mm 4-pin & J4 Elbow phases                & South/East & 24\,V \\
 J\_SV1      & 2.54\,mm 3-pin     & Wrist Pitch PWM / 6.6\,V / GND & South  & 6.6\,V \\
 J\_SV2      & 2.54\,mm 3-pin     & Wrist Yaw PWM / 6.6\,V / GND  & South  & 6.6\,V \\
 J\_SV3      & 2.54\,mm 3-pin     & Gripper PWM / 6.6\,V / GND    & South  & 6.6\,V \\
-J\_CAM1     & Micro-Fit 3.0 2-pin & Node2 5\,V / GND               & South  & 5.0\,V \\
-J\_CAM2     & Micro-Fit 3.0 2-pin & Node3 5\,V / GND               & South  & 5.0\,V \\
+J\_CAM1     & JST XH 2.5mm 2-pin & Node2 5\,V / GND               & South  & 5.0\,V \\
+J\_CAM2     & JST XH 2.5mm 2-pin & Node3 5\,V / GND               & South  & 5.0\,V \\
 J\_LDR      & 2.54\,mm 4-pin     & Node1 UART TX, RX, GND, 5\,V  & South  & -- \\
 J\_SD       & MicroSD push-pull  & SPI: CS / MOSI / SCK / MISO    & Interior & 3.3\,V \\
 \bottomrule
@@ -662,7 +662,7 @@ wirelessly:
 
 Node1 is an ESP32-C6 SuperMini board connected via two separate connectors:
 \begin{itemize}[noitemsep]
-    \item \textbf{J\_LDR\_PWR}: 5\,V / GND power (Micro-Fit 3.0, 2-pin, South Edge).
+    \item \textbf{J\_LDR\_PWR}: 5\,V / GND power (JST XH 2.5mm, 2-pin, South Edge).
     \item \textbf{J\_LDR}: UART signals TX / RX / GND / spare (2.54\,mm 4-pin, South Edge).
 \end{itemize}
 Baud: 921\,600, 8N1, non-blocking async receive. Parser uses magic-number scan +
@@ -706,7 +706,7 @@ Beta Rev2 & \textbf{This document} &
     Bulk caps changed to low-ESR SMD electrolytic (tantalum removed);
     5\,V load budget revised for Node1 ESP32-C6 offboard;
     Node1 split into J\_LDR (UART) + J\_LDR\_PWR (5\,V power) connectors;
-    ESP32-CAM headers changed to 2-pin Micro-Fit 3.0;
+    ESP32-CAM headers changed to 2-pin JST XH 2.5mm;
     Module variant locked to N16R8 (octal PSRAM); GPIO35/36/37/33/34/26 exclusions enforced;
     CH340K decoupling added (3$\times$ 100\,nF);
     Full connector edge-zone map added to Section~4 and connector table in Section~5. \\
