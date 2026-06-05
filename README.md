@@ -35,11 +35,11 @@ Canonical split: [Project Scope And Repo Map](docs/PROJECT_SCOPE_AND_REPO_MAP.md
 
 - 📘 **Getting Started**: [Complete Documentation Index](docs/README.md#quick-start)
 - 🚀 **Deploy Firmware**: [Flashing & Deployment Guide](docs/deployment/FLASHING_AND_DEPLOYMENT.md)
-- 🔌 **Build Hardware**: [Wiring & Assembly Guide](docs/hardware/WIRING_AND_ASSEMBLY.md)
-- 🧩 **Pinout Matrix**: [Dual-Controller Pinout & Wiring Matrix](docs/hardware/DUAL_CONTROLLER_PINOUT_MATRIX.md)
-- 🗺️ **System Architecture**: [Visual Architecture Guide](docs/firmware/VISUAL_ARCHITECTURE_GUIDE.md)
+- 🔌 **Build Hardware**: [Wiring & Assembly Guide](docs/hardware/alpha/WIRING_AND_ASSEMBLY.md)
+- 🧩 **Pinout Matrix (Alpha)**: [Alpha Pinout & Wiring Matrix](docs/hardware/alpha/PINOUT_MATRIX.md)
+- 🗺️ **System Architecture**: [Technical Reference — Beta Rev2](docs/references/SixEyes%20Technical%20Reference%20June%202026.md)
 - 🎮 **Teleoperation Architecture**: [Dual-Mode Firmware Plan](docs/firmware/TELEOPERATION_MODE_ARCHITECTURE.md)
-- ✅ **Validate Hardware**: [Hardware Validation Procedures](docs/hardware/HARDWARE_VALIDATION.md)
+- ✅ **Validate Hardware**: [Hardware Validation Procedures](docs/hardware/alpha/HARDWARE_VALIDATION.md)
 - 🛠️ **Run Tests**: [Testing & Validation Guide](docs/testing/TESTING_AND_VALIDATION_GUIDE.md)
 
 ## Project Overview
@@ -210,11 +210,11 @@ README.md                    (this file)
 
 ### For Hardware Assembly
 
-1. **Gather components**: [Parts List](docs/hardware/WIRING_AND_ASSEMBLY.md#parts-list)
-2. **Wire the hardware**: [Wiring Guide](docs/hardware/WIRING_AND_ASSEMBLY.md)
-3. **Validate**: [Hardware Validation](docs/hardware/HARDWARE_VALIDATION.md)
+1. **Gather components**: [Parts List](docs/hardware/alpha/WIRING_AND_ASSEMBLY.md#parts-list)
+2. **Wire the hardware**: [Wiring Guide](docs/hardware/alpha/WIRING_AND_ASSEMBLY.md)
+3. **Validate**: [Hardware Validation](docs/hardware/alpha/HARDWARE_VALIDATION.md)
 
-⏭️ **Next**: [Wiring & Assembly Guide](docs/hardware/WIRING_AND_ASSEMBLY.md)
+⏭️ **Next**: [Wiring & Assembly Guide](docs/hardware/alpha/WIRING_AND_ASSEMBLY.md)
 
 ### For ROS2 Integration
 
@@ -235,7 +235,7 @@ ros2 topic echo /sixeyes/firmware_status
 ros2 topic echo /sixeyes/is_safe
 ```
 
-⏭️ **Next**: [ROS2 Integration Guide](docs/ros2/ROS2_HEARTBEAT_INTEGRATION.md)
+⏭️ **Next**: [ROS2 Integration Guide](docs/ros2/ROS2_INTEGRATION.md)
 
 ## Technical Specifications
 
@@ -284,14 +284,14 @@ See [JSON Message Protocol](docs/protocols/JSON_MESSAGE_PROTOCOL.md) for full sp
 ## Key Documentation
 
 ### Architecture & Design
-- [Visual Architecture Guide](docs/firmware/VISUAL_ARCHITECTURE_GUIDE.md)
-- [Implementation Summary](docs/firmware/IMPLEMENTATION_SUMMARY.md)
+- [Technical Reference — Beta Rev2](docs/references/SixEyes%20Technical%20Reference%20June%202026.md)
 - [Teleoperation Mode Architecture](docs/firmware/TELEOPERATION_MODE_ARCHITECTURE.md)
 
 ### Hardware & Deployment
-- [Wiring & Assembly (Alpha)](docs/hardware/WIRING_AND_ASSEMBLY.md)
-- [Dual-Controller Pinout Matrix](docs/hardware/DUAL_CONTROLLER_PINOUT_MATRIX.md)
-- [Hardware Validation](docs/hardware/HARDWARE_VALIDATION.md)
+- [Wiring & Assembly (Alpha)](docs/hardware/alpha/WIRING_AND_ASSEMBLY.md)
+- [Pinout Matrix (Alpha)](docs/hardware/alpha/PINOUT_MATRIX.md)
+- [Leader PCB Design (Beta)](docs/hardware/beta/LEADER_PCB_DESIGN.md)
+- [Hardware Validation](docs/hardware/alpha/HARDWARE_VALIDATION.md)
 - [Flashing & Deployment](docs/deployment/FLASHING_AND_DEPLOYMENT.md)
 
 ### Testing & Quality
@@ -300,12 +300,11 @@ See [JSON Message Protocol](docs/protocols/JSON_MESSAGE_PROTOCOL.md) for full sp
 
 ### Communication & ROS2
 - [JSON Message Protocol](docs/protocols/JSON_MESSAGE_PROTOCOL.md)
-- [ROS2 Heartbeat Integration](docs/ros2/ROS2_HEARTBEAT_INTEGRATION.md)
-- [ROS2 Quickstart](docs/ros2/ROS2_HEARTBEAT_QUICKSTART.md)
+- [ROS2 Integration](docs/ros2/ROS2_INTEGRATION.md)
 
 ### References
-- [References Directory](docs/references/) — TMC2209, hardware specs, technical datasheets
-- [Firmware System Datasheet](docs/references/FIRMWARE_SYSTEM_DATASHEET.md)
+- [Technical Reference — Beta Rev2](docs/references/SixEyes%20Technical%20Reference%20June%202026.md)
+- [References Directory](docs/references/) — TMC2209 datasheet, historical technical references
 
 ## Project Status
 
@@ -370,8 +369,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for code style, PR process, commit conven
 ## Troubleshooting
 
 - **Compilation issues**: [Build Troubleshooting](docs/deployment/FLASHING_AND_DEPLOYMENT.md#troubleshooting)
-- **Hardware not responding**: [Hardware Validation](docs/hardware/HARDWARE_VALIDATION.md#troubleshooting)
-- **ROS2 communication problems**: [ROS2 Quickstart — Troubleshooting](docs/ros2/ROS2_HEARTBEAT_QUICKSTART.md#troubleshooting)
+- **Hardware not responding**: [Hardware Validation](docs/hardware/alpha/HARDWARE_VALIDATION.md#troubleshooting)
+- **ROS2 communication problems**: [ROS2 Integration](docs/ros2/ROS2_INTEGRATION.md)
 
 ## Contact & Support
 
