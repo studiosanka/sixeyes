@@ -35,8 +35,19 @@ public:
   std::array<float, NUM_STEPPERS> getCurrentVelocities() const;
   std::array<float, NUM_STEPPERS> getErrors() const;
 
+  // Skipped step estimates accumulated since last clear (open-loop slip proxy)
+  std::array<int32_t, NUM_STEPPERS> getEstimatedSkippedSteps() const;
+  void clearSkippedStepEstimates();
+
 private:
   MotorController();
+
+  // Microsteps injected on direction reversal to take up gearbox backlash.
+  // Tune empirically for 3D-printed cycloidals — see tmc2209_config.h.
+  static constexpr int32_t kBacklashSteps = TMC2209_BACKLASH_STEPS;
+
+  // Cumulative skipped-step estimate triggering a re-home warning.
+  static constexpr int32_t kSkippedStepWarningThreshold = 200;
 
   // Open-loop motion constants (motor shaft degrees).
   static constexpr float MAX_MOTOR_SPEED_DEG_PER_S = 720.0f;
@@ -69,7 +80,18 @@ private:
   volatile float commanded_step_rate_steps_s_[NUM_STEPPERS] = {0};
   volatile float step_phase_accumulator_[NUM_STEPPERS] = {0};
   volatile int32_t step_position_isr_[NUM_STEPPERS] = {0};
+  volatile int32_t backlash_remaining_[NUM_STEPPERS] = {0};
+  volatile bool last_isr_dir_positive_[NUM_STEPPERS] = {false};
   esp_timer_handle_t step_timer_ = nullptr;
+
+  // Stall / skipped-step tracking (updated in update(), read by main loop)
+  bool stall_active_[NUM_STEPPERS] = {false};
+  int32_t stall_start_steps_[NUM_STEPPERS] = {0};
+  int32_t estimated_skipped_steps_[NUM_STEPPERS] = {0};
+
+  // Homing backlash direction tracking
+  bool last_homing_dir_positive_[NUM_STEPPERS] = {false};
+  bool homing_dir_initialized_[NUM_STEPPERS] = {false};
 
   bool is_interpolating_ = false;
   bool enabled_ = false;

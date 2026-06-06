@@ -1,6 +1,7 @@
 #include "motor_controller.h"
 #include "modules/drivers/tmc2209/tmc2209_driver.h"
 #include <Arduino.h>
+#include <cstdlib>
 #include <algorithm>
 #include <cmath>
 #include <esp_rom_sys.h>
@@ -48,14 +49,22 @@ void MotorController::stepTimerCallback(void *arg) {
 
   int32_t emit_counts[NUM_STEPPERS] = {0};
   bool emit_direction_positive[NUM_STEPPERS] = {false};
+  bool emit_backlash[NUM_STEPPERS] = {false};
 
   portENTER_CRITICAL(&self->motion_lock_);
   for (size_t motor_index = 0; motor_index < NUM_STEPPERS; ++motor_index) {
     const float rate_steps_s = self->commanded_step_rate_steps_s_[motor_index];
     const float abs_rate = std::abs(rate_steps_s);
+    const bool dir_positive = rate_steps_s > 0.0f;
 
     if (abs_rate < 0.001f) {
       continue;
+    }
+
+    // Detect direction reversal — arm backlash injection
+    if (dir_positive != self->last_isr_dir_positive_[motor_index]) {
+      self->backlash_remaining_[motor_index] = kBacklashSteps;
+      self->last_isr_dir_positive_[motor_index] = dir_positive;
     }
 
     float phase = self->step_phase_accumulator_[motor_index];
@@ -65,9 +74,16 @@ void MotorController::stepTimerCallback(void *arg) {
     if (emit > 0) {
       phase -= static_cast<float>(emit);
       emit_counts[motor_index] = emit;
-      emit_direction_positive[motor_index] = rate_steps_s > 0.0f;
+      emit_direction_positive[motor_index] = dir_positive;
       self->step_position_isr_[motor_index] +=
-          emit_direction_positive[motor_index] ? emit : -emit;
+          dir_positive ? emit : -emit;
+    }
+
+    // Consume one backlash step this cycle (does not advance position)
+    if (self->backlash_remaining_[motor_index] > 0) {
+      emit_backlash[motor_index] = true;
+      emit_direction_positive[motor_index] = dir_positive;
+      self->backlash_remaining_[motor_index]--;
     }
 
     self->step_phase_accumulator_[motor_index] = phase;
@@ -76,12 +92,21 @@ void MotorController::stepTimerCallback(void *arg) {
 
   for (size_t motor_index = 0; motor_index < NUM_STEPPERS; ++motor_index) {
     const int32_t emit = emit_counts[motor_index];
-    if (emit <= 0) {
+    if (emit <= 0 && !emit_backlash[motor_index]) {
       continue;
     }
 
     digitalWrite(TMC2209_DIR_PINS[motor_index],
                  emit_direction_positive[motor_index] ? HIGH : LOW);
+
+    // Backlash pulse first — transparent to position tracking
+    if (emit_backlash[motor_index]) {
+      digitalWrite(TMC2209_STEP_PINS[motor_index], HIGH);
+      esp_rom_delay_us(STEP_PULSE_HIGH_US);
+      digitalWrite(TMC2209_STEP_PINS[motor_index], LOW);
+      esp_rom_delay_us(STEP_PULSE_LOW_US);
+    }
+
     for (int32_t step = 0; step < emit; ++step) {
       digitalWrite(TMC2209_STEP_PINS[motor_index], HIGH);
       esp_rom_delay_us(STEP_PULSE_HIGH_US);
@@ -237,6 +262,18 @@ int32_t MotorController::doSingleMotorStep(uint8_t motor_index,
                                            int32_t max_steps_this_cycle) {
   if (max_steps_this_cycle <= 0)
     return 0;
+
+  // Inject backlash steps on direction reversal during homing sequences.
+  // These pulses take up gearbox slack but are not counted in current_steps_.
+  if (homing_dir_initialized_[motor_index] &&
+      direction_positive != last_homing_dir_positive_[motor_index]) {
+    digitalWrite(TMC2209_DIR_PINS[motor_index], direction_positive ? HIGH : LOW);
+    for (int32_t b = 0; b < kBacklashSteps; ++b) {
+      pulseStepPin(motor_index);
+    }
+  }
+  last_homing_dir_positive_[motor_index] = direction_positive;
+  homing_dir_initialized_[motor_index] = true;
 
   digitalWrite(TMC2209_DIR_PINS[motor_index], direction_positive ? HIGH : LOW);
   for (int32_t step = 0; step < max_steps_this_cycle; ++step) {
@@ -478,6 +515,35 @@ void MotorController::update() {
     current_steps_[i] = isr_positions[i];
   }
 
+  // Stall detection via DIAG pins — fast GPIO reads, no UART overhead.
+  // Only active during normal motion (not homing, which manages stall itself).
+  if (homing_phase_ == HomingPhase::IDLE && enabled_) {
+    for (size_t i = 0; i < NUM_STEPPERS; ++i) {
+      const bool stalled_now =
+          TMC2209Driver::instance().isDiagAsserted(static_cast<uint8_t>(i));
+      if (stalled_now && !stall_active_[i]) {
+        stall_active_[i] = true;
+        stall_start_steps_[i] = current_steps_[i];
+      } else if (!stalled_now && stall_active_[i]) {
+        const int32_t slipped =
+            std::abs(current_steps_[i] - stall_start_steps_[i]);
+        estimated_skipped_steps_[i] += slipped;
+        stall_active_[i] = false;
+        Serial.print("MotorController: motor ");
+        Serial.print(i);
+        Serial.print(" stall cleared, est. slipped steps this event: ");
+        Serial.print(slipped);
+        Serial.print(", cumulative: ");
+        Serial.println(estimated_skipped_steps_[i]);
+        if (estimated_skipped_steps_[i] > kSkippedStepWarningThreshold) {
+          Serial.print("MotorController: WARNING motor ");
+          Serial.print(i);
+          Serial.println(" skipped step threshold exceeded — re-home recommended");
+        }
+      }
+    }
+  }
+
   if (homing_phase_ != HomingPhase::IDLE) {
     setAllCommandedRatesToZero();
     runHomingStep(dt);
@@ -565,6 +631,10 @@ bool MotorController::startStallGuardHoming(uint8_t motor_mask,
   homing_stall_debounce_count_ = 0;
   last_homing_success_ = false;
 
+  for (size_t i = 0; i < NUM_STEPPERS; ++i) {
+    homing_dir_initialized_[i] = false;
+  }
+
   Serial.print("MotorController: starting StallGuard homing, mask=0x");
   Serial.print(homing_mask_, HEX);
   Serial.print(" sensitivity=");
@@ -607,4 +677,17 @@ std::array<float, NUM_STEPPERS> MotorController::getCurrentVelocities() const {
 
 std::array<float, NUM_STEPPERS> MotorController::getErrors() const {
   return position_errors_;
+}
+
+std::array<int32_t, NUM_STEPPERS> MotorController::getEstimatedSkippedSteps() const {
+  std::array<int32_t, NUM_STEPPERS> result{};
+  for (size_t i = 0; i < NUM_STEPPERS; ++i) result[i] = estimated_skipped_steps_[i];
+  return result;
+}
+
+void MotorController::clearSkippedStepEstimates() {
+  for (size_t i = 0; i < NUM_STEPPERS; ++i) {
+    estimated_skipped_steps_[i] = 0;
+    stall_active_[i] = false;
+  }
 }

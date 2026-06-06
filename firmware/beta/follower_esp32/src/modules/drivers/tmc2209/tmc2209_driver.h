@@ -18,8 +18,17 @@ public:
   // DRV_STATUS (0x6F) - contains stall detection flag and other diagnostic bits
   bool readDrvStatus(uint8_t motor_index, uint32_t &status);
 
-  // Check if motor has stalled (parsed from DRV_STATUS)
+  // Check if motor has stalled via DRV_STATUS bit 24 (UART, use for homing)
   bool isStalled(uint8_t motor_index);
+
+  // Fast stall check via DIAG GPIO — no UART overhead, use in control loop
+  bool isDiagAsserted(uint8_t motor_index);
+
+  // MSCNT (0x6A) — microstep counter, 0–1023 within one electrical cycle
+  bool readMSCNT(uint8_t motor_index, uint16_t &mscnt);
+
+  // SG_RESULT — StallGuard2 load value 0–1023 (0 = stall) from DRV_STATUS[9:0]
+  bool readSGResult(uint8_t motor_index, uint16_t &sg_result);
 
   // IOIN (0x06) - read input/output pins state
   bool readIOIN(uint8_t motor_index, uint32_t &ioin);

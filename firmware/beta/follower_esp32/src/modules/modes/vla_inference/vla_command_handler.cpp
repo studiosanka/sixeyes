@@ -9,6 +9,7 @@
 #include "modules/comms/uart_leader/uart_leader.h"
 #include "modules/config/mode_config.h"
 #include "modules/motor_control/motor_controller.h"
+#include "modules/safety/safety_task.h"
 #include "modules/servo_control/servo_manager.h"
 #include "modules/util/logging.h"
 
@@ -62,6 +63,13 @@ static void handleHomeZero(const BaseMessage &msg) {
   MotorController::instance().setCurrentPositionAsZero();
 }
 
+static void handleResetFault(const BaseMessage &msg) {
+  (void)msg;
+  Logging::info("VLA: RESET_FAULT requested");
+  SafetyTask::instance().clearFault();
+  MotorController::instance().clearSkippedStepEstimates();
+}
+
 static void handleHomeStallGuard(const BaseMessage &msg) {
   const HomeStallGuardMessage &m =
       static_cast<const HomeStallGuardMessage &>(msg);
@@ -91,6 +99,7 @@ void VLACommandHandler::init() {
   parser.registerHandler(MessageType::ENABLE_MOTORS, handleEnableMotors);
   parser.registerHandler(MessageType::HOME_ZERO, handleHomeZero);
   parser.registerHandler(MessageType::HOME_STALLGUARD, handleHomeStallGuard);
+  parser.registerHandler(MessageType::RESET_FAULT, handleResetFault);
 
   parser.setErrorHandler(handleParseError);
 
@@ -112,7 +121,7 @@ bool VLACommandHandler::handleCommand(const char *cmd,
   if (strcmp(cmd, "MOTOR_TARGET") == 0 || strcmp(cmd, "SERVO_TARGET") == 0 ||
       strcmp(cmd, "HEARTBEAT") == 0 || strcmp(cmd, "ENABLE_MOTORS") == 0 ||
       strcmp(cmd, "HOME_ZERO") == 0 || strcmp(cmd, "HOME_STALLGUARD") == 0 ||
-      strcmp(cmd, "TUNE_PID") == 0) {
+      strcmp(cmd, "RESET_FAULT") == 0 || strcmp(cmd, "TUNE_PID") == 0) {
     Logging::debugf("VLA: Command dispatched via parser: %s", cmd);
     return true;
   }

@@ -20,6 +20,11 @@ void TMC2209Driver::init(HardwareSerial &uart) {
   Serial.println(
       "  - Configured for PDN_UART mode (single UART + PDN switching)");
 
+  // Initialize DIAG pins as inputs (open-drain with PCB pull-ups)
+  for (size_t i = 0; i < TMC2209_NUM_DRIVERS; ++i) {
+    pinMode(TMC2209_DIAG_PINS[i], INPUT);
+  }
+
   // Initialize PDN pins and set them HIGH (disabled/deselected)
   for (size_t i = 0; i < TMC2209_NUM_DRIVERS; ++i) {
     pinMode(TMC2209_PDN_PINS[i], OUTPUT);
@@ -134,6 +139,26 @@ bool TMC2209Driver::isStalled(uint8_t motor_index) {
   return (status & (1UL << 24)) != 0;
 }
 
+bool TMC2209Driver::isDiagAsserted(uint8_t motor_index) {
+  if (motor_index >= TMC2209_NUM_DRIVERS) return false;
+  return digitalRead(TMC2209_DIAG_PINS[motor_index]) == HIGH;
+}
+
+bool TMC2209Driver::readMSCNT(uint8_t motor_index, uint16_t &mscnt) {
+  if (motor_index >= TMC2209_NUM_DRIVERS || !drivers[motor_index]) return false;
+  selectDriver(motor_index);
+  mscnt = drivers[motor_index]->MSCNT();
+  deselectAll();
+  return true;
+}
+
+bool TMC2209Driver::readSGResult(uint8_t motor_index, uint16_t &sg_result) {
+  uint32_t status = 0;
+  if (!readDrvStatus(motor_index, status)) return false;
+  sg_result = static_cast<uint16_t>(status & 0x3FFU); // bits [9:0]
+  return true;
+}
+
 bool TMC2209Driver::readIOIN(uint8_t motor_index, uint32_t &ioin) {
   // IOIN (0x06) - read current state of inputs/outputs
   // Contains step, dir, dcin, dcen pin states
@@ -200,41 +225,42 @@ uint16_t TMC2209Driver::getCurrent(uint8_t motor_index) {
 
 bool TMC2209Driver::writeRegister(uint8_t motor_index, uint8_t reg,
                                   uint32_t value) {
-  if (motor_index >= TMC2209_NUM_DRIVERS || !drivers[motor_index]) {
-    return false;
-  }
+  if (motor_index >= TMC2209_NUM_DRIVERS || !drivers[motor_index]) return false;
 
   selectDriver(motor_index);
-
-  // TMCStepper provides higher-level APIs for register access
-  // Direct write() is protected; use setRegister or equivalent public method
-  // For now, this is a placeholder - actual implementation depends on
-  // TMCStepper version
-
-  Serial.print("TMC2209Driver: writeRegister motor ");
-  Serial.print(motor_index);
-  Serial.print(" reg 0x");
-  Serial.print(reg, HEX);
-  Serial.print(" = 0x");
-  Serial.println(value, HEX);
-
-  return true;
+  bool ok = true;
+  switch (reg) {
+    case TMC2209_REG_GCONF:    drivers[motor_index]->GCONF(value);                          break;
+    case TMC2209_REG_SGTHRS:   drivers[motor_index]->SGTHRS(static_cast<uint8_t>(value));   break;
+    case TMC2209_REG_CHOPCONF: drivers[motor_index]->CHOPCONF(value);                       break;
+    case TMC2209_REG_COOLCONF: drivers[motor_index]->COOLCONF(value);                       break;
+    case TMC2209_REG_TCOOLTHRS:drivers[motor_index]->TCOOLTHRS(value);                      break;
+    default: ok = false; break;
+  }
+  deselectAll();
+  return ok;
 }
 
 bool TMC2209Driver::readRegister(uint8_t motor_index, uint8_t reg,
                                  uint32_t &value, unsigned long timeout_ms) {
-  if (motor_index >= TMC2209_NUM_DRIVERS || !drivers[motor_index]) {
-    return false;
-  }
+  (void)timeout_ms;
+  if (motor_index >= TMC2209_NUM_DRIVERS || !drivers[motor_index]) return false;
 
   selectDriver(motor_index);
-
-  // TMCStepper provides higher-level APIs for diagnostics like DRV_STATUS()
-  // Direct read() is protected; use getRegister or equivalent
-  // For now, return placeholder
-
-  value = 0;
-  return true;
+  bool ok = true;
+  switch (reg) {
+    case TMC2209_REG_GCONF:    value = drivers[motor_index]->GCONF();      break;
+    case TMC2209_REG_GSTAT:    value = drivers[motor_index]->GSTAT();      break;
+    case TMC2209_REG_IOIN:     value = drivers[motor_index]->IOIN();       break;
+    case TMC2209_REG_TSTEP:    value = drivers[motor_index]->TSTEP();      break;
+    case TMC2209_REG_MSCNT:    value = drivers[motor_index]->MSCNT();      break;
+    case TMC2209_REG_CHOPCONF: value = drivers[motor_index]->CHOPCONF();   break;
+    case TMC2209_REG_DRVSTATUS:value = drivers[motor_index]->DRV_STATUS(); break;
+    case TMC2209_REG_SGRESULT: value = drivers[motor_index]->DRV_STATUS() & 0x3FFU; break;
+    default: value = 0; ok = false; break;
+  }
+  deselectAll();
+  return ok;
 }
 
 void TMC2209Driver::configureAllMotors(uint16_t rms_current_ma) {

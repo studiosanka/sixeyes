@@ -69,4 +69,13 @@ static constexpr float TMC2209_MICROSTEPS = 16.0f;
 #define TMC2209_REG_COOLCONF   0x6D
 #define TMC2209_REG_DRVSTATUS  0x6F
 
+#define TMC2209_REG_TCOOLTHRS  0x14
+#define TMC2209_REG_SGTHRS     0x40
+#define TMC2209_REG_SGRESULT   0x41
+
 #define TMC2209_SGTHRS_DEFAULT 100
+
+// Backlash compensation: microsteps to inject on direction reversal.
+// For 3D-printed cycloidal gearboxes tune empirically — start at 50 and
+// increase until direction-reversal positioning improves.
+#define TMC2209_BACKLASH_STEPS 50
