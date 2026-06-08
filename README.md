@@ -383,6 +383,15 @@ SixEyes uses a dual licence:
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full usage terms, including what is required if you manufacture or sell hardware based on these designs.
 
+## Credits
+
+| Role | Contributor |
+|---|---|
+| Firmware & System Architecture | Vincent Santosa ([@markantosa](https://github.com/markantosa)) |
+| Follower PCB Design | Vincent Santosa ([@markantosa](https://github.com/markantosa)) |
+| Leader PCB Design | Audrey ([@odriyy](https://github.com/odriyy)) |
+| Mechanical Design | Ren Jie ([@trenjie03](https://github.com/trenjie03)) |
+
 ## Contact & Support
 
 - 🐛 Issues: https://github.com/studiosanka/sixeyes/issues
