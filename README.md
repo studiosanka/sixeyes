@@ -387,6 +387,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full usage terms, including what is r
 
 | Role | Contributor |
 |---|---|
+| Project Lead | Vincent Santosa ([@markantosa](https://github.com/markantosa)) |
 | Firmware & System Architecture | Vincent Santosa ([@markantosa](https://github.com/markantosa)) |
 | Follower PCB Design | Vincent Santosa ([@markantosa](https://github.com/markantosa)) |
 | Leader PCB Design | Audrey ([@odriyy](https://github.com/odriyy)) |
