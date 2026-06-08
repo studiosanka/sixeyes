@@ -39,3 +39,7 @@ Thumbs.db
 build.log
 .pio/
 
+# Subprojects — separate repos, not part of sixeyes
+cyclocad/
+nodemesh/
+

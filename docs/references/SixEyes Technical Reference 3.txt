@@ -1,0 +1,1001 @@
+============================================================
+SixEyes – Technical Reference 3
+(Beta Rev2 / NodeMesh Edition)
+============================================================
+
+---
+
+1. Project Purpose & Scope
+
+---
+
+SixEyes is a low-cost, open-source, research robotic arm platform
+designed for Vision–Language–Action (VLA) experimentation.
+
+The system focuses on:
+
+• Collecting high-quality multimodal datasets
+• Enabling real-time VLA policy execution
+• Using accessible, reusable hardware
+• Maintaining deterministic low-level control
+
+The system architecture intentionally separates:
+
+Embedded control (real-time)
+from
+AI inference (high compute).
+
+Embedded hardware focuses strictly on sensing,
+motor control, and safety.
+
+All perception, planning, and machine learning
+runs on an external laptop.
+
+Two hardware generations exist:
+
+Alpha
+  Through-hole DevKit carrier.
+  Single-layer protoboard.
+  External TMC2209 modules.
+
+Beta Rev2 (this document)
+  60×60 mm 4-layer custom PCB.
+  Integrated MCU, drivers, buck converters.
+  ESP32-S3-WROOM-1-N16R8 (16 MB Flash, 8 MB Octal PSRAM).
+
+This document reflects Beta Rev2.
+For Alpha hardware details see docs/hardware/alpha/.
+
+---
+
+2. High-Level System Architecture
+
+---
+
+2.1 Distributed Control Philosophy
+
+Layer: Low-Level Control
+Device: Node0 — ESP32-S3-WROOM-1-N16R8 (Beta PCB)
+Responsibilities:
+• 400 Hz stepper timing (4 axes)
+• Servo PWM control (3 channels)
+• StallGuard2 sensorless homing
+• Safety supervision and heartbeat
+
+Layer: Communication Layer
+Device: USB-CDC serial link (Native OTG via J_USB1)
+Responsibilities:
+• Deterministic command transfer
+• Telemetry streaming to ROS2
+
+Layer: High-Level Intelligence
+Device: Laptop
+Responsibilities:
+• Vision processing
+• VLA policy inference
+• Dataset logging
+• Motion planning
+
+Layer: Orchestration
+Device: ROS2 (Laptop)
+Responsibilities:
+• Node communication
+• Dataset synchronization
+• Experiment tooling
+
+---
+
+2.2 NodeMesh Topology
+
+In NodeMesh mode the system spans four MCUs:
+
+Node0 — Beta PCB (ESP32-S3-WROOM-1-N16R8)
+  Role: Real-time orchestrator.
+  Runs 400 Hz control loop.
+  Aggregates joint states and vision features.
+  Logs experience packets to MicroSD.
+
+Node1 — ESP32-C6 SuperMini (offboard, wired to Node0)
+  Role: Leader/teleoperation input board.
+  Reads 6× potentiometers at 100 Hz ADC.
+  Sends absolute joint targets at 921,600 baud over UART.
+
+Node2 — ESP32-CAM (global perspective camera, wireless)
+  Role: Global camera node.
+  Sends 128-byte brightness histogram feature vectors
+  via ESP-NOW channel 6 to Node0.
+
+Node3 — ESP32-CAM (wrist/eye-in-hand camera, wireless)
+  Role: Wrist camera node.
+  Same protocol as Node2.
+
+Node0 discards camera frames older than 300 ms
+before merging into the IK/experience packet.
+
+---
+
+3. Hardware Architecture
+
+---
+
+3.1 Leader Arm (Teleoperation Controller)
+
+The leader arm captures human motion input using potentiometers.
+These analog signals represent target joint positions.
+
+MCU:
+ESP32-C6 SuperMini (Node1)
+
+ADC Domain:
+ADC1 only is used to avoid WiFi interference issues.
+
+Inputs:
+6× potentiometers.
+
+Leader Pinout (ESP32-C6 Node1):
+
+Pot 1  → GPIO0
+Pot 2  → GPIO1
+Pot 3  → GPIO2
+Pot 4  → GPIO3
+Pot 5  → GPIO4
+Pot 6  → GPIO6
+
+UART Link to Node0 (Follower):
+
+Node1 TX → (J_LDR Pin 2) → Node0 GPIO42
+Node1 RX → (J_LDR Pin 1) → Node0 GPIO41
+
+Baud:
+921,600 baud, 8N1.
+Magic-number scan + CRC-CCITT (poly 0x1021) framing.
+Packets carry absolute joint targets for all 6 joints.
+
+Power:
+Node1 is powered via J_LDR_PWR on the Beta PCB.
+5V / GND from the Beta 5V logic rail.
+10 µF ceramic bypass cap at the header.
+
+---
+
+3.2 Follower Arm (Actuated Robot Arm)
+
+The follower arm executes motion using stepper motors
+and servo actuators.
+
+Degrees of Freedom:
+
+Base            → 1× NEMA17 (J1)
+Shoulder A      → 1× NEMA17 (J2, torque split)
+Shoulder B      → 1× NEMA17 (J3, torque split)
+Elbow           → 1× NEMA17 (J4)
+Wrist Pitch     → 1× Servo (J_SV1)
+Wrist Yaw       → 1× Servo (J_SV2)
+Gripper         → 1× Servo (J_SV3)
+
+Total:
+
+• 4 stepper channels
+• 3 servo channels
+• 6 DOF system
+
+IK Parameters:
+
+Upper arm link = 140 mm
+Forearm link   = 140 mm
+2-link planar IK computed on Node0.
+
+---
+
+3.3 Stepper Motor Drivers (Beta Rev2)
+
+Drivers:
+
+4× TMC2209-LA (QFN-28, direct IC on Beta PCB, 2×2 grid)
+
+Configuration:
+
+• PDN_UART mode enabled (single-wire UART per driver)
+• StallGuard2 enabled (DIAG pins routed)
+• CoolStep adaptive current scaling available
+• SpreadCycle / StealthChop2 configurable per driver
+• VIO = 3.3V
+• VM  = 24V
+
+Global enable:
+GPIO4 → DRV_EN_ALL (active LOW, shared to all 4 drivers EN pins).
+
+PDN_UART wiring (per driver):
+1 kΩ series resistor + 4.7 kΩ pull-up to 3.3V.
+
+DIAG wiring (per driver):
+47 kΩ pull-up to 3.3V (open-drain output — pull-up is mandatory).
+
+Beta Follower GPIO — TMC2209 Pin Assignment:
+
+J1 – Base
+
+STEP     → GPIO5
+DIR      → GPIO6
+PDN_UART → GPIO7   (1 kΩ series + 4.7 kΩ pull-up)
+DIAG     ← GPIO1   (47 kΩ pull-up, StallGuard2 / fault)
+
+J2 – Shoulder A
+
+STEP     → GPIO8
+DIR      → GPIO9
+PDN_UART → GPIO14  (1 kΩ series + 4.7 kΩ pull-up)
+DIAG     ← GPIO2   (47 kΩ pull-up, StallGuard2 / fault)
+
+J3 – Shoulder B
+
+STEP     → GPIO15
+DIR      → GPIO16
+PDN_UART → GPIO17  (1 kΩ series + 4.7 kΩ pull-up)
+DIAG     ← GPIO3   (47 kΩ pull-up, StallGuard2 / fault)
+
+J4 – Elbow
+
+STEP     → GPIO18
+DIR      → GPIO21
+PDN_UART → GPIO47  (1 kΩ series + 4.7 kΩ pull-up)
+DIAG     ← GPIO48  (47 kΩ pull-up, StallGuard2 / fault)
+
+Global Enable:
+
+EN_ALL   → GPIO4   (active LOW)
+
+---
+
+3.4 Servo Outputs
+
+Servos operate on the dedicated 6.6V rail.
+
+Servo GPIO (Beta Rev2):
+
+Wrist Pitch → GPIO38  (J_SV1)
+Wrist Yaw   → GPIO39  (J_SV2)
+Gripper     → GPIO40  (J_SV3)
+
+PWM generation via ESP32-S3 LEDC / MCPWM peripheral.
+
+Servo Power:
+
+• Powered from 6.6V rail (TPS54540B buck on PCB)
+• Connector type: 2.54 mm 3-pin header per channel
+• Pinout per header: Signal / 6.6V / GND
+
+Servo Current Budget:
+
+Continuous: 5.0 A total (3 servos)
+Stall peak:  7.0 A
+
+---
+
+3.5 Leader–Follower Communication
+
+Communication between Node1 (leader) and Node0 (follower)
+uses a dedicated hardware UART.
+
+Node0 (Follower) Side:
+
+UART RX (Node1 TX) → GPIO42
+UART TX (Node1 RX) → GPIO41
+
+Baud rate: 921,600, 8N1.
+
+Packet framing: magic-number scan + CRC-CCITT (poly 0x1021).
+Non-blocking async receive on Node0.
+
+Connector: J_LDR — 2.54 mm 4-pin header (South Edge of PCB).
+Pinout: TX, RX, GND, spare.
+
+Benefits:
+
+• Deterministic latency
+• Works without laptop
+• Allows teleoperation fallback mode
+
+---
+
+3.6 Camera Architecture (NodeMesh)
+
+In NodeMesh mode, cameras are Node2 and Node3 (ESP32-CAM modules).
+They communicate wirelessly to Node0.
+
+Camera nodes are NOT wired to the Beta PCB data lines.
+Power only is supplied via J_CAM1 and J_CAM2 (5V / GND).
+
+Architecture:
+
+Node2 (Global Cam)  → ESP-NOW channel 6 → Node0
+Node3 (Wrist Cam)   → ESP-NOW channel 6 → Node0
+
+Data payload:
+128-byte brightness histogram feature vector embedded in
+ExperiencePacket (magic 0x4E4D5650).
+
+Freshness gate:
+Node0 discards frames older than 300 ms before IK merge.
+
+Power connectors on Beta PCB:
+
+J_CAM1 — JST XH 2.5mm 2-pin — Node2 5V / GND (South Edge)
+J_CAM2 — JST XH 2.5mm 2-pin — Node3 5V / GND (South Edge)
+
+10 µF ceramic bypass cap at each camera header
+to absorb ESP-NOW TX burst (~200 mA step).
+
+In standalone SixEyes mode (without NodeMesh),
+cameras may be connected directly to the laptop via USB.
+
+---
+
+3.7 MicroSD Logging
+
+Hardware SPI. FAT32, 32 kB clusters.
+1 MB pre-allocated circular buffer for experience packets.
+~300 B per experience packet.
+SD flush every 8 writes to reduce blocking.
+
+SD GPIO (Beta Rev2):
+
+CS   → GPIO10  (10 kΩ pull-up)
+MOSI → GPIO11  (10 kΩ pull-up)
+SCK  → GPIO12
+MISO → GPIO13  (10 kΩ pull-up)
+
+Connector: Hirose DM3D-SF MicroSD push-pull (interior zone).
+
+---
+
+3.8 Dual USB-C Interface
+
+Port 1 — J_USB1 (West Edge)
+  Native USB-OTG.
+  GPIO19 (D-) / GPIO20 (D+).
+  90 Ω differential pair, routed on L1 only.
+  Used for: ROS2 USB-CDC bridge, telemetry streaming,
+  VLA dataset logging.
+
+Port 2 — J_USB2 (West Edge)
+  CH340K UART bridge.
+  GPIO43 (UART0 TXD) / GPIO44 (UART0 RXD).
+  DTR/RTS auto-reset for PlatformIO firmware upload.
+  Eliminates need for external USB-serial programmer.
+
+---
+
+4. Power Architecture
+
+---
+
+4.1 Main Power Input
+
+Primary input:
+
+24V DC via XT30 right-angle connector (J_PWR, West Edge).
+Recommended supply: ≥10A.
+
+This rail directly powers:
+
+• 4× TMC2209 VM pins (direct, fused)
+• 6.6V buck converter input
+• 5.0V buck converter input
+
+---
+
+4.2 6.6V Rail (Servo Power)
+
+Regulator:
+
+TPS54540B — 5.5A synchronous buck, HSOP-8-EP.
+Integrated on Beta PCB.
+
+Output Voltage:
+
+6.6V
+(R_top = 102 kΩ, R_bot = 14 kΩ, V_ref = 0.8V)
+
+Purpose:
+
+• Power 3× MG996R / MG995 class servos
+
+Inductor:
+Shielded iron-powder / metal composite.
+L = 4.7 µH, I_sat > 9.0 A.
+Footprint ≥ 10×10 mm (e.g. Bourns SRR1260, Sumida CDEP134).
+
+Output Capacitance:
+≥ 1000 µF low-ESR SMD electrolytic
+(2× 470 µF / 16V in parallel acceptable)
++ 10 µF ceramic bank at servo headers.
+
+---
+
+4.3 5.0V Rail (Logic & Peripheral Domain)
+
+Regulator:
+
+LMR14030S — 3A asynchronous buck, HSOP-8-EP.
+Integrated on Beta PCB.
+
+Loads and worst-case current budget:
+
+Node2 ESP32-CAM (global camera, ESP-NOW TX)    200 mA typ / 400 mA peak
+Node3 ESP32-CAM (wrist camera, ESP-NOW TX)     200 mA typ / 400 mA peak
+Node1 ESP32-C6 offboard (leader UART + RF)     100 mA typ / 250 mA peak
+MIC5219-3.3 LDO input (ESP32-S3 + TMC VIO)    400 mA typ / 620 mA peak
+
+Total 5.0V rail:                               900 mA typ / 1670 mA peak
+
+LMR14030S 3A rating provides >1.3× headroom over worst-case peak.
+Inductor: 4.7 µH, I_sat > 3.5A.
+Output: ≥ 100 µF SMD electrolytic + ceramic bank.
+
+---
+
+4.4 3.3V Rail (Logic Domain)
+
+Regulator:
+
+MIC5219-3.3YM5 — 1A LDO, SOT-23-5.
+Powered from 5.0V rail.
+
+Loads:
+
+ESP32-S3-WROOM-1 core + RF    500 mA peak
+4× TMC2209 VIO (15 mA each)   60 mA peak
+Pull-up resistor networks      20 mA peak
+
+Total:                         580 mA peak
+
+MIC5219-3.3 1A rating provides ~420 mA headroom.
+
+Thermal note:
+Worst-case dissipation P_D = (5.0 - 3.3) V × 0.58 A ≈ 1.0 W.
+Ensure adequate copper spreading under SOT-23-5 pad.
+
+Input cap:  ≥ 10 µF ceramic (0805) on +5V input pin.
+Output cap: 22 µF ceramic (0805) + 100 nF X7R (0603).
+
+---
+
+4.5 Power Rail Summary
+
+24V Rail
+  → 4× TMC2209 VM (direct, fused)
+  → TPS54540B 6.6V buck input
+  → LMR14030S 5.0V buck input
+
+6.6V Rail (TPS54540B)
+  → 3× Servo channels (J_SV1–J_SV3)
+
+5.0V Rail (LMR14030S)
+  → Node1 leader board (J_LDR_PWR)
+  → Node2 camera (J_CAM1)
+  → Node3 camera (J_CAM2)
+  → MIC5219-3.3 LDO input
+
+3.3V Rail (MIC5219-3.3)
+  → ESP32-S3-WROOM-1 core logic
+  → 4× TMC2209 VIO
+  → Pull-up networks
+
+---
+
+4.6 24V Motor Rail Filtering (per TMC2209)
+
+Placed within 2 mm of IC package edge:
+
+Bulk:
+100 µF / 35V low-ESR SMD electrolytic
+(Panasonic FR or Nichicon UWX, case D / 7.3 mm diameter).
+DO NOT substitute tantalum — motor back-EMF causes catastrophic failure.
+
+HF bypass:
+100 nF X7R 50V (0603), trace length to VM pin ≤ 1 mm.
+
+---
+
+4.7 Grounding Strategy
+
+4-layer PCB stackup:
+
+L1 — Signal / Component (1 oz)
+L2 — Solid unbroken GND plane (1 oz) — primary return path
+L3 — Split power plane (24V, 6.6V, 5V, 3.3V copper polygons)
+L4 — Signal escape / thermal spreading (1 oz)
+
+Rules:
+
+• Servo return currents must not share trace segments with MCU signal GND.
+  Both terminate at L2 via separate vias.
+• Buck switching node polygons on L1 must not be crossed by signal traces.
+• GND stitching vias L1→L2 every ~5 mm at board perimeter.
+• GND stitching vias along full length of USB differential pair routes.
+• GND stitching vias adjacent to all buck switching polygons.
+
+---
+
+5. Forbidden GPIO Lines (N16R8 Octal PSRAM/Flash)
+
+The following GPIOs are consumed by ESP32-S3-WROOM-1-N16R8
+internal silicon.
+
+THESE MUST NEVER BE USED IN FIRMWARE OR ROUTED ON THE PCB:
+
+GPIO26 — Internal octal flash clock
+GPIO33 — Flash D4
+GPIO34 — Flash D5
+GPIO35 — Octal PSRAM D6 / WP
+GPIO36 — Octal PSRAM D7 / HOLD
+GPIO37 — Octal PSRAM CLK
+
+---
+
+6. Full GPIO Quick Reference (Beta Rev2)
+
+GPIO  Function
+----  --------
+0     MCU_BOOT (10 kΩ pull-up; tactile switch to GND)
+1     J1 Base DIAG    (StallGuard2, 47 kΩ pull-up)
+2     J2 ShldA DIAG   (StallGuard2, 47 kΩ pull-up)
+3     J3 ShldB DIAG   (StallGuard2, 47 kΩ pull-up)
+4     DRV_EN_ALL      (active LOW, all 4 TMC2209)
+5     J1 Base STEP
+6     J1 Base DIR
+7     J1 Base PDN_UART (1 kΩ series + 4.7 kΩ pull-up)
+8     J2 ShldA STEP
+9     J2 ShldA DIR
+10    SD_CS            (10 kΩ pull-up)
+11    SD_MOSI          (10 kΩ pull-up)
+12    SD_SCK
+13    SD_MISO          (10 kΩ pull-up)
+14    J2 ShldA PDN_UART (1 kΩ series + 4.7 kΩ pull-up)
+15    J3 ShldB STEP
+16    J3 ShldB DIR
+17    J3 ShldB PDN_UART (1 kΩ series + 4.7 kΩ pull-up)
+18    J4 Elbow STEP
+19    USB_D-           (90 Ω diff pair → J_USB1)
+20    USB_D+           (90 Ω diff pair → J_USB1)
+21    J4 Elbow DIR
+26    FORBIDDEN — internal octal flash clock
+33    FORBIDDEN — Flash D4
+34    FORBIDDEN — Flash D5
+35    FORBIDDEN — Octal PSRAM D6/WP
+36    FORBIDDEN — Octal PSRAM D7/HOLD
+37    FORBIDDEN — Octal PSRAM CLK
+38    Servo Wrist Pitch PWM → J_SV1
+39    Servo Wrist Yaw PWM   → J_SV2
+40    Servo Gripper PWM     → J_SV3
+41    Leader UART TX        (921,600 baud → Node1)
+42    Leader UART RX        (921,600 baud ← Node1)
+43    UART0_TXD             (→ CH340K RXD, J_USB2)
+44    UART0_RXD             (← CH340K TXD, J_USB2)
+46    MCU_STRAP_LOW         (10 kΩ pull-down to GND, required)
+47    J4 Elbow PDN_UART     (1 kΩ series + 4.7 kΩ pull-up)
+48    J4 Elbow DIAG         (StallGuard2, 47 kΩ pull-up)
+
+---
+
+7. Connector Reference
+
+Ref        Type                  Signal / Net                     Edge     Rail
+---------- --------------------- -------------------------------- -------- ------
+J_PWR      XT30 RA 2-pin         24V DC in / GND                  West     24V
+J_USB1     USB-C receptacle      Native USB-OTG (D- / D+)          West     —
+J_USB2     USB-C receptacle      CH340K UART debug / flash         West     —
+J_M1       JST XH 2.5mm 4-pin   J1 Base stepper phases            S / E    24V
+J_M2       JST XH 2.5mm 4-pin   J2 Shoulder A phases              S / E    24V
+J_M3       JST XH 2.5mm 4-pin   J3 Shoulder B phases              S / E    24V
+J_M4       JST XH 2.5mm 4-pin   J4 Elbow phases                   S / E    24V
+J_SV1      2.54 mm 3-pin         Wrist Pitch PWM / 6.6V / GND     South    6.6V
+J_SV2      2.54 mm 3-pin         Wrist Yaw PWM / 6.6V / GND       South    6.6V
+J_SV3      2.54 mm 3-pin         Gripper PWM / 6.6V / GND         South    6.6V
+J_CAM1     JST XH 2.5mm 2-pin   Node2 5V / GND                   South    5V
+J_CAM2     JST XH 2.5mm 2-pin   Node3 5V / GND                   South    5V
+J_LDR      2.54 mm 4-pin         Node1 UART TX, RX, GND, spare    South    —
+J_LDR_PWR  JST XH 2.5mm 2-pin   Node1 5V / GND power              South    5V
+J_SD       MicroSD push-pull     SPI: CS / MOSI / SCK / MISO      Interior 3.3V
+
+---
+
+8. Embedded Firmware Architecture
+
+---
+
+Control Loop:
+
+Node0 motor control loop: 400 Hz (Beta Rev2)
+Leader ADC sampling (Node1): 100 Hz
+VLA policy rate (laptop): 5–10 Hz
+
+Firmware environments (PlatformIO):
+
+beta_follower — firmware/beta/follower_esp32/   (Node0, Beta PCB)
+alpha_leader  — firmware/alpha/leader_esp32/    (Node1, shared with Alpha)
+alpha_follower — firmware/alpha/follower_esp32/ (Alpha only)
+
+Build:
+  cd firmware/beta/follower_esp32 && pio run -e beta_follower
+
+Operating Modes (compile-time -DOPERATION_MODE):
+
+Mode 1 — VLA Inference
+  ROS2 AI planner on laptop sends MOTOR_TARGET commands.
+  ESP32 executes trajectory profiling.
+
+Mode 2 — Teleoperation
+  Node1 streams joint angles → Node0 mirrors in real time.
+  Laptop optional (monitoring only).
+
+Data Streams:
+
+Node0 → Laptop (USB-CDC via J_USB1):
+  • joint positions
+  • timestamp
+  • motor state
+  • fault bitmask
+  • telemetry
+
+Node1 → Node0 (UART 921,600 baud):
+  • absolute joint targets (all 6 joints)
+
+Node2 / Node3 → Node0 (ESP-NOW channel 6):
+  • 128-byte histogram feature vectors
+
+Key Firmware Config Files:
+
+firmware/beta/follower_esp32/src/modules/config/board_config.h
+  Beta GPIO pin assignments.
+
+firmware/beta/follower_esp32/src/modules/drivers/tmc2209/tmc2209_config.h
+  Beta motor driver pins, DIAG, PDN_UART.
+
+---
+
+9. Communication Protocols
+
+---
+
+9.1 Safety Heartbeat (ASCII, hardware-agnostic)
+
+ROS2 → ESP32:
+  HB:<source_id>,<seq>\n
+  Rate: ≥ 50 Hz
+
+ESP32 → ROS2:
+  SB:<fault_bitmask>,<motors_en>,<ros2_alive>\n
+  Rate: 10 Hz
+
+Timeout: >500 ms → motors disabled, latched until RESET_FAULT.
+
+---
+
+9.2 JSON Command Protocol (VLA Inference Mode)
+
+Line-delimited, \n framed, max 512 bytes per message.
+
+Commands (ROS2 → ESP32):
+  MOTOR_TARGET      — stepper position targets
+  SERVO_TARGET      — servo angle targets
+  ENABLE_MOTORS     — arm motors
+  RESET_FAULT       — clear latched fault
+  HOME_ZERO         — zero all axes
+  HOME_STALLGUARD   — sensorless homing via StallGuard2
+  TUNE_PID          — adjust control loop gains
+
+---
+
+9.3 Teleoperation UART Protocol
+
+Joint State (Node1 → Node0, 921,600 baud):
+  JOINT_STATE      — leader joint angles → follower mirrors
+
+Telemetry (Node0 → host, USB-CDC):
+  TELEMETRY_STATE  — current joint positions + status
+
+Packet framing:
+  Magic-number scan + CRC-CCITT (poly 0x1021).
+
+---
+
+10. ROS2 Integration (Laptop)
+
+---
+
+Primary nodes:
+
+Node              Role
+----------------- -------------------------------------------
+usb_bridge_node   Owns serial port; HB TX at 50 Hz;
+                  telemetry RX; command TX.
+safety_node       Parses SB: → publishes /sixeyes/is_safe (Bool).
+joint_state_node  Converts /sixeyes/joint_states (deg)
+                  → /joint_states (rad).
+camera_node       USB cam → /camera/image_raw.
+vla_inference_node Stub (not yet implemented).
+
+Data Alignment Strategy (dataset recording):
+
+1. Image received.
+2. Find nearest joint_state timestamp.
+3. Next joint_state = action label.
+
+Minimal rosbag dataset schema:
+
+sensor_msgs/Image
+sensor_msgs/JointState
+custom ActionMsg
+timestamp
+
+---
+
+11. Safety Architecture
+
+---
+
+Safety principles:
+
+• Motors disabled by default at boot.
+• Motion only enabled after heartbeat is established.
+• RESET_FAULT required to re-enable after any fault.
+• Heartbeat must be active before ENABLE_MOTORS accepted.
+
+Heartbeat timeout: 500 ms.
+
+Safety control:
+DRV_EN_ALL (GPIO4) controlled by safety supervisor task.
+Active LOW — pulled LOW by ESP32 to disable all drivers simultaneously.
+
+If laptop communication stops:
+• All drivers disabled via DRV_EN_ALL.
+• Motion halts immediately.
+• State latched until RESET_FAULT received.
+
+DIAG pin monitoring:
+GPIO1 / 2 / 3 / 48 are TMC2209 StallGuard2 / fault flags.
+Open-drain outputs with 47 kΩ pull-ups on PCB.
+Firmware reads these to detect stalls and log fault events.
+
+Beta PCB safety rules (never violate):
+
+• Forbidden GPIOs (26/33/34/35/36/37) must never appear in firmware.
+• DIAG pull-ups (47 kΩ) are mandatory — open-drain without pull-up
+  will read indeterminate logic level.
+• No tantalum capacitors on the 24V motor rail.
+
+---
+
+12. Mechanical Design
+
+---
+
+12.1 Performance Targets
+
+Payload:      500 g at full reach
+Reach:        500 mm (base rotation axis → TCP, arm horizontal)
+Gear ratio:   25:1 cycloidal (all stepper joints)
+Structure:    Fully 3D-printed, no ball bearings
+
+---
+
+12.2 Link Length Ratios (AgileX Piper Reference)
+
+Design reference: AgileX Piper 6-DOF arm
+  Piper upper arm (a3):       285 mm
+  Piper forearm (d4):         251 mm
+  Piper wrist-to-TCP (d6):     91 mm
+  Piper total reach:          627 mm
+  Piper payload:             1500 g
+
+Scale factor for SixEyes (500 mm / 627 mm = 0.798):
+
+  Segment           Piper    SixEyes   Fraction of reach
+  ─────────────────────────────────────────────────────
+  Upper arm         285 mm   225 mm    45.0%
+  Forearm           251 mm   200 mm    40.0%
+  Wrist assembly     91 mm    75 mm    15.0%
+  ─────────────────────────────────────────────────────
+  Total             627 mm   500 mm   100.0%
+
+Link ratios:
+  Upper arm : Forearm : Wrist = 225 : 200 : 75 ≈ 3.00 : 2.67 : 1.00
+  Upper arm : Forearm         = 1.125 : 1
+
+The slightly longer upper arm (vs equal-length links) follows Piper's
+proportions and improves dexterity in the mid-workspace without
+increasing elbow torque demand at full extension.
+
+IK constants (Node0 firmware):
+  L1 (upper arm) = 225 mm
+  L2 (forearm)   = 200 mm
+  2-link planar IK on Node0.
+
+NOTE: The previous Technical Reference (v2) used 140 mm / 140 mm as
+placeholder IK constants. These are superseded by the values above.
+
+---
+
+12.3 Wrist Assembly Breakdown (75 mm total)
+
+Kinematic chain from elbow outward:
+
+  Elbow flange → Wrist Yaw pivot:    23 mm
+  Wrist Yaw → Wrist Pitch pivot:     27 mm
+  Wrist Pitch pivot → TCP:           25 mm
+  ─────────────────────────────────────────
+  Total wrist assembly:              75 mm
+
+Joint order:
+  J1  Base yaw          Stepper + cycloidal 25:1
+  J2  Shoulder pitch    Stepper + cycloidal 25:1  (torque split with J3)
+  J3  Shoulder pitch B  Stepper + cycloidal 25:1  (torque split partner)
+  J4  Elbow pitch       Stepper + cycloidal 25:1
+  J5  Wrist Yaw         MG996R servo  ← FURTHER from gripper
+  J6  Wrist Pitch       MG996R servo  ← CLOSER to gripper
+  J7  Gripper           MG996R servo
+
+---
+
+12.4 Wrist Joint Ordering Rationale
+
+Wrist Pitch (J6) is placed closer to the gripper than Wrist Yaw (J5).
+
+Reason: maximise lifting capacity within MG996R torque limits.
+
+MG996R specifications:
+  Stall torque:      13 kg·cm = 1.27 N·m  (at 6.6V)
+  Operating torque:  ~0.90 N·m (continuous safe)
+
+With Pitch closer to gripper (this design):
+  Load on pitch = gripper assembly (~100 g) + payload (500 g) = 600 g
+  Moment arm    = 25 mm (pitch pivot → TCP)
+  Required τ    = 0.6 kg × 9.81 m/s² × 0.025 m = 0.147 N·m
+  Stall margin  = 1.27 / 0.147 = 8.6×
+  Operating margin = 0.90 / 0.147 = 6.1×
+
+If ordering were reversed (Pitch further from gripper, ~50 mm from TCP):
+  Load on pitch = yaw assembly (~80 g) + gripper (100 g) + payload (500 g) = 680 g
+  Moment arm    = 50 mm
+  Required τ    = 0.68 × 9.81 × 0.050 = 0.334 N·m
+  Stall margin  = 1.27 / 0.334 = 3.8×
+  Operating margin = 0.90 / 0.334 = 2.7×  ← dangerously low at high duty cycle
+
+The current ordering (Yaw → Pitch → Gripper) reduces the pitch torque
+demand by 2.3× relative to the reversed ordering, providing safe margin
+for the MG996R under 500 g payload at maximum reach.
+
+Wrist Yaw (J5) rotates approximately about the forearm's long axis in
+mid-pose; the gravitational loading on yaw is pose-dependent and lower
+than pitch when the arm is extended horizontally for lifting tasks.
+
+---
+
+12.5 Per-Joint Torque Budget (500 g at 500 mm, arm horizontal)
+
+Estimates assume 3D-printed link masses: upper arm ~200 g, forearm ~150 g,
+wrist assembly ~80 g, gripper ~100 g.
+
+Joint   Type        Worst-case τ    Available τ     Margin
+──────────────────────────────────────────────────────────
+J1 Base  Cycloidal  2.7 N·m *       10.0 N·m (est)  3.7×
+J2+J3   Dual cyclo  3.2 N·m         20.0 N·m (est)  6.3×
+J4 Elbow Cycloidal  0.7 N·m         10.0 N·m (est) 14.3×
+J5 Yaw   MG996R     0.22 N·m (est)   1.27 N·m       5.8×
+J6 Pitch MG996R     0.147 N·m        1.27 N·m       8.6×
+──────────────────────────────────────────────────────────
+
+* J1 base torque is inertial/dynamic (arm rotating); gravitational
+  load on base is zero when arm is symmetric. Figure shown is for
+  worst-case deceleration at 400 Hz control rate.
+
+Available cycloidal torque estimates assume NEMA17 holding torque
+~0.4 N·m × 25:1 ratio. Actual value depends on motor current setting
+(TMC2209 RMS current config) and temperature derating.
+
+---
+
+12.6 Shoulder Joint
+
+Two NEMA17 motors are used (J2 and J3).
+
+Reasons:
+• Shoulder (J2/J3) bears the highest sustained gravitational torque
+  in the kinematic chain (full arm + payload at max reach).
+• Torque split across two cycloidal drives improves reliability
+  and halves shaft stress on each motor.
+
+Gear reduction: 25:1 cycloidal per motor (effectively 2 × 10 N·m at joint).
+
+---
+
+13. Mechanical Design Constraints
+
+---
+
+• Cycloidal gearboxes are fully 3D-printed.
+• Software compensates for backlash.
+• StallGuard2 used for sensorless homing (no limit switches required).
+• Wiring routed internally where possible.
+• Camera mounting (Node3) must avoid wrist occlusion.
+• Beta PCB antenna (North Edge): 2 mm overhang past board edge.
+  15×10 mm copper keep-out zone under antenna, all 4 layers.
+
+---
+
+14. Cost and Sustainability Goals
+
+---
+
+Design philosophy:
+
+Reuse hardware wherever possible.
+
+Typical reused components:
+
+• NEMA17 motors from old 3D printers
+• MG996R / MG995 servos
+• ESP32-CAM modules
+
+Structural components:
+
+• Entirely 3D-printed
+
+Target BOM:
+
+~$250 USD
+(excluding prints and laptop)
+
+---
+
+15. System Summary
+
+---
+
+SixEyes Beta Rev2 Platform:
+
+• 6 DOF robotic arm
+• 4× TMC2209-LA stepper drivers (QFN-28, direct on PCB)
+• 3× MG996R class servos
+• Dual shoulder motors (J2 + J3)
+• Node0: ESP32-S3-WROOM-1-N16R8 on 60×60 mm 4-layer PCB
+• 400 Hz deterministic control loop
+• TPS54540B 6.6V buck (servo power)
+• LMR14030S 5.0V buck (logic / peripheral power)
+• MIC5219-3.3 1A LDO (3.3V core logic)
+• Dual USB-C: Native OTG (J_USB1) + CH340K UART (J_USB2)
+• MicroSD experience packet logging (FAT32, circular buffer)
+• NodeMesh: Node1 leader, Node2/Node3 ESP-NOW camera nodes
+• ROS2 AI control stack on laptop
+• StallGuard2 sensorless homing (DIAG on GPIO1/2/3/48)
+
+---
+
+16. Summary Statement
+
+---
+
+SixEyes is a reproducible,
+low-cost research platform for
+Vision–Language–Action robotics.
+
+The embedded system focuses on:
+
+deterministic control,
+hardware safety,
+and real-time actuation.
+
+All intelligence is handled externally
+by a laptop running ROS2 and VLA models.
+
+This separation keeps the hardware simple,
+robust, and accessible to researchers.
+
+This document (Technical Reference 3) reflects Beta Rev2 hardware.
+For Alpha hardware, see docs/hardware/alpha/.
+For PCB design detail, see docs/references/SixEyes_Node0.pdf.
+For firmware config, see firmware/beta/follower_esp32/src/modules/config/.
+
+============================================================

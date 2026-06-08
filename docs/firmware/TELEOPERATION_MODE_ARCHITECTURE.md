@@ -548,7 +548,7 @@ Mode Switching (Runtime, Phase 2+):
 
 ### Current VLA Inference Mode
 ✅ Core implementation active  
-✅ 400 Hz control loop  
+✅ 500 Hz control loop (Alpha) / 400 Hz (Beta)  
 ✅ Safety timeout: 500ms  
 ✅ JSON command protocol  
 ✅ Motor control + homing command support  
