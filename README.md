@@ -35,11 +35,11 @@ Canonical split: [Project Scope And Repo Map](docs/PROJECT_SCOPE_AND_REPO_MAP.md
 
 - 📘 **Getting Started**: [Complete Documentation Index](docs/README.md#quick-start)
 - 🚀 **Deploy Firmware**: [Flashing & Deployment Guide](docs/deployment/FLASHING_AND_DEPLOYMENT.md)
-- 🔌 **Build Hardware**: [Wiring & Assembly Guide](docs/hardware/alpha/WIRING_AND_ASSEMBLY.md)
-- 🧩 **Pinout Matrix (Alpha)**: [Alpha Pinout & Wiring Matrix](docs/hardware/alpha/PINOUT_MATRIX.md)
+- 🔌 **Build Hardware**: [Wiring & Assembly Guide](docs/hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md)
+- 🧩 **Pinout Matrix (Alpha)**: [Alpha Pinout & Wiring Matrix](docs/hardware/legacy/alpha/PINOUT_MATRIX.md)
 - 🗺️ **System Architecture**: [Technical Reference — Beta Rev2](docs/references/SixEyes%20Technical%20Reference%20June%202026.md)
-- 🎮 **Teleoperation Architecture**: [Dual-Mode Firmware Plan](docs/firmware/TELEOPERATION_MODE_ARCHITECTURE.md)
-- ✅ **Validate Hardware**: [Hardware Validation Procedures](docs/hardware/alpha/HARDWARE_VALIDATION.md)
+- 🎮 **Teleoperation Architecture**: [Dual-Mode Firmware Plan](docs/firmware/legacy/TELEOPERATION_MODE_ARCHITECTURE.md)
+- ✅ **Validate Hardware**: [Hardware Validation Procedures](docs/hardware/legacy/alpha/HARDWARE_VALIDATION.md)
 - 🛠️ **Run Tests**: [Testing & Validation Guide](docs/testing/TESTING_AND_VALIDATION_GUIDE.md)
 
 ## Project Overview
@@ -161,7 +161,7 @@ README.md                    (this file)
 
 2. **Build Alpha firmware** (working hardware):
    ```bash
-   cd firmware/alpha/follower_esp32
+   cd firmware/legacy/alpha/follower_esp32
    pio run -e alpha_follower
    pio run -e alpha_follower -t upload
    pio device monitor
@@ -169,7 +169,7 @@ README.md                    (this file)
 
 3. **Build Beta firmware** (for Beta PCB when ready):
    ```bash
-   cd firmware/beta/follower_esp32
+   cd firmware/legacy/beta/follower_esp32
    pio run -e beta_follower
    ```
 
@@ -179,7 +179,7 @@ README.md                    (this file)
 
 1. **Flash leader** (Alpha hardware):
    ```bash
-   cd firmware/alpha/leader_esp32
+   cd firmware/legacy/alpha/leader_esp32
    pio run -e alpha_leader -t upload
    pio device monitor
    ```
@@ -191,7 +191,7 @@ README.md                    (this file)
 
 3. **Flash follower in teleop mode** (`-DOPERATION_MODE=2`):
    ```bash
-   cd firmware/alpha/follower_esp32
+   cd firmware/legacy/alpha/follower_esp32
    pio run -e alpha_follower -t upload
    ```
 
@@ -206,15 +206,15 @@ README.md                    (this file)
    python validate_teleop_log.py --input logs/teleop_session.jsonl
    ```
 
-⏭️ **Next**: [Teleoperation Mode Architecture](docs/firmware/TELEOPERATION_MODE_ARCHITECTURE.md)
+⏭️ **Next**: [Teleoperation Mode Architecture](docs/firmware/legacy/TELEOPERATION_MODE_ARCHITECTURE.md)
 
 ### For Hardware Assembly
 
-1. **Gather components**: [Parts List](docs/hardware/alpha/WIRING_AND_ASSEMBLY.md#parts-list)
-2. **Wire the hardware**: [Wiring Guide](docs/hardware/alpha/WIRING_AND_ASSEMBLY.md)
-3. **Validate**: [Hardware Validation](docs/hardware/alpha/HARDWARE_VALIDATION.md)
+1. **Gather components**: [Parts List](docs/hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md#parts-list)
+2. **Wire the hardware**: [Wiring Guide](docs/hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md)
+3. **Validate**: [Hardware Validation](docs/hardware/legacy/alpha/HARDWARE_VALIDATION.md)
 
-⏭️ **Next**: [Wiring & Assembly Guide](docs/hardware/alpha/WIRING_AND_ASSEMBLY.md)
+⏭️ **Next**: [Wiring & Assembly Guide](docs/hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md)
 
 ### For ROS2 Integration
 
@@ -270,7 +270,7 @@ SB:<fault_bitmask>,<motors_enabled>,<ros2_alive>\n
 {"cmd": "MOTOR_TARGET", "seq": 1, "targets": [0.0, 45.0, 90.0, 135.0]}
 ```
 
-See [JSON Message Protocol](docs/protocols/JSON_MESSAGE_PROTOCOL.md) for full specification.
+See [JSON Message Protocol](docs/protocols/legacy/JSON_MESSAGE_PROTOCOL.md) for full specification.
 
 ## Safety Guarantees
 
@@ -285,13 +285,13 @@ See [JSON Message Protocol](docs/protocols/JSON_MESSAGE_PROTOCOL.md) for full sp
 
 ### Architecture & Design
 - [Technical Reference — Beta Rev2](docs/references/SixEyes%20Technical%20Reference%20June%202026.md)
-- [Teleoperation Mode Architecture](docs/firmware/TELEOPERATION_MODE_ARCHITECTURE.md)
+- [Teleoperation Mode Architecture](docs/firmware/legacy/TELEOPERATION_MODE_ARCHITECTURE.md)
 
 ### Hardware & Deployment
-- [Wiring & Assembly (Alpha)](docs/hardware/alpha/WIRING_AND_ASSEMBLY.md)
-- [Pinout Matrix (Alpha)](docs/hardware/alpha/PINOUT_MATRIX.md)
-- [Leader PCB Design (Beta)](docs/hardware/beta/LEADER_PCB_DESIGN.md)
-- [Hardware Validation](docs/hardware/alpha/HARDWARE_VALIDATION.md)
+- [Wiring & Assembly (Alpha)](docs/hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md)
+- [Pinout Matrix (Alpha)](docs/hardware/legacy/alpha/PINOUT_MATRIX.md)
+- [Leader PCB Design (Beta)](docs/hardware/legacy/beta/LEADER_PCB_DESIGN.md)
+- [Hardware Validation](docs/hardware/legacy/alpha/HARDWARE_VALIDATION.md)
 - [Flashing & Deployment](docs/deployment/FLASHING_AND_DEPLOYMENT.md)
 
 ### Testing & Quality
@@ -299,7 +299,7 @@ See [JSON Message Protocol](docs/protocols/JSON_MESSAGE_PROTOCOL.md) for full sp
 - [CI/CD Pipeline](docs/ops/CI_CD_PIPELINE.md)
 
 ### Communication & ROS2
-- [JSON Message Protocol](docs/protocols/JSON_MESSAGE_PROTOCOL.md)
+- [JSON Message Protocol](docs/protocols/legacy/JSON_MESSAGE_PROTOCOL.md)
 - [ROS2 Integration](docs/ros2/ROS2_INTEGRATION.md)
 
 ### References
@@ -323,39 +323,39 @@ See [JSON Message Protocol](docs/protocols/JSON_MESSAGE_PROTOCOL.md) for full sp
 
 ```bash
 # Alpha follower — build, flash, monitor
-cd firmware/alpha/follower_esp32
+cd firmware/legacy/alpha/follower_esp32
 pio run -e alpha_follower -t upload
 pio device monitor
 
 # Alpha leader — build, flash
-cd firmware/alpha/leader_esp32
+cd firmware/legacy/alpha/leader_esp32
 pio run -e alpha_leader -t upload
 
 # Beta follower — build (hardware in progress)
-cd firmware/beta/follower_esp32
+cd firmware/legacy/beta/follower_esp32
 pio run -e beta_follower
 
 # Beta leader — build (ESP32-C3-MINI-1 integrated PCB)
-cd firmware/beta/leader_esp32
+cd firmware/legacy/beta/leader_esp32
 pio run -e beta_leader
 
 # Unit tests
-cd firmware/alpha/follower_esp32
+cd firmware/legacy/alpha/follower_esp32
 pio test
 ```
 
 ## Key Files
 
 ```
-firmware/alpha/follower_esp32/src/modules/config/board_config.h        Alpha follower GPIO assignments
-firmware/alpha/leader_esp32/src/...                                     Alpha leader GPIO assignments
-firmware/beta/follower_esp32/src/modules/config/board_config.h         Beta follower GPIO assignments
-firmware/beta/follower_esp32/src/modules/drivers/tmc2209/tmc2209_config.h  Beta TMC2209 pins + DIAG
-firmware/beta/leader_esp32/src/...                                      Beta leader GPIO assignments (C3)
+firmware/legacy/alpha/follower_esp32/src/modules/config/board_config.h        Alpha follower GPIO assignments
+firmware/legacy/alpha/leader_esp32/src/...                                     Alpha leader GPIO assignments
+firmware/legacy/beta/follower_esp32/src/modules/config/board_config.h         Beta follower GPIO assignments
+firmware/legacy/beta/follower_esp32/src/modules/drivers/tmc2209/tmc2209_config.h  Beta TMC2209 pins + DIAG
+firmware/legacy/beta/leader_esp32/src/...                                      Beta leader GPIO assignments (C3)
 
-docs/hardware/alpha/PINOUT_MATRIX.md                                   Alpha GPIO quick reference
-docs/hardware/beta/PINOUT_MATRIX.md                                    Beta follower GPIO quick reference
-docs/hardware/beta/LEADER_PCB_DESIGN.md                                Beta leader PCB design (ESP32-C3-MINI-1)
+docs/hardware/legacy/alpha/PINOUT_MATRIX.md                                   Alpha GPIO quick reference
+docs/hardware/legacy/beta/PINOUT_MATRIX.md                                    Beta follower GPIO quick reference
+docs/hardware/legacy/beta/LEADER_PCB_DESIGN.md                                Beta leader PCB design (ESP32-C3-MINI-1)
 docs/references/SixEyes Technical Reference June 2026.md               Authoritative system spec (Beta Rev2)
 
 hardware_assets/pcb_project_files/                                     KiCad PCB project (Beta follower)
@@ -369,7 +369,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for code style, PR process, commit conven
 ## Troubleshooting
 
 - **Compilation issues**: [Build Troubleshooting](docs/deployment/FLASHING_AND_DEPLOYMENT.md#troubleshooting)
-- **Hardware not responding**: [Hardware Validation](docs/hardware/alpha/HARDWARE_VALIDATION.md#troubleshooting)
+- **Hardware not responding**: [Hardware Validation](docs/hardware/legacy/alpha/HARDWARE_VALIDATION.md#troubleshooting)
 - **ROS2 communication problems**: [ROS2 Integration](docs/ros2/ROS2_INTEGRATION.md)
 
 ## Licence

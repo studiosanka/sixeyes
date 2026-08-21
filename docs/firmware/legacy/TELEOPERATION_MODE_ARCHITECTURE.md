@@ -1,6 +1,8 @@
 # SixEyes Teleoperation Mode - Firmware Architecture
 
-**Status**: Architecture + implementation reference for teleoperation firmware mode (Leader-Follower-Laptop)  
+**Status**: LEGACY — describes the Alpha/Beta leader-follower architecture. v1 hardware has no leader arm; future control input is IMU + inverse kinematics. Kept for historical/Alpha-Beta reference only.
+
+**Status (legacy, Alpha/Beta)**: Architecture + implementation reference for teleoperation firmware mode (Leader-Follower-Laptop)  
 **Current scope**: Dual-mode firmware fully wired — compile-time mode selection (`OPERATION_MODE`), JOINT_STATE parsing via UartJsonParser callbacks, TELEMETRY_STATE streaming, 4 of 5 ROS2 nodes implemented  
 **Next phase**: Hardware bring-up on test bench; ROS2 launch file; vla_inference_node implementation
 

@@ -26,9 +26,9 @@ jobs:
       matrix:
         include:
           - target: alpha_follower
-            working_dir: firmware/alpha/follower_esp32
+            working_dir: firmware/legacy/alpha/follower_esp32
           - target: beta_follower
-            working_dir: firmware/beta/follower_esp32
+            working_dir: firmware/legacy/beta/follower_esp32
       fail-fast: false
 
     steps:
@@ -102,9 +102,9 @@ jobs:
       matrix:
         include:
           - target: alpha_follower
-            src_dir: firmware/alpha/follower_esp32/src
+            src_dir: firmware/legacy/alpha/follower_esp32/src
           - target: beta_follower
-            src_dir: firmware/beta/follower_esp32/src
+            src_dir: firmware/legacy/beta/follower_esp32/src
       fail-fast: false
 
     steps:
