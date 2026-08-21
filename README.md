@@ -1,165 +1,141 @@
 # SixEyes — 6-DOF Robotic Arm with ROS2 Integration
 
-An open-source, in-progress robotics platform for a 6-degree-of-freedom arm, spanning ESP32 firmware, ROS2 integration, teleoperation tooling, and hardware bring-up.
+An open-source, in-progress robotics platform for a 6-degree-of-freedom arm, spanning ESP32 firmware, ROS2 integration, and hardware bring-up.
 
-**Repository**: [studiosanka/sixeyes](https://github.com/studiosanka/sixeyes)  
-**NodeMesh subproject** (optional, 4-MCU edge system): [studiosanka/nodemesh](https://github.com/studiosanka/nodemesh)  
-**CycloCad subproject** (cycloidal gear generator): [studiosanka/cyclocad](https://github.com/studiosanka/cyclocad)
+**Repository**: [studiosanka/sixeyes](https://github.com/studiosanka/sixeyes)
+**NodeMesh subproject** (optional, 4-MCU edge system): [studiosanka/nodemesh](https://github.com/studiosanka/nodemesh) — currently targets legacy Alpha/Beta hardware only, not yet compatible with v1
+**CycloCad subproject** (cycloidal gear generator): [studiosanka/cyclocad](https://github.com/studiosanka/cyclocad) — unaffected by the v1 rework
 
 ## Scope Clarity (Read This First)
 
 SixEyes is the standard robotic-arm package.
 
-- **Standard path** (this repo): arm hardware + follower/leader firmware + laptop/ROS2-assisted operation.
-- **Optional path** (NodeMesh repo): 4-MCU edge firmware system with camera nodes and ESP-NOW. Not required for standard SixEyes operation.
-
-Default policy:
-- SD card reader hardware may be present as a compatibility option but is not part of the default runtime flow.
-- ESP32-CAM perception nodes are not part of the standard package.
+- **Standard path** (this repo): arm hardware + distributed joint firmware + laptop/ROS2-assisted operation.
+- **Optional path** (NodeMesh repo): 4-MCU edge firmware system with camera nodes and ESP-NOW. Not required for standard SixEyes operation, and not currently compatible with v1 hardware (see below).
 
 Canonical split: [Project Scope And Repo Map](docs/PROJECT_SCOPE_AND_REPO_MAP.md)
 
-## Hardware Generations
+## Architecture — v1 (Current)
+
+SixEyes v1 is a **major architectural change from Alpha/Beta**: no leader arm, no single monolithic follower MCU. Instead, one Universal Joint PCB design (ESP32-C6-MINI-1, ~42×42mm, 4-layer) is populated four ways and distributed across the arm on a shared CAN bus.
+
+| Node | Populated | Role |
+|---|---|---|
+| Base | Stepper 1 driver, USB-C, CAN master | Bus master, host bridge to laptop/ROS2 |
+| Shoulder L | Stepper 2A driver | CAN node |
+| Shoulder R | Stepper 2B driver | CAN node, inverse-direction logic |
+| Elbow | Stepper 3 driver, 3× servo headers (open-loop) | CAN node, closest hop to wrist/gripper |
+
+- **Bus**: CAN (TWAI), 1 Mbps, linear daisy chain Base → Shoulder L → Shoulder R → Elbow
+- **Position feedback**: SPI magnetic encoder per node (MT6835 / AS5048A) — new in v1, Alpha/Beta had none on the follower side
+- **Control input**: laptop/ROS2 only for now. The leader arm (Alpha/Beta's teleoperation input device) has been eliminated; a future IMU + inverse-kinematics input path is planned but not yet designed.
+- **Status**: hardware spec and CAN protocol are drafted; firmware (`firmware/v1/`) and the KiCad PCB project are not yet started. See [`docs/V1_TODO.md`](docs/V1_TODO.md) for the live task list.
+
+📐 **v1 Hardware Spec**: [Universal Joint PCB — Design Reference](docs/hardware/v1/v1_PCB_Design_Reference.md)
+🚌 **v1 CAN Protocol** (draft): [CAN Message Protocol](docs/protocols/CAN_MESSAGE_PROTOCOL.md)
+📋 **v1 Rework Task List**: [docs/V1_TODO.md](docs/V1_TODO.md)
+
+## Legacy Hardware (Alpha/Beta)
+
+Alpha and Beta are the prior generation: one monolithic follower MCU per arm (ESP32-S3) directly driving all steppers/servos over local GPIO, plus a separate leader-arm MCU streaming potentiometer joint state over UART for teleoperation. **Both are retired in favor of v1** and kept only as a working reference until v1 hardware is fabricated and validated — Alpha remains the last known-good build target in the meantime.
 
 | | Alpha | Beta Rev2 |
 |---|---|---|
 | Form factor | Through-hole DevKit carrier, single-layer protoboard | 60×60 mm 4-layer custom PCB |
 | MCU | ESP32-S3 DevKit | ESP32-S3-WROOM-1-N16R8 (16 MB Flash, 8 MB Octal PSRAM) |
 | Motor drivers | External TMC2209 carrier modules | Direct TMC2209 QFN-28 on PCB |
-| Power | Bench supply / external regulators | Onboard 6.6 V servo buck (TPS54540B) + 5 V logic buck (LMR14030S) + 3.3 V LDO |
-| USB | 1× micro-USB | 2× USB-C (native OTG + CH340K debug/flash) |
 | Control loop | 500 Hz | 400 Hz |
-| Status | Working hardware baseline | PCB in design (KiCad schematic in progress) |
+| Status | Legacy — working, last known-good | Legacy — schematic only, not fabricated |
+
+All Alpha/Beta code, PCB projects, and docs now live under `legacy/` subpaths — see [Legacy Hardware Docs](docs/hardware/legacy/) and [Legacy Firmware Docs](docs/firmware/legacy/). Full specs: [Technical Reference — Beta Rev2 (legacy)](docs/references/SixEyes%20Technical%20Reference%20June%202026.md).
 
 ## Quick Links
 
-- 📘 **Getting Started**: [Complete Documentation Index](docs/README.md#quick-start)
-- 🚀 **Deploy Firmware**: [Flashing & Deployment Guide](docs/deployment/FLASHING_AND_DEPLOYMENT.md)
-- 🔌 **Build Hardware**: [Wiring & Assembly Guide](docs/hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md)
-- 🧩 **Pinout Matrix (Alpha)**: [Alpha Pinout & Wiring Matrix](docs/hardware/legacy/alpha/PINOUT_MATRIX.md)
-- 🗺️ **System Architecture**: [Technical Reference — Beta Rev2](docs/references/SixEyes%20Technical%20Reference%20June%202026.md)
-- 🎮 **Teleoperation Architecture**: [Dual-Mode Firmware Plan](docs/firmware/legacy/TELEOPERATION_MODE_ARCHITECTURE.md)
-- ✅ **Validate Hardware**: [Hardware Validation Procedures](docs/hardware/legacy/alpha/HARDWARE_VALIDATION.md)
+- 📘 **Getting Started**: [Complete Documentation Index](docs/README.md)
+- 📐 **v1 Hardware Spec**: [Universal Joint PCB Design Reference](docs/hardware/v1/v1_PCB_Design_Reference.md)
+- 🚌 **v1 CAN Protocol** (draft): [CAN Message Protocol](docs/protocols/CAN_MESSAGE_PROTOCOL.md)
+- 📋 **v1 Task List**: [docs/V1_TODO.md](docs/V1_TODO.md)
+- 🚀 **Deploy Legacy Firmware**: [Flashing & Deployment Guide](docs/deployment/FLASHING_AND_DEPLOYMENT.md)
+- 🔌 **Build Legacy Hardware**: [Wiring & Assembly Guide (Alpha)](docs/hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md)
 - 🛠️ **Run Tests**: [Testing & Validation Guide](docs/testing/TESTING_AND_VALIDATION_GUIDE.md)
-
-## Project Overview
-
-### System Architecture
-
-```
-┌─────────────────────────────────┐
-│  ROS2 Safety Node (Laptop)      │
-│  • Heartbeat control (50 Hz)    │
-│  • Motion planning              │
-│  • Emergency stop logic         │
-└──────────────┬──────────────────┘
-               │ USB-CDC (ASCII + JSON)
-┌──────────────▼──────────────────┐
-│  ESP32-S3 Follower (Embedded)   │
-│  • 400/500 Hz control loop      │
-│  • Motor drivers (TMC2209)      │
-│  • Servo control (LEDC PWM)     │
-│  • Safety monitoring            │
-└──────────────┬──────────────────┘
-               │ Power + Control
-┌──────────────▼──────────────────┐
-│  Hardware (SixEyes Robot)       │
-│  • 4× NEMA23 steppers (24V)     │
-│  • 3× MG996R/MG995 servos       │
-│  • USB-CDC telemetry            │
-└─────────────────────────────────┘
-```
-
-### Key Features
-
-✅ **Safety-Critical**: Dual heartbeat monitoring with <2.5 ms motor disable latency  
-✅ **Real-Time Control**: 400–500 Hz FreeRTOS deterministic control loop  
-✅ **Extensible**: JSON message protocol for future expansion  
-🚧 **In Active Development**: Beta PCB design in progress; teleoperation and ROS2 integration maturing  
-✅ **Well-Tested**: Unit tests + hardware validation procedures  
-✅ **CI/CD Ready**: GitHub Actions for automated builds and releases  
-
-### Firmware Operation Modes
-
-| Mode | Purpose | Data Path | Status |
-|------|---------|-----------|--------|
-| **VLA Inference** | Execute AI-planned tasks from laptop/ROS2 | Laptop ROS2 → Follower ESP32 | ✅ Active |
-| **Teleoperation** | Stream human-driven leader joint states for mirroring/data collection | Leader ESP32 → Laptop → Follower | ✅ Fully wired (hardware pending) |
-
-### Choose Your Mode First
-
-Before building/flashing, set the follower mode in `platformio.ini`:
-
-```ini
--DOPERATION_MODE=1   # VLA Inference: ROS2 AI planner sends motor targets
--DOPERATION_MODE=2   # Teleoperation: Leader ESP32 streams joint angles → Follower mirrors
-```
 
 ## Repository Structure
 
 ```
 firmware/
-├── alpha/
-│   ├── follower_esp32/      env: alpha_follower  (ESP32-S3 DevKit, 500 Hz)
-│   └── leader_esp32/        env: alpha_leader    (ESP32-C6 SuperMini, 100 Hz ADC)
-└── beta/
-    ├── follower_esp32/      env: beta_follower   (ESP32-S3-WROOM-1-N16R8, 400 Hz)
-    └── leader_esp32/        (shared leader hardware with Alpha)
+├── v1/                       ← Current generation — not yet implemented, see docs/V1_TODO.md
+└── legacy/
+    ├── alpha/
+    │   ├── follower_esp32/    env: alpha_follower  (ESP32-S3 DevKit, 500 Hz)
+    │   └── leader_esp32/      env: alpha_leader    (ESP32-C6 SuperMini, 100 Hz ADC)
+    └── beta/
+        ├── follower_esp32/    env: beta_follower   (ESP32-S3-WROOM-1-N16R8, 400 Hz)
+        └── leader_esp32/      (shared leader hardware with Alpha)
 
-ros2_ws/                     ← ROS2 workspace (runs on laptop)
+ros2_ws/                      ← ROS2 workspace (runs on laptop)
 ├── src/
-│   ├── safety_node/         ✅ Monitors firmware status, publishes /sixeyes/is_safe
-│   ├── vla_inference_node/  🚧 VLA inference stub (in development)
-│   ├── camera_node/         ✅ OpenCV camera → /camera/image_raw
-│   ├── joint_state_node/    ✅ Bridges /sixeyes/joint_states → /joint_states (rad)
-│   └── usb_bridge_node/     ✅ Owns serial port; heartbeat TX, telemetry RX, command TX
+│   ├── safety_node/          Monitors firmware status, publishes /sixeyes/is_safe
+│   ├── vla_inference_node/   VLA inference stub (in development)
+│   ├── camera_node/          OpenCV camera → /camera/image_raw
+│   ├── joint_state_node/     Bridges /sixeyes/joint_states → /joint_states (rad)
+│   └── usb_bridge_node/      Owns serial port; heartbeat TX, telemetry RX, command TX
+                               (targets legacy protocol today; needs CAN-relay rework for v1 — see docs/V1_TODO.md)
 
-simulation/                  ← Gazebo simulation
+simulation/                   ← Gazebo simulation
 ├── models/
 └── launch/
 
-hardware_assets/             ← Mechanical + PCB production files
-├── 3d_print_stl/            (STL files for printed parts)
-├── pcb_project_files/       (KiCad projects)
-│   └── SixEyes Follower PCB Beta/   (Beta Rev2 schematic, in progress)
-└── pcb_latest_gerber/       (Gerber files for fabrication)
+hardware_assets/              ← Mechanical + PCB production files
+├── 3d_print_stl/             (STL files for printed parts)
+├── pcb_project_files/
+│   └── legacy/                (Alpha/Beta Follower + Leader KiCad projects)
+└── pcb_latest_gerber/         (Gerber files for fabrication)
 
-nodemesh/                    ← NodeMesh subproject (studiosanka/nodemesh)
-cyclocad/                    ← CycloCad subproject (studiosanka/cyclocad)
+nodemesh/                     ← NodeMesh subproject (studiosanka/nodemesh)
+cyclocad/                     ← CycloCad subproject (studiosanka/cyclocad)
 
-docs/                        ← Documentation ⭐ START HERE
-├── README.md                (doc navigation index)
-├── firmware/                (implementation guides)
+docs/                         ← Documentation ⭐ START HERE
+├── README.md                 (doc navigation index)
+├── V1_TODO.md                (v1 rework task list)
+├── firmware/
+│   └── legacy/                (Alpha/Beta firmware architecture docs)
 ├── hardware/
-│   ├── alpha/               (Alpha wiring, validation, pinout, PCB design)
-│   └── beta/                (Beta wiring, pinout — from SixEyes_Node0.pdf)
-├── deployment/              (flashing guide)
-├── testing/                 (validation procedures)
-├── protocols/               (message specs)
-├── ros2/                    (ROS2 integration)
-├── ops/                     (CI/CD pipeline)
-└── references/              (datasheets, technical references)
+│   ├── v1/                    (current — Universal Joint PCB spec)
+│   └── legacy/
+│       ├── alpha/              (Alpha wiring, validation, pinout, PCB design)
+│       └── beta/               (Beta wiring, pinout, PCB design)
+├── deployment/                (flashing guide, legacy)
+├── testing/                   (validation procedures)
+├── protocols/
+│   ├── CAN_MESSAGE_PROTOCOL.md      (current, draft)
+│   └── legacy/
+│       └── JSON_MESSAGE_PROTOCOL.md
+├── ros2/                      (ROS2 integration)
+├── ops/                       (CI/CD pipeline)
+└── references/                (datasheets, technical references)
 
-.github/workflows/           ← CI/CD pipelines
-├── platformio-build.yml
+.github/workflows/            ← CI/CD pipelines
+├── platformio-build.yml       (builds legacy Alpha/Beta targets)
 ├── code-quality.yml
 └── release.yml
 
 CONTRIBUTING.md
 LICENSE
-README.md                    (this file)
+README.md                     (this file)
 ```
 
 ## Getting Started
 
-### For Firmware Developers
+### For Firmware Developers (Legacy — current working baseline)
+
+v1 firmware doesn't exist yet (see [docs/V1_TODO.md](docs/V1_TODO.md)). Until then, Alpha is the build target that actually works on real hardware.
 
 1. **Clone**:
    ```bash
    git clone https://github.com/studiosanka/sixeyes.git
    ```
 
-2. **Build Alpha firmware** (working hardware):
+2. **Build Alpha firmware**:
    ```bash
    cd firmware/legacy/alpha/follower_esp32
    pio run -e alpha_follower
@@ -167,7 +143,7 @@ README.md                    (this file)
    pio device monitor
    ```
 
-3. **Build Beta firmware** (for Beta PCB when ready):
+3. **Build Beta firmware** (schematic-only, not fabricated):
    ```bash
    cd firmware/legacy/beta/follower_esp32
    pio run -e beta_follower
@@ -175,40 +151,7 @@ README.md                    (this file)
 
 ⏭️ **Next**: [Flashing & Deployment Guide](docs/deployment/FLASHING_AND_DEPLOYMENT.md)
 
-### For Teleoperation Mode
-
-1. **Flash leader** (Alpha hardware):
-   ```bash
-   cd firmware/legacy/alpha/leader_esp32
-   pio run -e alpha_leader -t upload
-   pio device monitor
-   ```
-
-2. **Capture home pose zero**:
-   ```text
-   HOME_ZERO
-   ```
-
-3. **Flash follower in teleop mode** (`-DOPERATION_MODE=2`):
-   ```bash
-   cd firmware/legacy/alpha/follower_esp32
-   pio run -e alpha_follower -t upload
-   ```
-
-4. **Run laptop bridge**:
-   ```bash
-   cd tools
-   python teleoperation_bridge.py --leader-port COM5 --follower-port COM6 --log-file logs/teleop_session.jsonl
-   ```
-
-5. **Validate captured JSONL**:
-   ```bash
-   python validate_teleop_log.py --input logs/teleop_session.jsonl
-   ```
-
-⏭️ **Next**: [Teleoperation Mode Architecture](docs/firmware/legacy/TELEOPERATION_MODE_ARCHITECTURE.md)
-
-### For Hardware Assembly
+### For Hardware Assembly (Legacy — Alpha)
 
 1. **Gather components**: [Parts List](docs/hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md#parts-list)
 2. **Wire the hardware**: [Wiring Guide](docs/hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md)
@@ -223,10 +166,6 @@ cd ros2_ws
 colcon build
 source install/setup.bash
 
-# Teleoperation mode (4 nodes)
-ros2 launch sixeyes_bringup teleop.launch.py port:=/dev/ttyACM0
-
-# VLA inference mode (5 nodes)
 ros2 launch sixeyes_bringup vla.launch.py port:=/dev/ttyACM0
 ```
 
@@ -237,22 +176,17 @@ ros2 topic echo /sixeyes/is_safe
 
 ⏭️ **Next**: [ROS2 Integration Guide](docs/ros2/ROS2_INTEGRATION.md)
 
-## Technical Specifications
+### For v1 Development
 
-| Feature | Alpha | Beta Rev2 |
-|---------|-------|-----------|
-| **MCU** | ESP32-S3 DevKit (240 MHz) | ESP32-S3-WROOM-1-N16R8 (240 MHz, 8 MB PSRAM) |
-| **Control Loop** | 500 Hz FreeRTOS | 400 Hz FreeRTOS |
-| **Steppers** | 4× NEMA23 via TMC2209 modules | 4× NEMA23 via TMC2209 QFN direct |
-| **Servos** | 3× MG996R | 3× MG996R/MG995 (6.6V rail) |
-| **USB** | 1× micro-USB | 2× USB-C (OTG + CH340K) |
-| **Safety Timeout** | 500 ms heartbeat + <2.5 ms disable | Same |
-| **StallGuard** | Not routed | GPIO1/2/3/48 DIAG pins |
-| **Build Status** | Zero compiler warnings ✅ | In schematic design 🚧 |
+v1 is in the design phase — see [docs/V1_TODO.md](docs/V1_TODO.md) for the current task list and open decisions blocking firmware work (control loop frequency, stall detection strategy, CAN checksum policy, bus-off recovery behavior).
 
 ## Communication Protocols
 
-### ASCII Heartbeat (Safety-Critical)
+### v1 — CAN Bus (draft, not yet implemented)
+
+One shared CAN bus (TWAI, 1 Mbps) carries E-stop, heartbeat, node status, motor/servo targets, and encoder telemetry between Base and the three joint nodes. Full spec: [CAN Message Protocol](docs/protocols/CAN_MESSAGE_PROTOCOL.md).
+
+### Legacy — ASCII Heartbeat + JSON (Alpha/Beta, still real and working)
 
 **ROS2 → ESP32** (≥50 Hz):
 ```
@@ -264,30 +198,41 @@ HB:0,<sequence>\n
 SB:<fault_bitmask>,<motors_enabled>,<ros2_alive>\n
 ```
 
-### JSON Message Protocol
-
 ```json
 {"cmd": "MOTOR_TARGET", "seq": 1, "targets": [0.0, 45.0, 90.0, 135.0]}
 ```
 
-See [JSON Message Protocol](docs/protocols/legacy/JSON_MESSAGE_PROTOCOL.md) for full specification.
+See [JSON Message Protocol (legacy)](docs/protocols/legacy/JSON_MESSAGE_PROTOCOL.md) for full specification.
 
 ## Safety Guarantees
+
+### v1 (draft — see [CAN Message Protocol §5](docs/protocols/CAN_MESSAGE_PROTOCOL.md#5-safety-model--heartbeat-and-e-stop-over-can))
+
+- Two independent timeout domains: bus heartbeat loss (per-node watchdog) and single-node liveness loss (detected by Base)
+- E-stop is the highest-priority CAN ID — wins arbitration against any in-flight frame
+- Target end-to-end disable latency: ≤2.63 ms, matching the legacy <2.5 ms guarantee
+
+### Legacy (Alpha/Beta, implemented)
 
 - **Auto-disable**: Motors off if ROS2 heartbeat lost for >500 ms
 - **Latency**: Motor disable within 1 control loop cycle (~2.5 ms at 400 Hz)
 - **Boot state**: Motors disabled by default; `RESET_FAULT` required after any fault
-- **Heartbeat required**: Must be active before motors can be enabled
 - **Beta DIAG pins**: Open-drain — 47 kΩ pull-ups mandatory on GPIO1/2/3/48
 - **Beta forbidden GPIOs**: 26/33/34/35/36/37 committed to octal PSRAM/flash — never route externally
 
 ## Key Documentation
 
-### Architecture & Design
+### v1 (Current)
+- [Universal Joint PCB — Design Reference](docs/hardware/v1/v1_PCB_Design_Reference.md)
+- [CAN Message Protocol](docs/protocols/CAN_MESSAGE_PROTOCOL.md) (draft)
+- [v1 Rework Task List](docs/V1_TODO.md)
+
+### Legacy — Architecture & Design
 - [Technical Reference — Beta Rev2](docs/references/SixEyes%20Technical%20Reference%20June%202026.md)
 - [Teleoperation Mode Architecture](docs/firmware/legacy/TELEOPERATION_MODE_ARCHITECTURE.md)
+- [Open-Loop Stepper Mitigation Strategies](docs/firmware/legacy/OPEN_LOOP_STEPPER_STRATEGIES.md)
 
-### Hardware & Deployment
+### Legacy — Hardware & Deployment
 - [Wiring & Assembly (Alpha)](docs/hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md)
 - [Pinout Matrix (Alpha)](docs/hardware/legacy/alpha/PINOUT_MATRIX.md)
 - [Leader PCB Design (Beta)](docs/hardware/legacy/beta/LEADER_PCB_DESIGN.md)
@@ -299,68 +244,24 @@ See [JSON Message Protocol](docs/protocols/legacy/JSON_MESSAGE_PROTOCOL.md) for 
 - [CI/CD Pipeline](docs/ops/CI_CD_PIPELINE.md)
 
 ### Communication & ROS2
-- [JSON Message Protocol](docs/protocols/legacy/JSON_MESSAGE_PROTOCOL.md)
+- [JSON Message Protocol (legacy)](docs/protocols/legacy/JSON_MESSAGE_PROTOCOL.md)
 - [ROS2 Integration](docs/ros2/ROS2_INTEGRATION.md)
-
-### References
-- [Technical Reference — Beta Rev2](docs/references/SixEyes%20Technical%20Reference%20June%202026.md)
-- [References Directory](docs/references/) — TMC2209 datasheet, historical technical references
 
 ## Project Status
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| Firmware Core — Alpha | ✅ Stable | 500 Hz control loop, safety heartbeat, teleop wired |
-| Firmware Core — Beta | 🚧 In Progress | 400 Hz, DIAG/StallGuard, beta board_config.h |
-| Beta PCB Schematic | 🚧 In Progress | KiCad, components placed, routing not started |
-| Documentation | ✅ Active | Dual-mode docs current; beta hardware docs growing |
-| Unit Tests | 🟡 Partial | 17 tests pass; teleop path tests needed |
-| CI/CD Pipeline | ✅ Complete | 3 GitHub Actions workflows |
-| Hardware Validation | ✅ Available | Alpha procedures documented |
-| ROS2 Integration | 🟡 Partial | Heartbeat done; teleop ROS nodes need expansion |
-
-## Development Workflow
-
-```bash
-# Alpha follower — build, flash, monitor
-cd firmware/legacy/alpha/follower_esp32
-pio run -e alpha_follower -t upload
-pio device monitor
-
-# Alpha leader — build, flash
-cd firmware/legacy/alpha/leader_esp32
-pio run -e alpha_leader -t upload
-
-# Beta follower — build (hardware in progress)
-cd firmware/legacy/beta/follower_esp32
-pio run -e beta_follower
-
-# Beta leader — build (ESP32-C3-MINI-1 integrated PCB)
-cd firmware/legacy/beta/leader_esp32
-pio run -e beta_leader
-
-# Unit tests
-cd firmware/legacy/alpha/follower_esp32
-pio test
-```
-
-## Key Files
-
-```
-firmware/legacy/alpha/follower_esp32/src/modules/config/board_config.h        Alpha follower GPIO assignments
-firmware/legacy/alpha/leader_esp32/src/...                                     Alpha leader GPIO assignments
-firmware/legacy/beta/follower_esp32/src/modules/config/board_config.h         Beta follower GPIO assignments
-firmware/legacy/beta/follower_esp32/src/modules/drivers/tmc2209/tmc2209_config.h  Beta TMC2209 pins + DIAG
-firmware/legacy/beta/leader_esp32/src/...                                      Beta leader GPIO assignments (C3)
-
-docs/hardware/legacy/alpha/PINOUT_MATRIX.md                                   Alpha GPIO quick reference
-docs/hardware/legacy/beta/PINOUT_MATRIX.md                                    Beta follower GPIO quick reference
-docs/hardware/legacy/beta/LEADER_PCB_DESIGN.md                                Beta leader PCB design (ESP32-C3-MINI-1)
-docs/references/SixEyes Technical Reference June 2026.md               Authoritative system spec (Beta Rev2)
-
-hardware_assets/pcb_project_files/                                     KiCad PCB project (Beta follower)
-hardware_assets/pcb_latest_gerber/                                     Gerber files for fabrication
-```
+| v1 Hardware Spec | ✅ Drafted | Universal Joint PCB design reference complete |
+| v1 CAN Protocol | 🚧 Draft | Open decisions block firmware start — see docs/V1_TODO.md |
+| v1 Firmware | ⬜ Not started | `firmware/v1/joint_node/` not yet scaffolded |
+| v1 PCB | ⬜ Not started | No KiCad project yet |
+| Legacy Firmware — Alpha | ✅ Stable | 500 Hz control loop, safety heartbeat, teleop wired — last known-good |
+| Legacy Firmware — Beta | 🚧 Frozen | 400 Hz, DIAG/StallGuard — not being advanced further |
+| Legacy Beta PCB | 🚧 Frozen | KiCad, components placed, routing not started — not being fabricated |
+| Documentation | ✅ Active | v1 docs current; legacy docs preserved for reference |
+| Unit Tests (legacy) | 🟡 Partial | 17 tests pass on Alpha/Beta |
+| CI/CD Pipeline | ✅ Complete | Builds legacy Alpha/Beta targets |
+| ROS2 Integration | 🟡 Partial | Heartbeat done on legacy protocol; needs CAN-relay rework for v1 |
 
 ## Contributing
 
@@ -400,4 +301,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full usage terms, including what is r
 
 ---
 
-**Last Updated**: June 2026
+**Last Updated**: August 2026 — v1 rework in progress
