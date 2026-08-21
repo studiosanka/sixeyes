@@ -1,8 +1,8 @@
 # SixEyes — Open-Loop Stepper Mitigation Strategies
 
-**Status**: Implemented in Beta firmware (`firmware/beta/follower_esp32/`)  
+**Status**: LEGACY — describes Alpha/Beta firmware only (`firmware/legacy/beta/follower_esp32/`). v1 hardware adds a per-joint SPI position encoder, so open-loop drift mitigation is no longer the primary strategy; see `docs/hardware/v1/v1_PCB_Design_Reference.md`.  
 **Scope**: Documents every strategy added to compensate for the inherent limitations of open-loop stepper control — no shaft encoder, no ground-truth position verification  
-**Related**: [Technical Reference — Beta Rev2](../references/SixEyes%20Technical%20Reference%20June%202026.md) · [Teleoperation Mode Architecture](TELEOPERATION_MODE_ARCHITECTURE.md)
+**Related**: [Technical Reference — Beta Rev2](../../references/SixEyes%20Technical%20Reference%20June%202026.md) · [Teleoperation Mode Architecture (legacy)](TELEOPERATION_MODE_ARCHITECTURE.md)
 
 ---
 

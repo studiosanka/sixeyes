@@ -2,10 +2,12 @@
 
 **Beta Rev2 / NodeMesh Edition**
 
+> **Status: LEGACY.** Beta is superseded by the v1 Universal Joint PCB architecture — see `docs/hardware/v1/v1_PCB_Design_Reference.md` for the current authoritative hardware spec. This document is kept for Alpha/Beta reference only.
+
 > This document reflects Beta Rev2 hardware.
-> For Alpha hardware details see `docs/hardware/alpha/`.
+> For Alpha hardware details see `docs/hardware/legacy/alpha/`.
 > For PCB design detail see `docs/references/SixEyes_Node0.pdf`.
-> For firmware config see `firmware/beta/follower_esp32/src/modules/config/`.
+> For firmware config see `firmware/legacy/beta/follower_esp32/src/modules/config/`.
 
 ---
 
@@ -463,12 +465,12 @@ Rules:
 
 | Environment | Path | Target |
 |---|---|---|
-| `beta_follower` | `firmware/beta/follower_esp32/` | Node0, Beta PCB |
-| `alpha_leader` | `firmware/alpha/leader_esp32/` | Node1, shared with Alpha |
-| `alpha_follower` | `firmware/alpha/follower_esp32/` | Alpha only |
+| `beta_follower` | `firmware/legacy/beta/follower_esp32/` | Node0, Beta PCB |
+| `alpha_leader` | `firmware/legacy/alpha/leader_esp32/` | Node1, shared with Alpha |
+| `alpha_follower` | `firmware/legacy/alpha/follower_esp32/` | Alpha only |
 
 ```bash
-cd firmware/beta/follower_esp32 && pio run -e beta_follower
+cd firmware/legacy/beta/follower_esp32 && pio run -e beta_follower
 ```
 
 **Operating modes** (compile-time `-DOPERATION_MODE`):
@@ -488,8 +490,8 @@ cd firmware/beta/follower_esp32 && pio run -e beta_follower
 
 **Key firmware config files:**
 
-- `firmware/beta/follower_esp32/src/modules/config/board_config.h` — Beta GPIO pin assignments
-- `firmware/beta/follower_esp32/src/modules/drivers/tmc2209/tmc2209_config.h` — Beta motor driver pins, DIAG, PDN_UART
+- `firmware/legacy/beta/follower_esp32/src/modules/config/board_config.h` — Beta GPIO pin assignments
+- `firmware/legacy/beta/follower_esp32/src/modules/drivers/tmc2209/tmc2209_config.h` — Beta motor driver pins, DIAG, PDN_UART
 
 ---
 
@@ -781,4 +783,4 @@ The embedded system focuses on **deterministic control**, **hardware safety**, a
 
 ---
 
-*For Alpha hardware see `docs/hardware/alpha/`. For PCB design detail see `docs/references/SixEyes_Node0.pdf`. For firmware config see `firmware/beta/follower_esp32/src/modules/config/`.*
+*For Alpha hardware see `docs/hardware/legacy/alpha/`. For PCB design detail see `docs/references/SixEyes_Node0.pdf`. For firmware config see `firmware/legacy/beta/follower_esp32/src/modules/config/`.*

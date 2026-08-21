@@ -39,9 +39,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 1.0,
-          "height": 1.7,
-          "width": 1.7
+          "drill": 0.8,
+          "height": 1.27,
+          "width": 2.54
         },
         "silk_line_width": 0.1,
         "silk_text_italic": false,
@@ -50,7 +50,23 @@
         "silk_text_thickness": 0.1,
         "silk_text_upright": false,
         "zones": {
-          "min_clearance": 1.0
+          "border_display_style": 2,
+          "border_hatch_pitch": 0.5,
+          "corner_radius": 0.0,
+          "corner_smoothing": 0,
+          "fill_mode": 0,
+          "hatch_gap": 1.5,
+          "hatch_orientation": 0.0,
+          "hatch_smoothing_level": 0,
+          "hatch_smoothing_value": 0.1,
+          "hatch_thickness": 1.0,
+          "min_clearance": 0.5,
+          "min_island_area": 10.0,
+          "min_thickness": 0.25,
+          "pad_connection": 1,
+          "remove_islands": 0,
+          "thermal_relief_gap": 0.5,
+          "thermal_relief_spoke_width": 0.5
         }
       },
       "diff_pair_dimensions": [],
@@ -472,7 +488,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "SixEyes Follower PCB.kicad_pro",
+    "filename": "Sixeyes Leader PCB Beta.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -495,101 +511,6 @@
         "via_diameter": 0.6,
         "via_drill": 0.3,
         "wire_width": 6
-      },
-      {
-        "bus_width": 12,
-        "clearance": 0.25,
-        "diff_pair_gap": 0.25,
-        "diff_pair_via_gap": 0.25,
-        "diff_pair_width": 0.2,
-        "line_style": 0,
-        "microvia_diameter": 0.3,
-        "microvia_drill": 0.1,
-        "name": "GND_RETURN",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 140,
-        "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 1.2,
-        "tuning_profile": "",
-        "via_diameter": 0.8,
-        "via_drill": 0.4,
-        "wire_width": 6
-      },
-      {
-        "bus_width": 12,
-        "clearance": 0.3,
-        "diff_pair_gap": 0.25,
-        "diff_pair_via_gap": 0.25,
-        "diff_pair_width": 0.2,
-        "line_style": 0,
-        "microvia_diameter": 0.3,
-        "microvia_drill": 0.1,
-        "name": "PWR_24V",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 130,
-        "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 1.0,
-        "tuning_profile": "",
-        "via_diameter": 0.8,
-        "via_drill": 0.4,
-        "wire_width": 6
-      },
-      {
-        "bus_width": 12,
-        "clearance": 0.25,
-        "diff_pair_gap": 0.25,
-        "diff_pair_via_gap": 0.25,
-        "diff_pair_width": 0.2,
-        "line_style": 0,
-        "microvia_diameter": 0.3,
-        "microvia_drill": 0.1,
-        "name": "PWR_3V3_6V6",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 120,
-        "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 0.6,
-        "tuning_profile": "",
-        "via_diameter": 0.8,
-        "via_drill": 0.4,
-        "wire_width": 6
-      },
-      {
-        "bus_width": 12,
-        "clearance": 0.2,
-        "diff_pair_gap": 0.25,
-        "diff_pair_via_gap": 0.25,
-        "diff_pair_width": 0.2,
-        "line_style": 0,
-        "microvia_diameter": 0.3,
-        "microvia_drill": 0.1,
-        "name": "SIGNAL_FINE",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 100,
-        "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 0.25,
-        "tuning_profile": "",
-        "via_diameter": 0.6,
-        "via_drill": 0.3,
-        "wire_width": 6
-      },
-      {
-        "bus_width": 12,
-        "clearance": 0.2,
-        "diff_pair_gap": 0.25,
-        "diff_pair_via_gap": 0.25,
-        "diff_pair_width": 0.2,
-        "line_style": 0,
-        "microvia_diameter": 0.3,
-        "microvia_drill": 0.1,
-        "name": "SIGNAL_STD",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 110,
-        "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 0.3,
-        "tuning_profile": "",
-        "via_diameter": 0.6,
-        "via_drill": 0.3,
-        "wire_width": 6
       }
     ],
     "meta": {
@@ -597,62 +518,13 @@
     },
     "net_colors": null,
     "netclass_assignments": null,
-    "netclass_patterns": [
-      {
-        "netclass": "PWR_24V",
-        "pattern": "^\\+24V_MOTOR$"
-      },
-      {
-        "netclass": "PWR_24V",
-        "pattern": "^J[1-4]_MOTOR_PIN[1-4]$"
-      },
-      {
-        "netclass": "PWR_3V3_6V6",
-        "pattern": "^\\+3V3_LOGIC$"
-      },
-      {
-        "netclass": "PWR_3V3_6V6",
-        "pattern": "^\\+6V6_SERVO$"
-      },
-      {
-        "netclass": "GND_RETURN",
-        "pattern": "^GND$"
-      },
-      {
-        "netclass": "SIGNAL_FINE",
-        "pattern": "^(STEP|DIR)_J[1-4]$"
-      },
-      {
-        "netclass": "SIGNAL_FINE",
-        "pattern": "^PDN_J[1-4]$"
-      },
-      {
-        "netclass": "SIGNAL_FINE",
-        "pattern": "^EN_ALL$"
-      },
-      {
-        "netclass": "SIGNAL_FINE",
-        "pattern": "^SERVO_(WRIST_PITCH|WRIST_YAW|GRIPPER)$"
-      },
-      {
-        "netclass": "SIGNAL_FINE",
-        "pattern": "^UART_LEADER_(RX|TX)$"
-      },
-      {
-        "netclass": "SIGNAL_FINE",
-        "pattern": "^SD_(SCK|MISO|MOSI|CS)$"
-      },
-      {
-        "netclass": "SIGNAL_FINE",
-        "pattern": "^TP_.*$"
-      }
-    ]
+    "netclass_patterns": []
   },
   "pcbnew": {
     "last_paths": {
       "idf": "",
       "netlist": "",
-      "plot": "../../../Follower PCB Plot/",
+      "plot": "",
       "specctra_dsn": "",
       "vrml": ""
     },
@@ -726,26 +598,14 @@
           "label": "Datasheet",
           "name": "Datasheet",
           "show": true
-        },
-        {
-          "group_by": false,
-          "label": "Description",
-          "name": "Description",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "#",
-          "name": "${ITEM_NUMBER}",
-          "show": false
         }
       ],
       "filter_string": "",
       "group_symbols": true,
       "include_excluded_from_bom": true,
-      "name": "",
+      "name": "Default Editing",
       "sort_asc": true,
-      "sort_field": "Footprint"
+      "sort_field": "Reference"
     },
     "bus_aliases": {},
     "connection_grid_size": 50.0,
@@ -783,18 +643,18 @@
     "subpart_id_separator": 0,
     "top_level_sheets": [
       {
-        "filename": "SixEyes Follower PCB.kicad_sch",
-        "name": "SixEyes Follower PCB",
-        "uuid": "d240bcf1-8492-4bb0-bc56-88689ccb56bf"
+        "filename": "Sixeyes Leader PCB Beta.kicad_sch",
+        "name": "Root",
+        "uuid": "892596ff-4723-4b2c-9423-a59c78b8515c"
       }
     ],
-    "used_designators": "J1-24,R1-7,R12-17,C1-25",
+    "used_designators": "U1-2,J1-11,SW1-2",
     "variants": []
   },
   "sheets": [
     [
-      "d240bcf1-8492-4bb0-bc56-88689ccb56bf",
-      "SixEyes Follower PCB"
+      "892596ff-4723-4b2c-9423-a59c78b8515c",
+      "Root"
     ]
   ],
   "text_variables": {},

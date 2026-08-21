@@ -1,5 +1,7 @@
 # JSON Message Protocol for SixEyes UART Communication
 
+**Status**: LEGACY — this is the single-MCU USB-CDC protocol used by Alpha/Beta. v1's distributed CAN-node hardware uses a separate protocol; see `docs/protocols/CAN_MESSAGE_PROTOCOL.md` (once written) for the current spec.
+
 Working reference for the extensible JSON message protocol used in SixEyes firmware for UART-based communication with ROS2 and external systems.
 
 ---

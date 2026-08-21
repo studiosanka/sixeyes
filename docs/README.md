@@ -16,9 +16,9 @@ See: [Project Scope And Repo Map](PROJECT_SCOPE_AND_REPO_MAP.md)
 
 If you want to get running with as little reading as possible:
 
-1. [Wiring & Assembly — Alpha](hardware/alpha/WIRING_AND_ASSEMBLY.md)
+1. [Wiring & Assembly — Alpha](hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md)
 2. [Flashing & Deployment](deployment/FLASHING_AND_DEPLOYMENT.md)
-3. [Hardware Validation — Alpha](hardware/alpha/HARDWARE_VALIDATION.md)
+3. [Hardware Validation — Alpha](hardware/legacy/alpha/HARDWARE_VALIDATION.md)
 
 Then expand to other docs only as needed.
 
@@ -27,32 +27,32 @@ Then expand to other docs only as needed.
 ## Quick Start by Role
 
 ### 🧑‍💻 Firmware Developers
-1. Read: [Teleoperation Mode Architecture](firmware/TELEOPERATION_MODE_ARCHITECTURE.md) — dual-mode design (VLA vs teleop)
+1. Read: [Teleoperation Mode Architecture](firmware/legacy/TELEOPERATION_MODE_ARCHITECTURE.md) — dual-mode design (VLA vs teleop)
 2. Follow: [Flashing & Deployment](deployment/FLASHING_AND_DEPLOYMENT.md) to build and flash
 3. Run: [Testing & Validation Guide](testing/TESTING_AND_VALIDATION_GUIDE.md) to verify code
 
 ### 🎮 Teleoperation Developers
-1. Read: [Teleoperation Mode Architecture](firmware/TELEOPERATION_MODE_ARCHITECTURE.md)
-2. Reference: [JSON Message Protocol](protocols/JSON_MESSAGE_PROTOCOL.md#teleoperation-streaming-messages-phase-2)
-3. Build: `firmware/alpha/leader_esp32` (joint-state streamer, env: `alpha_leader`)
+1. Read: [Teleoperation Mode Architecture](firmware/legacy/TELEOPERATION_MODE_ARCHITECTURE.md)
+2. Reference: [JSON Message Protocol](protocols/legacy/JSON_MESSAGE_PROTOCOL.md#teleoperation-streaming-messages-phase-2)
+3. Build: `firmware/legacy/alpha/leader_esp32` (joint-state streamer, env: `alpha_leader`)
 4. Run bridge: `python tools/teleoperation_bridge.py --leader-port COM5 --follower-port COM6`
 5. Validate: `JOINT_STATE` forwarding + optional JSONL logging
 6. Optional: `python tools/operator_control.py --port COM6 teleop-ready`
 
 ### 🔧 Hardware Integrators — Alpha
-1. Gather parts: [Wiring & Assembly — Alpha](hardware/alpha/WIRING_AND_ASSEMBLY.md#parts-list)
-2. Wire: [Wiring & Assembly — Alpha](hardware/alpha/WIRING_AND_ASSEMBLY.md)
-3. Validate: [Hardware Validation — Alpha](hardware/alpha/HARDWARE_VALIDATION.md)
+1. Gather parts: [Wiring & Assembly — Alpha](hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md#parts-list)
+2. Wire: [Wiring & Assembly — Alpha](hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md)
+3. Validate: [Hardware Validation — Alpha](hardware/legacy/alpha/HARDWARE_VALIDATION.md)
 4. Flash: [Flashing & Deployment](deployment/FLASHING_AND_DEPLOYMENT.md)
 
 ### 🔧 Hardware Integrators — Beta PCB
 1. Read design spec: [Sixeyes Node0 (Follower PCB Beta).txt](references/Sixeyes%20Node0%20(Folloer%20PCB%20Beta).txt) or [SixEyes_Node0.pdf](references/SixEyes_Node0.pdf)
-2. Reference pinout: [Beta Pinout Matrix](hardware/beta/PINOUT_MATRIX.md)
-3. Reference wiring: [Beta Wiring & Assembly](hardware/beta/WIRING_AND_ASSEMBLY.md)
+2. Reference pinout: [Beta Pinout Matrix](hardware/legacy/beta/PINOUT_MATRIX.md)
+3. Reference wiring: [Beta Wiring & Assembly](hardware/legacy/beta/WIRING_AND_ASSEMBLY.md)
 
 ### 🤖 ROS2 Engineers
 1. Read: [ROS2 Integration](ros2/ROS2_INTEGRATION.md) — heartbeat protocol, node architecture, integration details
-2. Reference: [JSON Message Protocol](protocols/JSON_MESSAGE_PROTOCOL.md) for commands
+2. Reference: [JSON Message Protocol](protocols/legacy/JSON_MESSAGE_PROTOCOL.md) for commands
 3. Check: [CI/CD Pipeline](ops/CI_CD_PIPELINE.md) for build automation
 
 ### 🚀 DevOps / Release Engineers
@@ -65,7 +65,7 @@ Then expand to other docs only as needed.
 
 ### 🎮 Firmware Architecture & Design
 
-#### [Teleoperation Mode Architecture](firmware/TELEOPERATION_MODE_ARCHITECTURE.md)
+#### [Teleoperation Mode Architecture](firmware/legacy/TELEOPERATION_MODE_ARCHITECTURE.md)
 - **Contents**: Dual-mode firmware plan, teleoperation protocol, VLA vs teleop comparison, module roadmap
 - **Best For**: Understanding the two operating modes and how leader/follower interact
 - **Read Time**: 15 min
@@ -78,7 +78,7 @@ Then expand to other docs only as needed.
 
 ### 🔌 Hardware & Assembly
 
-#### [Wiring & Assembly — Alpha](hardware/alpha/WIRING_AND_ASSEMBLY.md)
+#### [Wiring & Assembly — Alpha](hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md)
 - **Contents**: Parts list, pinout reference, power distribution, motor/servo wiring
 - **Best For**: Physical Alpha hardware assembly and electrical integration
 - **Read Time**: 30 min
@@ -89,7 +89,7 @@ Then expand to other docs only as needed.
   - Servo connections (LEDC PWM)
   - Power distribution and star grounding
 
-#### [Hardware Validation — Alpha](hardware/alpha/HARDWARE_VALIDATION.md)
+#### [Hardware Validation — Alpha](hardware/legacy/alpha/HARDWARE_VALIDATION.md)
 - **Contents**: Testing procedures, validation checklists, troubleshooting
 - **Best For**: Verifying Alpha hardware is correctly assembled
 - **Read Time**: 20 min (execution ~2 hours full run)
@@ -99,25 +99,25 @@ Then expand to other docs only as needed.
   - Integration tests (heartbeat timeout, servo response)
   - Failure mode testing and recovery
 
-#### [Pinout Matrix — Alpha](hardware/alpha/PINOUT_MATRIX.md)
+#### [Pinout Matrix — Alpha](hardware/legacy/alpha/PINOUT_MATRIX.md)
 - **Contents**: Consolidated pin map for leader ESP32-C6 SuperMini and follower ESP32-S3, 4× TMC2209 channels, servos, UART links, power rails
 - **Best For**: Fast verification of inter-board wiring and GPIO assignments
 - **Read Time**: 8 min
 
-#### [Follower PCB Design — Alpha](hardware/alpha/FOLLOWER_PCB_DESIGN.md)
+#### [Follower PCB Design — Alpha](hardware/legacy/alpha/FOLLOWER_PCB_DESIGN.md)
 - **Contents**: Alpha follower board design details
 - **Best For**: Understanding the Alpha follower hardware design
 
-#### [Leader PCB Design — Alpha](hardware/alpha/LEADER_PCB_DESIGN.md)
+#### [Leader PCB Design — Alpha](hardware/legacy/alpha/LEADER_PCB_DESIGN.md)
 - **Contents**: Alpha leader board design details
 - **Best For**: Understanding the Alpha leader hardware design
 
-#### [Wiring & Assembly — Beta](hardware/beta/WIRING_AND_ASSEMBLY.md)
+#### [Wiring & Assembly — Beta](hardware/legacy/beta/WIRING_AND_ASSEMBLY.md)
 - **Contents**: Beta Rev2 PCB-specific wiring and assembly notes
 - **Best For**: Beta PCB bring-up (when hardware is fabricated)
 - **Status**: 🚧 In progress alongside PCB design
 
-#### [Pinout Matrix — Beta](hardware/beta/PINOUT_MATRIX.md)
+#### [Pinout Matrix — Beta](hardware/legacy/beta/PINOUT_MATRIX.md)
 - **Contents**: Beta Rev2 GPIO table (derived from SixEyes_Node0.pdf design spec)
 - **Best For**: Beta firmware development, schematic cross-checking
 - **Key Info**: Includes forbidden GPIO list (26/33/34/35/36/37 — octal PSRAM/flash)
@@ -154,7 +154,7 @@ Then expand to other docs only as needed.
 
 ### 🛠️ Communication Protocols
 
-#### [JSON Message Protocol](protocols/JSON_MESSAGE_PROTOCOL.md)
+#### [JSON Message Protocol](protocols/legacy/JSON_MESSAGE_PROTOCOL.md)
 - **Contents**: Message format, command types, response types, error handling
 - **Best For**: Building ROS2 nodes or custom applications
 - **Read Time**: 25 min
@@ -199,38 +199,38 @@ Then expand to other docs only as needed.
 
 | File | Contents |
 |---|---|
-| [SixEyes_Node0.pdf](references/SixEyes_Node0.pdf) | Beta Rev2 PCB full design specification (authoritative) |
-| [Sixeyes Node0 (Follower PCB Beta).txt](references/Sixeyes%20Node0%20(Folloer%20PCB%20Beta).txt) | Beta Rev2 design spec — LaTeX source / text form |
-| [SixEyes Technical Reference.txt](references/SixEyes%20Technical%20Reference.txt) | Alpha hardware technical specifications |
-| [SixEyes Technical Reference 2.txt](references/SixEyes%20Technical%20Reference%202.txt) | Extended technical reference |
+| [SixEyes_Node0.pdf](references/SixEyes_Node0.pdf) | Beta Rev2 PCB full design specification (authoritative, legacy) |
+| [Sixeyes Node0 (Follower PCB Beta).txt](references/Sixeyes%20Node0%20(Folloer%20PCB%20Beta).txt) | Beta Rev2 design spec — LaTeX source / text form (legacy) |
+| [SixEyes Technical Reference June 2026.md](references/SixEyes%20Technical%20Reference%20June%202026.md) | Authoritative technical reference (Beta Rev2, legacy) |
 | [tmc2209_datasheet_rev1.09.pdf](references/tmc2209_datasheet_rev1.09.pdf) | TMC2209 official datasheet |
+| [v1 PCB Design Reference](hardware/v1/v1_PCB_Design_Reference.md) | Current authoritative hardware spec (v1 Universal Joint PCB) |
 
 ---
 
 ## Task-Based Navigation
 
 ### "I need to build Alpha hardware"
-1. [Wiring & Assembly — Alpha](hardware/alpha/WIRING_AND_ASSEMBLY.md)
-2. [Hardware Validation — Alpha](hardware/alpha/HARDWARE_VALIDATION.md)
+1. [Wiring & Assembly — Alpha](hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md)
+2. [Hardware Validation — Alpha](hardware/legacy/alpha/HARDWARE_VALIDATION.md)
 3. [Flashing & Deployment](deployment/FLASHING_AND_DEPLOYMENT.md)
 
 ### "I need to understand the Beta PCB design"
 1. [SixEyes_Node0.pdf](references/SixEyes_Node0.pdf) (authoritative spec)
-2. [Beta Pinout Matrix](hardware/beta/PINOUT_MATRIX.md)
-3. [Beta Wiring & Assembly](hardware/beta/WIRING_AND_ASSEMBLY.md)
+2. [Beta Pinout Matrix](hardware/legacy/beta/PINOUT_MATRIX.md)
+3. [Beta Wiring & Assembly](hardware/legacy/beta/WIRING_AND_ASSEMBLY.md)
 
 ### "I need to understand how the firmware works"
-1. [Teleoperation Mode Architecture](firmware/TELEOPERATION_MODE_ARCHITECTURE.md)
-2. [JSON Message Protocol](protocols/JSON_MESSAGE_PROTOCOL.md)
+1. [Teleoperation Mode Architecture](firmware/legacy/TELEOPERATION_MODE_ARCHITECTURE.md)
+2. [JSON Message Protocol](protocols/legacy/JSON_MESSAGE_PROTOCOL.md)
 3. [ROS2 Integration](ros2/ROS2_INTEGRATION.md)
 
 ### "I need to set up ROS2"
 1. [ROS2 Integration](ros2/ROS2_INTEGRATION.md)
-2. [JSON Message Protocol](protocols/JSON_MESSAGE_PROTOCOL.md)
+2. [JSON Message Protocol](protocols/legacy/JSON_MESSAGE_PROTOCOL.md)
 
 ### "I need to run the tests"
 1. [Testing & Validation Guide](testing/TESTING_AND_VALIDATION_GUIDE.md)
-2. [Hardware Validation — Alpha](hardware/alpha/HARDWARE_VALIDATION.md)
+2. [Hardware Validation — Alpha](hardware/legacy/alpha/HARDWARE_VALIDATION.md)
 3. [CI/CD Pipeline](ops/CI_CD_PIPELINE.md)
 
 ### "I need to deploy firmware"
@@ -239,7 +239,7 @@ Then expand to other docs only as needed.
 
 ### "Something's broken"
 1. [Flashing & Deployment — Troubleshooting](deployment/FLASHING_AND_DEPLOYMENT.md#troubleshooting)
-2. [Hardware Validation — Troubleshooting](hardware/alpha/HARDWARE_VALIDATION.md#troubleshooting)
+2. [Hardware Validation — Troubleshooting](hardware/legacy/alpha/HARDWARE_VALIDATION.md#troubleshooting)
 3. [ROS2 Integration — Troubleshooting](ros2/ROS2_INTEGRATION.md#troubleshooting)
 
 ---
@@ -251,32 +251,37 @@ docs/
 ├── README.md                          (this file — navigation index)
 ├── PROJECT_SCOPE_AND_REPO_MAP.md      (canonical repo split and scope boundaries)
 ├── firmware/
-│   └── TELEOPERATION_MODE_ARCHITECTURE.md
+│   └── legacy/
+│       ├── TELEOPERATION_MODE_ARCHITECTURE.md
+│       └── OPEN_LOOP_STEPPER_STRATEGIES.md
 ├── hardware/
-│   ├── alpha/
-│   │   ├── WIRING_AND_ASSEMBLY.md     (Alpha parts list, pinout, wiring)
-│   │   ├── HARDWARE_VALIDATION.md     (Alpha test procedures)
-│   │   ├── PINOUT_MATRIX.md           (Alpha leader + follower GPIO map)
-│   │   ├── FOLLOWER_PCB_DESIGN.md
-│   │   └── LEADER_PCB_DESIGN.md
-│   └── beta/
-│       ├── WIRING_AND_ASSEMBLY.md     (Beta Rev2 PCB wiring — in progress)
-│       └── PINOUT_MATRIX.md           (Beta GPIO map, forbidden pins)
+│   ├── v1/
+│   │   └── v1_PCB_Design_Reference.md (current authoritative hardware spec)
+│   └── legacy/
+│       ├── alpha/
+│       │   ├── WIRING_AND_ASSEMBLY.md     (Alpha parts list, pinout, wiring)
+│       │   ├── HARDWARE_VALIDATION.md     (Alpha test procedures)
+│       │   ├── PINOUT_MATRIX.md           (Alpha leader + follower GPIO map)
+│       │   ├── FOLLOWER_PCB_DESIGN.md
+│       │   └── LEADER_PCB_DESIGN.md
+│       └── beta/
+│           ├── WIRING_AND_ASSEMBLY.md     (Beta Rev2 PCB wiring)
+│           └── PINOUT_MATRIX.md           (Beta GPIO map, forbidden pins)
 ├── deployment/
 │   └── FLASHING_AND_DEPLOYMENT.md
 ├── testing/
 │   └── TESTING_AND_VALIDATION_GUIDE.md
 ├── protocols/
-│   └── JSON_MESSAGE_PROTOCOL.md
+│   └── legacy/
+│       └── JSON_MESSAGE_PROTOCOL.md
 ├── ros2/
 │   └── ROS2_INTEGRATION.md
 ├── ops/
 │   └── CI_CD_PIPELINE.md
 └── references/
-    ├── SixEyes_Node0.pdf              (Beta Rev2 design spec — authoritative)
+    ├── SixEyes_Node0.pdf              (Beta Rev2 design spec, legacy)
     ├── Sixeyes Node0 (Folloer PCB Beta).txt
-    ├── SixEyes Technical Reference.txt
-    ├── SixEyes Technical Reference 2.txt
+    ├── SixEyes Technical Reference June 2026.md
     └── tmc2209_datasheet_rev1.09.pdf
 ```
 
