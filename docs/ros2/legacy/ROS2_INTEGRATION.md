@@ -76,11 +76,7 @@ echo "HB:0,0" > /dev/ttyACM0
 # 5. Stop sending for 500ms — expected: motors disable, SB:1,0,0
 ```
 
-Python heartbeat node:
-```bash
-pip install pyserial
-python tools/ros2_heartbeat_node.py --port /dev/ttyACM0 --hz 50
-```
+For a real ROS2 heartbeat bridge (not a standalone script), run `usb_bridge_node` from `ros2_ws/src/usb_bridge_node/` — it owns the serial port and handles heartbeat TX / status RX as an actual ROS2 node. See the Node architecture section below.
 
 ---
 
