@@ -81,6 +81,11 @@ If you want to get a physical arm running today, this is still Alpha:
 - **Best For**: Understanding the current hardware generation
 - **Status**: Design reference complete; PCB layout not started
 
+#### [Gearbox Torque Budget](hardware/v1/GEARBOX_TORQUE_BUDGET.md)
+- **Contents**: Torque calculation for the 500g/500mm design target, 1:20 vs 1:25 printed cycloidal reduction comparison, and why 1:25 was chosen
+- **Best For**: Anyone selecting steppers/current settings or printing gearboxes
+- **Status**: First-pass estimate — every figure flagged with its own uncertainty pending a real motor and a load-tested gearbox
+
 #### [CAN Message Protocol](protocols/CAN_MESSAGE_PROTOCOL.md)
 - **Contents**: Node addressing, CAN ID allocation, message formats, distributed safety/heartbeat model, E-stop latency budget
 - **Best For**: Understanding how v1 nodes communicate and fail safe
@@ -183,6 +188,16 @@ See v1 section above.
 
 ### 🤖 ROS2 Integration
 
+#### [Raspberry Pi 5 — ROS2 Setup Guide](ros2/RPI5_SETUP_GUIDE.md) — Current
+- **Contents**: ROS2 basics primer, flashing Ubuntu 24.04 to a Pi 5, installing ROS2 Jazzy + Gazebo Harmonic, building the workspace, verification commands
+- **Best For**: Getting a Pi 5 running ROS2 from zero prior ROS2 experience
+- **Status**: Gazebo-simulation target only for now — no physical firmware bridge yet. See [V1_TODO.md](V1_TODO.md) for the virtual-arm build status.
+
+#### `ros2_ws/src/sixeyes_description/` — placeholder URDF/Xacro
+- **Contents**: Kinematic model of the SixEyes arm (waist/shoulder/elbow/wrist-pitch/wrist-yaw/gripper), placeholder link dimensions summing to the 500mm reach design target, joint effort limits from [`docs/hardware/v1/GEARBOX_TORQUE_BUDGET.md`](hardware/v1/GEARBOX_TORQUE_BUDGET.md), plus a `display.launch.py` for RViz-only verification
+- **Best For**: Anyone building the Gazebo sim stack or checking the placeholder geometry before real mechanical CAD lands
+- **Status**: URDF + RViz display launch exist; Gazebo `sim.launch.py` does not yet — see [V1_TODO.md](V1_TODO.md)
+
 #### [ROS2 Integration](ros2/legacy/ROS2_INTEGRATION.md)
 - **Contents**: Heartbeat protocol, node architecture, integration details, quickstart testing
 - **Best For**: Everything ROS2 — safety protocol, node setup, testing
@@ -278,7 +293,8 @@ docs/
 │       └── OPEN_LOOP_STEPPER_STRATEGIES.md
 ├── hardware/
 │   ├── v1/
-│   │   └── v1_PCB_Design_Reference.md (current authoritative hardware spec)
+│   │   ├── v1_PCB_Design_Reference.md (current authoritative hardware spec)
+│   │   └── GEARBOX_TORQUE_BUDGET.md   (500g/500mm torque budget, 1:25 reduction rationale)
 │   └── legacy/
 │       ├── alpha/
 │       │   ├── WIRING_AND_ASSEMBLY.md     (Alpha parts list, pinout, wiring)
@@ -298,6 +314,7 @@ docs/
 │   └── legacy/
 │       └── JSON_MESSAGE_PROTOCOL.md
 ├── ros2/
+│   ├── RPI5_SETUP_GUIDE.md         (current -- ROS2 Jazzy + Gazebo Harmonic on a Pi 5)
 │   └── legacy/
 │       └── ROS2_INTEGRATION.md
 ├── ops/

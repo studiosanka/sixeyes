@@ -72,18 +72,17 @@ firmware/
         ├── follower_esp32/    env: beta_follower   (ESP32-S3-WROOM-1-N16R8, 400 Hz)
         └── leader_esp32/      (shared leader hardware with Alpha)
 
-ros2_ws/                      ← ROS2 workspace (runs on laptop)
+ros2_ws/                      ← ROS2 workspace (runs on laptop, or a Raspberry Pi 5 — see docs/ros2/RPI5_SETUP_GUIDE.md)
 ├── src/
 │   ├── safety_node/          Monitors firmware status, publishes /sixeyes/is_safe
 │   ├── vla_inference_node/   VLA inference stub (in development)
 │   ├── camera_node/          OpenCV camera → /camera/image_raw
 │   ├── joint_state_node/     Bridges /sixeyes/joint_states → /joint_states (rad)
-│   └── usb_bridge_node/      Owns serial port; heartbeat TX, telemetry RX, command TX
-                               (targets legacy protocol today; needs CAN-relay rework for v1 — see docs/V1_TODO.md)
-
-simulation/                   ← Gazebo simulation
-├── models/
-└── launch/
+│   ├── usb_bridge_node/      Owns serial port; heartbeat TX, telemetry RX, command TX
+│   │                          (targets legacy protocol today; needs CAN-relay rework for v1 — see docs/V1_TODO.md)
+│   └── sixeyes_description/  Placeholder URDF/Xacro + RViz display launch (Gazebo virtual arm, in progress)
+                               (Gazebo sim itself lives here too, in sixeyes_bringup's sim.launch.py —
+                                no separate top-level simulation/ folder)
 
 hardware_assets/              ← Mechanical + PCB production files
 ├── 3d_print_stl/             (STL files for printed parts)

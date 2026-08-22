@@ -1,0 +1,36 @@
+# ros2_control controller config for the SixEyes Gazebo virtual arm.
+# Loaded by the gz_ros2_control plugin block in urdf/sixeyes.urdf.xacro.
+#
+# update_rate matches CONTROL_LOOP_HZ = 250 from the resolved v1 control-loop
+# decision (docs/protocols/CAN_MESSAGE_PROTOCOL.md section 5) -- the sim runs
+# its control update at the same rate real firmware is meant to, so behavior
+# differences later are more likely to be real, not an artifact of mismatched
+# timing between sim and hardware.
+
+controller_manager:
+  ros__parameters:
+    update_rate: 250
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    arm_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+arm_controller:
+  ros__parameters:
+    joints:
+      - waist_joint
+      - shoulder_joint
+      - elbow_joint
+      - wrist_pitch_joint
+      - wrist_yaw_joint
+      - gripper_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    state_publish_rate: 50.0
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: true
