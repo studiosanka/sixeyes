@@ -11,29 +11,37 @@ Tracks the v1 Universal Joint PCB rework: eliminating the leader arm (future IMU
 - [x] Deleted 3 stale duplicate `SixEyes Technical Reference*.txt` files; kept June 2026 `.md`, marked LEGACY
 - [x] Repo-wide link repair (README.md, docs/README.md, docs/PROJECT_SCOPE_AND_REPO_MAP.md, technical reference doc) — verified zero remaining broken references
 - [x] Drafted `docs/protocols/CAN_MESSAGE_PROTOCOL.md` — node addressing, CAN ID allocation, message formats, dual-timeout safety model, E-stop latency budget
-
-## Open decisions (blocking firmware work — see CAN protocol doc §6)
-
-- [ ] StallGuard-equivalent sensorless stall detection: keep alongside new SPI encoders, or fully replace with encoder-vs-command divergence?
-- [ ] v1 control loop frequency — not yet fixed anywhere (Alpha=500Hz, Beta=400Hz precedent). Sets the E-stop latency budget.
-- [ ] App-layer checksum on top of CAN's built-in 15-bit CRC — needed given safety-critical E-STOP/MOTOR_TARGET frames, or is transport-layer CRC sufficient?
-- [ ] TWAI bus-off recovery behavior: stay disabled requiring manual recovery, or attempt auto-recovery?
+- [x] Resolved all 4 blocking design decisions (2026-08-22) — see CAN protocol doc §6 for full rationale:
+  - Stall detection: StallGuard for homing only; runtime stall/fault = encoder-vs-commanded-position divergence
+  - Control loop frequency: **250 Hz** (down from legacy 400/500 Hz — CAN bus bandwidth + single-core ESP32-C6 headroom); E-stop handling decoupled from control loop tick (ISR-driven)
+  - Checksum: no app-layer checksum, rely on CAN's CRC-15 + existing `seq` fields — **note: revisit if a formal functional-safety certification (IEC 61508/ISO 13849) is ever pursued for this bus, which would require diverse redundancy, not just CAN's CRC**
+  - Bus-off recovery: manual/power-cycle only, no auto-recovery (Base's node-liveness timeout fires a bus-wide E-STOP regardless)
+- [x] Rewrote root `README.md` and `docs/README.md` around v1 as primary generation, Alpha/Beta collapsed into "Legacy Hardware" sections
+- [x] Fixed `.gitignore` UTF-16 encoding corruption (bare `*` pattern was silently matching everything)
+- [x] Found and fixed a stale doc hiding outside `legacy/`: `docs/ros2/ROS2_INTEGRATION.md` claimed "hardware-agnostic" but documents the legacy ASCII/JSON protocol only — moved to `docs/ros2/legacy/ROS2_INTEGRATION.md` with a LEGACY banner, all links repaired
+- [x] Scaffolded `firmware/v1/joint_node/` — one PlatformIO project, 4 envs (`v1_base`/`v1_shoulder_l`/`v1_shoulder_r`/`v1_elbow`) selected via `-DJOINT_NODE_ID=N`. **All 4 environments build clean** (verified with `pio run -e <env>` for each, ESP32-C6). See `firmware/v1/joint_node/docs/README.md` for exactly what's real vs. stubbed.
+  - Reused from legacy Beta: TMC2209 driver (unchanged, already generic over driver count), servo_manager (open-loop PWM math is generation-agnostic), logging util
+  - New: CAN/TWAI driver + protocol structs matching CAN_MESSAGE_PROTOCOL.md exactly, dual-timeout safety task, ISR-decoupled E-stop handler, encoder driver interface (stub), motor controller with encoder-divergence stall check (stub), Base-only USB bridge (stub)
+  - Two real platform bugs caught by build-testing (not scaffold logic, ESP32-S3→C6 + arduino-esp32 core version differences): TMC2209 UART defaulted to `Serial2` which doesn't exist on C6 (fixed to `Serial1`); servo PWM used the old channel-based LEDC API (`ledcSetup`/`ledcAttachPin`) which this core version replaced with a pin-keyed API (`ledcAttach`/`ledcWrite`)
+  - Dropped (all legacy-only now): leader-comms code, closed-loop servo feedback, USB-CDC JSON follower protocol
+  - **Stubbed, not real yet**: encoder register-level driver (blocked on MT6835 vs AS5048A part selection), step generation, homing sequence, USB↔CAN JSON translation, deterministic FreeRTOS-scheduled control loop (currently a placeholder `delay()` pace in `loop()`), true ISR-driven CAN RX dispatch (currently polled from `loop()`, not from TWAI's actual interrupt path)
+- [ ] New KiCad project: `hardware_assets/pcb_project_files/SixEyes Joint PCB v1/` — one board design, 4 populated variants (Base/Shoulder L/Shoulder R/Elbow) per BOM DNP table in v1 hardware doc
 
 ## Next up
 
-- [ ] Resolve open decisions above
-- [ ] Scaffold `firmware/v1/joint_node/` — single PlatformIO project, role selected by `-DJOINT_NODE_ID=N` build flag
-  - [ ] Reuse from Beta follower: TMC2209 driver, config patterns
-  - [ ] New: CAN/TWAI driver + node protocol module (per CAN_MESSAGE_PROTOCOL.md)
-  - [ ] New: SPI encoder driver (MT6835 / AS5048A)
-  - [ ] New: open-loop servo PWM (Elbow only, subset of existing servo_control)
-  - [ ] New: distributed safety/heartbeat module (bus heartbeat + node liveness, dual timeout model)
-  - [ ] Drop: leader-comms code, closed-loop servo feedback, USB-CDC JSON follower protocol (all legacy-only now)
-- [ ] New KiCad project: `hardware_assets/pcb_project_files/SixEyes Joint PCB v1/` — one board design, 4 populated variants (Base/Shoulder L/Shoulder R/Elbow) per BOM DNP table in v1 hardware doc
+- [ ] Wire the CAN RX dispatch onto TWAI's actual interrupt path (or a high-priority pinned FreeRTOS task) instead of the current polled `loop()` call — needed to actually hit the ISR-driven E-stop latency budget in CAN_MESSAGE_PROTOCOL.md §5, not just approximate it
+- [ ] Port a `MotorControlScheduler`-equivalent (deterministic FreeRTOS task at `CONTROL_LOOP_HZ`) — `loop()` currently paces itself with `delay()`, not a real timing guarantee
+- [ ] Implement `encoder_driver.cpp` once MT6835 vs AS5048A is chosen (blocks real stall detection and `ENCODER_TELEMETRY`)
+- [ ] Implement `motor_controller.cpp` step generation and homing sequence
+- [ ] Implement `usb_bridge.cpp` JSON↔CAN translation (pairs with the `usb_bridge_node` ROS2 rework below)
+- [ ] Bench-tune `MotorController::STALL_DIVERGENCE_THRESHOLD_DEG` once encoder units/gear ratio are known
+- [ ] Resolve the TMC2209 EN pin placeholder in `tmc2209_config.h` (v1 hardware doc §3 pin map doesn't define one yet) once the KiCad schematic exists
+- [ ] Verify GPIO4/5 (used for CAN TX/RX) against the ESP32-C6 TRM boot-config table before PCB layout — flagged as open since the original hardware doc, not yet re-verified
+- [ ] Add a `test/` directory once real logic lands, following legacy's `MockSerial`/`MockGPIO`/`MockTimer` pattern
 - [ ] `usb_bridge_node` (ROS2): rework to a Base-only USB link; Base translates ROS2 JSON/ASCII commands to CAN fan-out (see CAN protocol doc §1)
 - [ ] `joint_state_node` / `safety_node`: update message assumptions once CAN protocol is implemented and Base-side translation exists
-- [ ] Root `README.md` + `docs/README.md`: rewrite around v1 as primary generation, collapse Alpha/Beta into a single "Legacy Hardware" section instead of side-by-side comparison
 - [ ] `docs/PROJECT_SCOPE_AND_REPO_MAP.md`: add NodeMesh compatibility note — "targets legacy Alpha/Beta hardware; not yet compatible with v1's distributed CAN architecture"
+- [ ] Bench-validate the 250 Hz control loop choice and ISR-driven E-stop latency figures against real ESP32-C6 hardware once firmware exists; revisit rate upward if headroom allows
 - [ ] Consider merging `docs/README.md` + `docs/PROJECT_SCOPE_AND_REPO_MAP.md` into one index (deferred from initial cleanup pass)
 
 ## Deferred (not in scope until IMU+IK exists)

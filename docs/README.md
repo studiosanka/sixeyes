@@ -62,7 +62,7 @@ If you want to get a physical arm running today, this is still Alpha:
 3. Reference wiring: [Beta Wiring & Assembly](hardware/legacy/beta/WIRING_AND_ASSEMBLY.md)
 
 ### 🤖 ROS2 Engineers
-1. Read: [ROS2 Integration](ros2/ROS2_INTEGRATION.md) — heartbeat protocol, node architecture, integration details (legacy protocol; CAN-relay rework for v1 is pending, see [V1_TODO.md](V1_TODO.md))
+1. Read: [ROS2 Integration](ros2/legacy/ROS2_INTEGRATION.md) — heartbeat protocol, node architecture, integration details (legacy protocol; CAN-relay rework for v1 is pending, see [V1_TODO.md](V1_TODO.md))
 2. Reference: [JSON Message Protocol (legacy)](protocols/legacy/JSON_MESSAGE_PROTOCOL.md) for current commands, or [CAN Message Protocol](protocols/CAN_MESSAGE_PROTOCOL.md) for the v1 design
 3. Check: [CI/CD Pipeline](ops/CI_CD_PIPELINE.md) for build automation
 
@@ -183,7 +183,7 @@ See v1 section above.
 
 ### 🤖 ROS2 Integration
 
-#### [ROS2 Integration](ros2/ROS2_INTEGRATION.md)
+#### [ROS2 Integration](ros2/legacy/ROS2_INTEGRATION.md)
 - **Contents**: Heartbeat protocol, node architecture, integration details, quickstart testing
 - **Best For**: Everything ROS2 — safety protocol, node setup, testing
 - **Read Time**: 25 min
@@ -243,10 +243,10 @@ See v1 section above.
 ### "I need to understand how the legacy firmware works"
 1. [Teleoperation Mode Architecture](firmware/legacy/TELEOPERATION_MODE_ARCHITECTURE.md)
 2. [JSON Message Protocol](protocols/legacy/JSON_MESSAGE_PROTOCOL.md)
-3. [ROS2 Integration](ros2/ROS2_INTEGRATION.md)
+3. [ROS2 Integration](ros2/legacy/ROS2_INTEGRATION.md)
 
 ### "I need to set up ROS2"
-1. [ROS2 Integration](ros2/ROS2_INTEGRATION.md)
+1. [ROS2 Integration](ros2/legacy/ROS2_INTEGRATION.md)
 2. [JSON Message Protocol (legacy)](protocols/legacy/JSON_MESSAGE_PROTOCOL.md) or [CAN Message Protocol (v1, draft)](protocols/CAN_MESSAGE_PROTOCOL.md)
 
 ### "I need to run the tests"
@@ -261,7 +261,7 @@ See v1 section above.
 ### "Something's broken"
 1. [Flashing & Deployment — Troubleshooting](deployment/FLASHING_AND_DEPLOYMENT.md#troubleshooting)
 2. [Hardware Validation — Troubleshooting](hardware/legacy/alpha/HARDWARE_VALIDATION.md#troubleshooting)
-3. [ROS2 Integration — Troubleshooting](ros2/ROS2_INTEGRATION.md#troubleshooting)
+3. [ROS2 Integration — Troubleshooting](ros2/legacy/ROS2_INTEGRATION.md#troubleshooting)
 
 ---
 
@@ -298,7 +298,8 @@ docs/
 │   └── legacy/
 │       └── JSON_MESSAGE_PROTOCOL.md
 ├── ros2/
-│   └── ROS2_INTEGRATION.md
+│   └── legacy/
+│       └── ROS2_INTEGRATION.md
 ├── ops/
 │   └── CI_CD_PIPELINE.md
 └── references/

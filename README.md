@@ -174,7 +174,7 @@ ros2 topic echo /sixeyes/firmware_status
 ros2 topic echo /sixeyes/is_safe
 ```
 
-⏭️ **Next**: [ROS2 Integration Guide](docs/ros2/ROS2_INTEGRATION.md)
+⏭️ **Next**: [ROS2 Integration Guide](docs/ros2/legacy/ROS2_INTEGRATION.md)
 
 ### For v1 Development
 
@@ -245,7 +245,7 @@ See [JSON Message Protocol (legacy)](docs/protocols/legacy/JSON_MESSAGE_PROTOCOL
 
 ### Communication & ROS2
 - [JSON Message Protocol (legacy)](docs/protocols/legacy/JSON_MESSAGE_PROTOCOL.md)
-- [ROS2 Integration](docs/ros2/ROS2_INTEGRATION.md)
+- [ROS2 Integration](docs/ros2/legacy/ROS2_INTEGRATION.md)
 
 ## Project Status
 
@@ -271,7 +271,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for code style, PR process, commit conven
 
 - **Compilation issues**: [Build Troubleshooting](docs/deployment/FLASHING_AND_DEPLOYMENT.md#troubleshooting)
 - **Hardware not responding**: [Hardware Validation](docs/hardware/legacy/alpha/HARDWARE_VALIDATION.md#troubleshooting)
-- **ROS2 communication problems**: [ROS2 Integration](docs/ros2/ROS2_INTEGRATION.md)
+- **ROS2 communication problems**: [ROS2 Integration](docs/ros2/legacy/ROS2_INTEGRATION.md)
 
 ## Licence
 
