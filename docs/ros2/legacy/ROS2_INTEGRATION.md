@@ -1,6 +1,8 @@
 # ROS2 Integration Guide
 
-Covers the heartbeat safety protocol and ROS2 node architecture for SixEyes. Hardware-agnostic — applies to both Alpha and Beta.
+**Status**: LEGACY — describes the ASCII heartbeat (`HB:`/`SB:`) + JSON protocol used by Alpha/Beta only. v1's distributed CAN-node hardware needs a CAN-relay rework of `usb_bridge_node`; see `docs/protocols/CAN_MESSAGE_PROTOCOL.md` and `docs/V1_TODO.md`.
+
+Covers the heartbeat safety protocol and ROS2 node architecture for legacy SixEyes hardware. Applies to both Alpha and Beta.
 
 ---
 
