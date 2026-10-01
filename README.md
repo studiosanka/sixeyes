@@ -1,6 +1,8 @@
-# SixEyes — 6-DOF Robotic Arm with ROS2 Integration
+# SixEyes
 
-An open-source, in-progress robotics platform for a 6-degree-of-freedom arm, spanning ESP32 firmware, ROS2 integration, and hardware bring-up.
+**A ~S$250 6-DOF robotic arm with 500 g @ 500 mm capability.**
+
+An open-source, in-progress robotics platform: a 5-DOF arm plus a gripper, spanning ESP32 firmware, ROS2 integration, and hardware bring-up. The ~S$250 figure is the whole-arm build budget (prints, mechanics and electronics; PSU and compute excluded), and 500 g at 500 mm is the design target.
 
 **Repository**: [studiosanka/sixeyes](https://github.com/studiosanka/sixeyes)
 **NodeMesh subproject** (optional, 4-MCU edge system): [studiosanka/nodemesh](https://github.com/studiosanka/nodemesh) — currently targets legacy Alpha/Beta hardware only, not yet compatible with v1
