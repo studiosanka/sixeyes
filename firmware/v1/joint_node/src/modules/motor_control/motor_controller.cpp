@@ -12,8 +12,9 @@ MotorController &MotorController::instance() {
 void MotorController::init() {
   TMC2209Driver::instance().init();
   TMC2209Driver::instance().configureMotor(0);
-  // Motors start disabled -- CanSafetyTask::emergencyDisable() / boot-state
-  // rule in can_safety_task.cpp governs when this becomes true.
+  // Motors start disabled (TMC2209Driver::init() holds EN high) --
+  // CanSafetyTask / boot-state rule in can_safety_task.cpp governs when
+  // enable() is called.
   enabled_ = false;
 }
 
@@ -28,14 +29,17 @@ void MotorController::update() {
 
   // Stall/fault check: encoder-vs-commanded divergence (§4.3a). Not
   // StallGuard -- StallGuard is homing-only, see startHoming() below.
+  // Always read so the encoder can recover from a transient I2C fault;
+  // hasFault() reports whether this reading can be trusted.
+  int32_t counts = EncoderDriver::instance().readPosition();
   if (!EncoderDriver::instance().hasFault()) {
-    int32_t raw = EncoderDriver::instance().readPosition();
-    // TODO: raw encoder counts -> degrees conversion depends on final
-    // encoder part (MT6835 vs AS5048A) and gear ratio -- not implemented,
-    // see encoder_driver.cpp. Divergence check below is a placeholder using
-    // raw counts directly, which is almost certainly the wrong scale.
-    float encoder_deg_placeholder = static_cast<float>(raw);
-    float divergence = fabsf(encoder_deg_placeholder - target_position_deg_);
+    // TODO: counts -> joint degrees still needs the mechanical decision of
+    // where the magnet sits (motor shaft vs. 1:25 gearbox output) and, if on
+    // the motor shaft, the 1:25 ratio. countsToDegrees() gives degrees of the
+    // magnet's own shaft only, so this divergence is only correct for an
+    // output-shaft magnet until that is settled. Not bench-tuned either.
+    float encoder_deg = EncoderDriver::countsToDegrees(counts);
+    float divergence = fabsf(encoder_deg - target_position_deg_);
     stall_detected_ = divergence > STALL_DIVERGENCE_THRESHOLD_DEG;
   }
 }
@@ -59,10 +63,16 @@ bool MotorController::isHomingComplete() const { return homing_complete_; }
 
 bool MotorController::isStallDetected() const { return stall_detected_; }
 
+void MotorController::enable() {
+  TMC2209Driver::instance().setEnabled(0, true);
+  enabled_ = true;
+}
+
 void MotorController::disable() {
+  // Cut driver power stage first, then clear the flag. Safe from the E-stop
+  // path: this is a single GPIO write, no UART traffic.
+  TMC2209Driver::instance().setEnabled(0, false);
   enabled_ = false;
-  // TODO: assert TMC2209 EN pin once TMC2209_EN_PINS is wired to a real
-  // GPIO -- see tmc2209_config.h placeholder note.
 }
 
 bool MotorController::isEnabled() const { return enabled_; }

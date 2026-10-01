@@ -7,13 +7,18 @@
 class TMC2209Driver {
 public:
   static TMC2209Driver &instance();
-  // Initialize UART and PDN pins; uses Serial1 by default.
+  // Initialize UART and EN pin; uses Serial1 by default. The driver starts
+  // disabled (EN high) -- call setEnabled(i, true) to energize the motor.
   // NOTE: adapted from legacy (ESP32-S3, which defaults to Serial2) --
   // ESP32-C6 only exposes Serial0/Serial1, not Serial2. This is a genuine
   // platform difference caught by build-testing this scaffold, not a design
   // choice; single-wire PDN_UART only needs one HardwareSerial instance
   // regardless of which one it is.
   void init(HardwareSerial &uart = Serial1);
+
+  // === Enable ===
+  // Drives the active-low EN pin. Safe to call from the safety path.
+  void setEnabled(uint8_t motor_index, bool enabled);
 
   // === Configuration ===
   void configureMotor(uint8_t motor_index, uint16_t rms_current_ma = 800);
@@ -63,7 +68,4 @@ private:
   TMC2209Stepper *drivers[TMC2209_NUM_DRIVERS];
   uint16_t last_current_ma_[TMC2209_NUM_DRIVERS] =
       {}; // Track configured current
-
-  void selectDriver(uint8_t motor_index);
-  void deselectAll();
 };

@@ -45,7 +45,7 @@ struct NodeStatusFrame {
   uint8_t  fault_bitmask;
   uint8_t  motors_enabled;   // 0/1
   uint8_t  stall_detected;   // 0/1 — encoder-vs-command divergence, see §4.3a
-  int32_t  encoder_position; // raw SPI encoder counts
+  int32_t  encoder_position; // raw AS5600 encoder counts
 }; // 7 bytes
 
 struct MotorTargetFrame {
@@ -61,7 +61,7 @@ struct ServoTargetFrame {
 }; // 7 bytes
 
 struct EncoderTelemetryFrame {
-  int32_t  position;          // raw SPI encoder counts
+  int32_t  position;          // raw AS5600 encoder counts
   int16_t  velocity_estimate; // counts/tick
   uint16_t seq;
 }; // 8 bytes

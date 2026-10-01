@@ -14,13 +14,13 @@ See: [Project Scope And Repo Map](PROJECT_SCOPE_AND_REPO_MAP.md)
 
 ## Read This First — v1
 
-v1 replaces Alpha/Beta's leader-follower architecture with one Universal Joint PCB design (ESP32-C6-MINI-1) populated four ways — Base, Shoulder L, Shoulder R, Elbow — on a shared CAN bus. No leader arm; future control input is IMU + inverse kinematics (not yet designed).
+v1 replaces Alpha/Beta's leader-follower architecture with one Universal Joint PCB design (ESP32-C6 Super Mini module on sockets, through-hole) populated four ways — Base, Shoulder L, Shoulder R, Elbow — on a shared CAN bus. No leader arm; future control input is IMU + inverse kinematics (not yet designed).
 
-1. [Universal Joint PCB — Design Reference](hardware/v1/v1_PCB_Design_Reference.md) — hardware spec
+1. [Universal Joint PCB — Design Reference v1.2](hardware/v1/v1.2_PCB_Design_Reference.md) — hardware spec ([BOM CSV](hardware/v1/v1.2_BOM_LCSC.csv); v1.1 kept at [v1_PCB_Design_Reference.md](hardware/v1/v1_PCB_Design_Reference.md))
 2. [CAN Message Protocol](protocols/CAN_MESSAGE_PROTOCOL.md) — protocol design (draft)
 3. [V1_TODO.md](V1_TODO.md) — live task list and open decisions
 
-v1 firmware and PCB layout are not started yet. Everything below this point is either legacy reference material or generation-agnostic (ROS2, testing, CI/CD).
+v1 firmware builds for all four roles but is partly stubbed and untested on hardware; PCB layout is not started. Everything below this point is either legacy reference material or generation-agnostic (ROS2, testing, CI/CD).
 
 ---
 
@@ -37,7 +37,7 @@ If you want to get a physical arm running today, this is still Alpha:
 ## Quick Start by Role
 
 ### 🧑‍💻 v1 Firmware Developers
-1. Read: [Universal Joint PCB Design Reference](hardware/v1/v1_PCB_Design_Reference.md)
+1. Read: [Universal Joint PCB Design Reference v1.2](hardware/v1/v1.2_PCB_Design_Reference.md) (§3 is the pin map the firmware's `board_config.h` follows)
 2. Read: [CAN Message Protocol](protocols/CAN_MESSAGE_PROTOCOL.md) — note the open decisions in §6 blocking implementation
 3. Check: [V1_TODO.md](V1_TODO.md) for current status before starting new work
 
@@ -47,8 +47,9 @@ If you want to get a physical arm running today, this is still Alpha:
 3. Run: [Testing & Validation Guide](testing/TESTING_AND_VALIDATION_GUIDE.md) to verify code
 
 ### 🔧 Hardware Integrators — v1
-1. Read design spec: [Universal Joint PCB Design Reference](hardware/v1/v1_PCB_Design_Reference.md)
-2. Note: no KiCad project exists yet for v1 — see [V1_TODO.md](V1_TODO.md)
+1. Read design spec: [Universal Joint PCB Design Reference v1.2](hardware/v1/v1.2_PCB_Design_Reference.md)
+2. Order parts from the [LCSC BOM CSV](hardware/v1/v1.2_BOM_LCSC.csv); the modules (Super Mini, TMC2209, AS5600) are listed separately in the design reference §10
+3. Note: no KiCad project exists yet for v1 — see [V1_TODO.md](V1_TODO.md)
 
 ### 🔧 Hardware Integrators — Legacy Alpha
 1. Gather parts: [Wiring & Assembly — Alpha](hardware/legacy/alpha/WIRING_AND_ASSEMBLY.md#parts-list)
@@ -76,13 +77,18 @@ If you want to get a physical arm running today, this is still Alpha:
 
 ### 📐 v1 (Current)
 
-#### [Universal Joint PCB — Design Reference](hardware/v1/v1_PCB_Design_Reference.md)
-- **Contents**: Board architecture, power design, ESP32-C6-MINI-1 pin map, CAN bus, interboard connectors, full BOM and net list
-- **Best For**: Understanding the current hardware generation
-- **Status**: Design reference complete; PCB layout not started
+#### [Universal Joint PCB — Design Reference v1.2](hardware/v1/v1.2_PCB_Design_Reference.md)
+- **Contents**: Architecture, power design (XL4016 buck, LM2940 5 V rail), ESP32-C6 Super Mini pin map with the exact header order, CAN (MCP2562), AS5600 encoder, TMC2209 socket, connectors, full BOM with LCSC part numbers, net list, open items
+- **Companion**: [v1.2_BOM_LCSC.csv](hardware/v1/v1.2_BOM_LCSC.csv) — same BOM in an LCSC-importable CSV
+- **Best For**: Laying out the PCB and ordering parts
+- **Status**: Spec complete; module footprints (Super Mini, TMC2209, AS5600) still to be confirmed against the actual modules; PCB layout not started
+
+#### [Universal Joint PCB — Design Reference v1.1](hardware/v1/v1_PCB_Design_Reference.md) (superseded)
+- **Contents**: The earlier all-SMD design (MT6835/AS5048A SPI encoder, TPS54560B buck, XT30 interboard connectors)
+- **Status**: Kept unchanged for reference; do not build from it
 
 #### [Gearbox Torque Budget](hardware/v1/GEARBOX_TORQUE_BUDGET.md)
-- **Contents**: Torque calculation for the 500g/500mm design target, 1:20 vs 1:25 printed cycloidal reduction comparison, and why 1:25 was chosen
+- **Contents**: Torque calculation for the 500g/500mm design target and per-joint margins for 4× NEMA17 behind 1:25 printed cycloidal reductions (shoulder = two motors sharing one gearbox)
 - **Best For**: Anyone selecting steppers/current settings or printing gearboxes
 - **Status**: First-pass estimate — every figure flagged with its own uncertainty pending a real motor and a load-tested gearbox
 
@@ -106,7 +112,7 @@ If you want to get a physical arm running today, this is still Alpha:
 
 #### [Open-Loop Stepper Mitigation Strategies (legacy)](firmware/legacy/OPEN_LOOP_STEPPER_STRATEGIES.md)
 - **Contents**: StallGuard homing, drift mitigation for steppers with no shaft encoder
-- **Best For**: Understanding Alpha/Beta's open-loop limitations — v1 adds per-joint SPI encoders instead
+- **Best For**: Understanding Alpha/Beta's open-loop limitations — v1 adds per-joint AS5600 encoders instead
 - **Status**: Legacy — superseded by v1 encoder hardware
 
 ---
@@ -231,7 +237,9 @@ See v1 section above.
 
 | File | Contents |
 |---|---|
-| [v1 PCB Design Reference](hardware/v1/v1_PCB_Design_Reference.md) | Current authoritative hardware spec (v1 Universal Joint PCB) |
+| [v1.2 PCB Design Reference](hardware/v1/v1.2_PCB_Design_Reference.md) | Current authoritative hardware spec (v1 Universal Joint PCB) |
+| [v1.2 BOM (LCSC CSV)](hardware/v1/v1.2_BOM_LCSC.csv) | Orderable BOM with LCSC part numbers |
+| [v1 PCB Design Reference (v1.1)](hardware/v1/v1_PCB_Design_Reference.md) | Superseded all-SMD spec, kept for reference |
 | [Sixeyes Node0 (Follower PCB Beta).txt](references/Sixeyes%20Node0%20(Folloer%20PCB%20Beta).txt) | Beta Rev2 PCB full design specification (legacy) |
 | [SixEyes Technical Reference June 2026.md](references/SixEyes%20Technical%20Reference%20June%202026.md) | Technical reference (Beta Rev2, legacy) |
 | [tmc2209_datasheet_rev1.09.pdf](references/tmc2209_datasheet_rev1.09.pdf) | TMC2209 official datasheet |
@@ -241,7 +249,7 @@ See v1 section above.
 ## Task-Based Navigation
 
 ### "I need to understand v1"
-1. [Universal Joint PCB Design Reference](hardware/v1/v1_PCB_Design_Reference.md)
+1. [Universal Joint PCB Design Reference v1.2](hardware/v1/v1.2_PCB_Design_Reference.md)
 2. [CAN Message Protocol](protocols/CAN_MESSAGE_PROTOCOL.md)
 3. [V1_TODO.md](V1_TODO.md)
 
@@ -293,7 +301,9 @@ docs/
 │       └── OPEN_LOOP_STEPPER_STRATEGIES.md
 ├── hardware/
 │   ├── v1/
-│   │   ├── v1_PCB_Design_Reference.md (current authoritative hardware spec)
+│   │   ├── v1.2_PCB_Design_Reference.md (current authoritative hardware spec)
+│   │   ├── v1.2_BOM_LCSC.csv          (BOM with LCSC part numbers)
+│   │   ├── v1_PCB_Design_Reference.md (v1.1, superseded, kept for reference)
 │   │   └── GEARBOX_TORQUE_BUDGET.md   (500g/500mm torque budget, 1:25 reduction rationale)
 │   └── legacy/
 │       ├── alpha/

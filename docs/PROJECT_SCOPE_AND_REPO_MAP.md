@@ -52,6 +52,10 @@ NodeMesh hardware assumptions:
 - Uses SD logging in NodeMesh mode.
 - Supports low-cost ESP32-CAM based perception nodes (and can be adapted to S3 camera variants when needed).
 
+NodeMesh compatibility with v1:
+- NodeMesh targets the legacy Alpha/Beta hardware (single follower MCU, JSON/UART protocol). It is **not yet compatible** with v1's distributed CAN architecture.
+- Node1 (input) would need an IMU stream in place of leader-arm potentiometers, and Node0 would need a CAN-relay role talking to the v1 Base node. See the "Deferred" section of [V1_TODO.md](V1_TODO.md).
+
 ### 3) cyclocad (mechanical design tool)
 
 Repository:

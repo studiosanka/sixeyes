@@ -1,7 +1,9 @@
-// Board configuration — v1 Universal Joint PCB
-// Module: ESP32-C6-MINI-1
-// PCB:    ~42x42mm, 4-layer, one design deployed to all joint nodes
-// Source: docs/hardware/v1/v1_PCB_Design_Reference.md
+// Board configuration — v1.2 Universal Joint PCB
+// Module: ESP32-C6 Super Mini (ESP32-C6FH4), socketed -- only the 2x10 header
+//         pins are used (GPIO 0-7, 14-20 plus 5V/GND/3V3); the underside pads
+//         (GPIO12/13 USB, 21/22/23) are NOT used.
+// PCB:    4-layer, one design deployed to all joint nodes, through-hole
+// Source: docs/hardware/v1/v1.2_PCB_Design_Reference.md (§3 pin map)
 
 #pragma once
 #include "node_config.h"
@@ -20,31 +22,38 @@ static constexpr unsigned long NODE_LIVENESS_TIMEOUT_MS = 500; // Base-side only
 
 // TMC2209 — single stepper per node (v1 config differs from Alpha/Beta's
 // TMC2209_NUM_DRIVERS=4; each joint node here drives exactly one motor).
-static constexpr int TMC2209_STEP_PIN = 0;
-static constexpr int TMC2209_DIR_PIN  = 1;
-static constexpr int TMC2209_UART_PIN = 2; // PDN_UART, single-wire
+// PDN_UART is a real single-wire UART, not a chip-select: UART TX reaches
+// PDN_UART through a 1k series resistor (RDR1), UART RX is wired straight to
+// PDN_UART. EN is active low with a 10k pull-up to 3V3 (RDR2), so the driver
+// is disabled until firmware drives it low.
+static constexpr int TMC2209_STEP_PIN    = 0;
+static constexpr int TMC2209_DIR_PIN     = 1;
+static constexpr int TMC2209_UART_TX_PIN = 2;
+static constexpr int TMC2209_UART_RX_PIN = 17; // header pad labelled "RX"
+static constexpr int TMC2209_EN_PIN      = 3;
 
-// SPI magnetic encoder (MT6835 / AS5048A) — new in v1, no equivalent on
-// Alpha/Beta follower.
-static constexpr int ENCODER_SPI_SCK_PIN  = 18;
-static constexpr int ENCODER_SPI_MISO_PIN = 19;
-static constexpr int ENCODER_SPI_MOSI_PIN = 20;
-static constexpr int ENCODER_SPI_CS_PIN   = 21;
+// AS5600 magnetic encoder module (I2C, fixed address 0x36) -- replaces the
+// MT6835 / AS5048A SPI encoder planned in v1.1. Pull-ups live on the module.
+static constexpr int ENCODER_I2C_SDA_PIN = 18;
+static constexpr int ENCODER_I2C_SCL_PIN = 19;
 
-// CAN (TWAI) — GPIO4/5 are ESP32-C6 strapping pins.
-// ⚠ Verify against the ESP32-C6 TRM boot-config table before PCB layout;
-// flagged as open in the v1 hardware doc §3, not yet re-verified here.
-static constexpr int CAN_TX_PIN = 4;
-static constexpr int CAN_RX_PIN = 5;
+// CAN (TWAI) via MCP2562-E/P (VDD 5V, VIO 3V3). Both pins are "safe" GPIOs on
+// the Super Mini; v1.1's GPIO4/5 were strapping pins and are no longer used.
+static constexpr int CAN_TX_PIN = 14;
+static constexpr int CAN_RX_PIN = 20;
 
-// Servo PWM (open-loop) — Elbow only (JOINT_NODE_HAS_SERVOS).
-static constexpr int SERVO_PIN_0 = 14;
-static constexpr int SERVO_PIN_1 = 22;
-static constexpr int SERVO_PIN_2 = 23;
+// Servo PWM (open-loop) — Elbow only (JOINT_NODE_HAS_SERVOS). 1k series
+// resistor on each line. GPIO4 is MTMS (strapping, SDIO timing only),
+// GPIO6/7 are MTCK/MTDO (JTAG pins, free for GPIO use while JTAG_SEL on
+// GPIO15 selects the internal USB-JTAG).
+static constexpr int SERVO_PIN_0 = 6;
+static constexpr int SERVO_PIN_1 = 7;
+static constexpr int SERVO_PIN_2 = 4;
 
-// USB Serial/JTAG — Base only, bridges to laptop/ROS2.
-static constexpr int USB_DM_PIN = 12;
-static constexpr int USB_DP_PIN = 13;
+// USB Serial/JTAG (GPIO12/13) lives on the module's own USB-C connector, not
+// on a header -- there is no board-level USB circuit. Serial must be mapped to
+// USB CDC (platformio.ini sets ARDUINO_USB_CDC_ON_BOOT=1) because UART0's
+// default pads, GPIO16/17, would collide with TMC2209_UART_RX_PIN.
 
-// Reserved / do not route externally (strapping or flash use on this module):
-// GPIO4, 5 (also used for CAN above — see TRM caveat), 8, 9, 15, 24-30.
+// Not used / do not route: GPIO5 and GPIO16 (spare); GPIO8 (RGB LED + strapping),
+// GPIO9 (BOOT button), GPIO15 (LED + JTAG_SEL).

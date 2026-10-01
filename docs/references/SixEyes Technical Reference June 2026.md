@@ -2,7 +2,7 @@
 
 **Beta Rev2 / NodeMesh Edition**
 
-> **Status: LEGACY.** Beta is superseded by the v1 Universal Joint PCB architecture — see `docs/hardware/v1/v1_PCB_Design_Reference.md` for the current authoritative hardware spec. This document is kept for Alpha/Beta reference only.
+> **Status: LEGACY.** Beta is superseded by the v1 Universal Joint PCB architecture — see `docs/hardware/v1/v1.2_PCB_Design_Reference.md` for the current authoritative hardware spec. This document is kept for Alpha/Beta reference only.
 
 > This document reflects Beta Rev2 hardware.
 > For Alpha hardware details see `docs/hardware/legacy/alpha/`.

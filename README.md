@@ -17,7 +17,7 @@ Canonical split: [Project Scope And Repo Map](docs/PROJECT_SCOPE_AND_REPO_MAP.md
 
 ## Architecture — v1 (Current)
 
-SixEyes v1 is a **major architectural change from Alpha/Beta**: no leader arm, no single monolithic follower MCU. Instead, one Universal Joint PCB design (ESP32-C6-MINI-1, ~42×42mm, 4-layer) is populated four ways and distributed across the arm on a shared CAN bus.
+SixEyes v1 is a **major architectural change from Alpha/Beta**: no leader arm, no single monolithic follower MCU. Instead, one Universal Joint PCB design (ESP32-C6 Super Mini module on sockets, 4-layer, fully through-hole so builders can hand-solder it) is populated four ways and distributed across the arm on a shared CAN bus.
 
 | Node | Populated | Role |
 |---|---|---|
@@ -27,11 +27,13 @@ SixEyes v1 is a **major architectural change from Alpha/Beta**: no leader arm, n
 | Elbow | Stepper 3 driver, 3× servo headers (open-loop) | CAN node, closest hop to wrist/gripper |
 
 - **Bus**: CAN (TWAI), 1 Mbps, linear daisy chain Base → Shoulder L → Shoulder R → Elbow
-- **Position feedback**: SPI magnetic encoder per node (MT6835 / AS5048A) — new in v1, Alpha/Beta had none on the follower side
+- **Position feedback**: AS5600 magnetic encoder module per node (I²C) — new in v1, Alpha/Beta had none on the follower side
+- **Motors**: 4× NEMA17 (40 mm class) behind 1:25 printed cycloidal reductions; the shoulder is two motors sharing one gearbox
+- **Budget target**: SGD 250 for the whole arm (prints, mechanics, electronics; PSU and compute excluded)
 - **Control input**: laptop/ROS2 only for now. The leader arm (Alpha/Beta's teleoperation input device) has been eliminated; a future IMU + inverse-kinematics input path is planned but not yet designed.
-- **Status**: hardware spec and CAN protocol are drafted; firmware (`firmware/v1/`) and the KiCad PCB project are not yet started. See [`docs/V1_TODO.md`](docs/V1_TODO.md) for the live task list.
+- **Status**: v1.2 hardware spec and BOM are written and the CAN protocol is drafted; `firmware/v1/joint_node/` builds for all four node roles (not yet run on hardware, several modules still stubbed); the KiCad PCB project is not yet started. See [`docs/V1_TODO.md`](docs/V1_TODO.md) for the live task list.
 
-📐 **v1 Hardware Spec**: [Universal Joint PCB — Design Reference](docs/hardware/v1/v1_PCB_Design_Reference.md)
+📐 **v1 Hardware Spec (current, v1.2)**: [Universal Joint PCB — Design Reference v1.2](docs/hardware/v1/v1.2_PCB_Design_Reference.md) · [BOM with LCSC part numbers (CSV)](docs/hardware/v1/v1.2_BOM_LCSC.csv) · superseded: [v1.1](docs/hardware/v1/v1_PCB_Design_Reference.md)
 🚌 **v1 CAN Protocol** (draft): [CAN Message Protocol](docs/protocols/CAN_MESSAGE_PROTOCOL.md)
 📋 **v1 Rework Task List**: [docs/V1_TODO.md](docs/V1_TODO.md)
 
@@ -52,7 +54,7 @@ All Alpha/Beta code, PCB projects, and docs now live under `legacy/` subpaths �
 ## Quick Links
 
 - 📘 **Getting Started**: [Complete Documentation Index](docs/README.md)
-- 📐 **v1 Hardware Spec**: [Universal Joint PCB Design Reference](docs/hardware/v1/v1_PCB_Design_Reference.md)
+- 📐 **v1 Hardware Spec (v1.2)**: [Universal Joint PCB Design Reference v1.2](docs/hardware/v1/v1.2_PCB_Design_Reference.md) · [BOM (CSV)](docs/hardware/v1/v1.2_BOM_LCSC.csv)
 - 🚌 **v1 CAN Protocol** (draft): [CAN Message Protocol](docs/protocols/CAN_MESSAGE_PROTOCOL.md)
 - 📋 **v1 Task List**: [docs/V1_TODO.md](docs/V1_TODO.md)
 - 🚀 **Deploy Legacy Firmware**: [Flashing & Deployment Guide](docs/deployment/FLASHING_AND_DEPLOYMENT.md)
@@ -63,7 +65,8 @@ All Alpha/Beta code, PCB projects, and docs now live under `legacy/` subpaths �
 
 ```
 firmware/
-├── v1/                       ← Current generation — not yet implemented, see docs/V1_TODO.md
+├── v1/
+│   └── joint_node/            ← Current generation: one image, 4 roles (v1_base / v1_shoulder_l / v1_shoulder_r / v1_elbow, ESP32-C6). Builds; partly stubbed — see docs/V1_TODO.md
 └── legacy/
     ├── alpha/
     │   ├── follower_esp32/    env: alpha_follower  (ESP32-S3 DevKit, 500 Hz)
@@ -222,7 +225,8 @@ See [JSON Message Protocol (legacy)](docs/protocols/legacy/JSON_MESSAGE_PROTOCOL
 ## Key Documentation
 
 ### v1 (Current)
-- [Universal Joint PCB — Design Reference](docs/hardware/v1/v1_PCB_Design_Reference.md)
+- [Universal Joint PCB — Design Reference v1.2](docs/hardware/v1/v1.2_PCB_Design_Reference.md) and [BOM (LCSC CSV)](docs/hardware/v1/v1.2_BOM_LCSC.csv) (v1.1 kept for reference: [v1_PCB_Design_Reference.md](docs/hardware/v1/v1_PCB_Design_Reference.md))
+- [Gearbox Torque Budget](docs/hardware/v1/GEARBOX_TORQUE_BUDGET.md)
 - [CAN Message Protocol](docs/protocols/CAN_MESSAGE_PROTOCOL.md) (draft)
 - [v1 Rework Task List](docs/V1_TODO.md)
 
@@ -250,10 +254,11 @@ See [JSON Message Protocol (legacy)](docs/protocols/legacy/JSON_MESSAGE_PROTOCOL
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| v1 Hardware Spec | ✅ Drafted | Universal Joint PCB design reference complete |
+| v1 Hardware Spec | ✅ v1.2 written | Through-hole design reference + LCSC BOM; module footprints still to confirm before layout |
 | v1 CAN Protocol | 🚧 Draft | Open decisions block firmware start — see docs/V1_TODO.md |
-| v1 Firmware | ⬜ Not started | `firmware/v1/joint_node/` not yet scaffolded |
-| v1 PCB | ⬜ Not started | No KiCad project yet |
+| v1 Firmware | 🚧 Scaffold builds | All 4 roles build; v1.2 pin map, single-wire TMC2209 + EN, AS5600 I²C driver done; homing, step generation, USB↔CAN bridge still stubbed; not run on hardware |
+| v1 PCB | ⬜ Not started | No KiCad project yet; spec is ready for layout |
+| v1 Gazebo sim | 🚧 Scaffolded | URDF + controllers + launch files written; never run (needs the Pi 5) |
 | Legacy Firmware — Alpha | ✅ Stable | 500 Hz control loop, safety heartbeat, teleop wired — last known-good |
 | Legacy Firmware — Beta | 🚧 Frozen | 400 Hz, DIAG/StallGuard — not being advanced further |
 | Legacy Beta PCB | 🚧 Frozen | KiCad, components placed, routing not started — not being fabricated |
@@ -300,4 +305,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full usage terms, including what is r
 
 ---
 
-**Last Updated**: August 2026 — v1 rework in progress
+**Last Updated**: October 2026 — v1.2 hardware spec, v1 firmware pin map updated

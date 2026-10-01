@@ -1,6 +1,6 @@
 // Single-stepper position control for one v1 joint node.
 // Unlike legacy motor_controller.cpp (4 steppers, no position feedback),
-// this drives exactly one TMC2209 and closes the loop against the SPI
+// this drives exactly one TMC2209 and closes the loop against the AS5600
 // encoder for stall/fault detection only -- it does not do closed-loop PID
 // position control (encoder is a divergence check, not a control input;
 // see docs/protocols/CAN_MESSAGE_PROTOCOL.md §4.3a for why).
@@ -29,6 +29,8 @@ public:
   // Threshold is a bench-tuning constant, not fixed at the protocol level.
   bool isStallDetected() const;
 
+  // Drives the TMC2209 EN pin. disable() is what the E-stop path calls.
+  void enable();
   void disable();
   bool isEnabled() const;
 

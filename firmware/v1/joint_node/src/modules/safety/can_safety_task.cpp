@@ -3,6 +3,7 @@
 #include "modules/comms/can/can_protocol.h"
 #include "modules/config/board_config.h"
 #include "modules/config/node_config.h"
+#include "modules/motor_control/motor_controller.h"
 #include "modules/util/logging.h"
 #include <Arduino.h>
 
@@ -71,7 +72,7 @@ bool CanSafetyTask::isSafeToOperate() const { return motors_enabled_; }
 
 void CanSafetyTask::emergencyDisable() {
   motors_enabled_ = false;
-  // TODO: wire to MotorController::instance().disableAll() and (Elbow only)
-  // ServoManager::instance().disableAll() once those modules exist -- see
-  // docs/V1_TODO.md "Scaffold firmware/v1/joint_node/" checklist.
+  MotorController::instance().disable(); // asserts TMC2209 EN (driver off)
+  // TODO: (Elbow only) ServoManager::instance().disableAll() -- servo
+  // disable path not wired yet, see docs/V1_TODO.md.
 }

@@ -15,14 +15,16 @@
 
   Stepper joint effort limits (waist/shoulder/elbow) come from the 1:25
   cycloidal reduction torque budget in
-  docs/hardware/v1/GEARBOX_TORQUE_BUDGET.md (~9.75 N.m output, before
-  further real-world derating). Servo joint limits use representative
+  docs/hardware/v1/GEARBOX_TORQUE_BUDGET.md (NEMA17 at 1:25: ~6.5 N.m output
+  for waist/elbow, ~13 N.m for the two-motor shoulder, before further
+  real-world derating). Servo joint limits use representative
   MG996R figures, matching the legacy 0-180 degree range in
   firmware/legacy/*/servo_control.
 -->
 <robot name="sixeyes" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <xacro:property name="stepper_effort" value="9.75" />   <!-- N.m, see GEARBOX_TORQUE_BUDGET.md -->
+  <xacro:property name="stepper_effort" value="6.5" />    <!-- N.m, single NEMA17 at 1:25 (waist/elbow), see GEARBOX_TORQUE_BUDGET.md -->
+  <xacro:property name="shoulder_effort" value="13.0" />  <!-- N.m, two NEMA17 sharing one 1:25 gearbox -->
   <xacro:property name="stepper_velocity" value="1.0" />  <!-- rad/s placeholder; 1:25 reduction is slow -->
   <xacro:property name="servo_effort" value="1.2" />      <!-- N.m, representative MG996R stall torque estimate -->
   <xacro:property name="servo_velocity" value="3.0" />    <!-- rad/s, placeholder -->
@@ -97,7 +99,7 @@
     <child link="upper_arm_link" />
     <origin xyz="0 0 0.10" rpy="0 0 0" />
     <axis xyz="0 1 0" />
-    <limit lower="-1.5708" upper="1.5708" effort="${stepper_effort}" velocity="${stepper_velocity}" />
+    <limit lower="-1.5708" upper="1.5708" effort="${shoulder_effort}" velocity="${stepper_velocity}" />
   </joint>
 
   <!-- Elbow -->

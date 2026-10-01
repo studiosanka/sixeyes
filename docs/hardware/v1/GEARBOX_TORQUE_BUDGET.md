@@ -28,24 +28,37 @@ Two multipliers stack on top of the payload-only figure:
 
 ## 3. Motor + gearbox torque available
 
-**Motor torque assumption**: NEMA23 driven by TMC2209. TMC2209's spec ceiling is ~2A RMS, but on a dense 4-driver v1 PCB without dedicated per-driver cooling, realistic *sustained* current is closer to 1.4–1.7A RMS before thermal derating matters. At that current, a representative NEMA23 gives roughly **0.6 N·m** motor-side holding torque — this is an estimate, not a datasheet figure for a specific chosen motor part; revisit once a motor is actually selected.
+**Motor**: NEMA17, 40 mm body class, driven by a TMC2209 — four of them, all behind 1:25 printed cycloidal reductions (June 2026 Technical Reference). A 40 mm NEMA17 is roughly **0.3–0.4 N·m** holding torque; 0.4 N·m is the Technical Reference figure and is used below, with 0.3 N·m as the pessimistic case (small NEMA17s run on a TMC2209 sustain closer to 1.0–1.5 A RMS, and the dense 4-driver PCB has no per-driver cooling). These are estimates, not a datasheet figure for a chosen motor part.
 
-**Gearbox efficiency assumption**: FDM-printed cycloidal drives are not metal-gearbox efficient. Friction, layer adhesion, and tolerance stack typically put them in the **60–70%** range. Used **65%** below as a middle estimate.
+**Gearbox efficiency assumption**: FDM-printed cycloidal drives are not metal-gearbox efficient. Friction, layer adhesion, and tolerance stack typically put them in the **60–70%** range. Used **65%** below.
 
-| Reduction | Motor torque | Gearbox efficiency | Output torque | Margin vs. 7.0 N·m target |
-|---|---|---|---|---|
-| 1:20 | 0.6 N·m | 65% | 0.6 × 20 × 0.65 ≈ **7.8 N·m** | ~1.1× — thin |
-| 1:25 | 0.6 N·m | 65% | 0.6 × 25 × 0.65 ≈ **9.75 N·m** | ~1.4× — comfortable |
+Per-joint output torque at 1:25 (`motor × 25 × 0.65`):
 
-## 4. Decision: 1:25
+| Joint | Motors | 0.4 N·m motor | 0.3 N·m motor |
+|---|---|---|---|
+| Waist (Base) | 1 | 6.5 N·m | 4.9 N·m |
+| Shoulder (L+R, shared gearbox) | 2 | 13.0 N·m | 9.75 N·m |
+| Elbow | 1 | 6.5 N·m | 4.9 N·m |
 
-The single largest uncertainty in this whole budget is printed-gearbox efficiency — it's the term most likely to land worse than estimated on a first print (poor layer adhesion, insufficient lubrication, tolerance drift with wear). The system runs **open-loop steppers**: under-torque means missed steps, which v1's encoder-vs-command divergence check (see `docs/protocols/CAN_MESSAGE_PROTOCOL.md` §4.3a) catches *after the fact*, not before. Given that, trading some maximum joint speed for stall-margin headroom against the biggest unknown is the right call.
+## 4. Per-joint requirement and margin
 
-**Trade-off accepted**: 1:25 vs 1:20 reduces maximum joint angular velocity by a further ~20% (25/20 speed ratio) for the same motor speed. For a 500 g-class manipulator this is not expected to be speed-limiting, but flagging it as a real trade, not a free upgrade.
+The 7.0 N·m figure in §2 is the **shoulder** requirement (500 mm lever). Other joints see a shorter lever or no gravity load:
 
-## 5. Open items this budget does not resolve
+- **Waist**: rotates about the vertical axis — no gravity torque, only inertial load. Not the limiting joint.
+- **Shoulder**: 7.0 N·m target vs. 13.0 N·m (0.4) / 9.75 N·m (0.3) available from two motors → **~1.9× / ~1.4×**. The torque split between Shoulder L/R is what makes this joint work.
+- **Elbow**: lever to the tip is about 280 mm (forearm 180 + wrist/gripper 100), so payload torque is 0.5 × 9.81 × 0.28 ≈ 1.37 N·m; with the same ×1.5 self-weight and ×1.75 safety factors that is ≈ 3.6 N·m, vs. 6.5 N·m (0.4) / 4.9 N·m (0.3) available from one motor → **~1.8× / ~1.35×**.
 
-- No real link masses exist yet (no mechanical CAD in-repo) — the "+50% self-weight" multiplier in §2 is a placeholder, not measured.
-- No specific motor part has been selected — §3's 0.6 N·m figure is a representative estimate for "a NEMA23 at ~1.5A," not a datasheet number.
-- No printed gearbox has been built and load-tested — the 65% efficiency figure is a literature-typical estimate for FDM cycloidal drives generally, not this design specifically.
-- Once a real motor, TMC2209 current setting, and a printed/tested gearbox exist, redo this calc with real numbers and update the joint effort limits in `sixeyes_description`'s URDF accordingly.
+A single NEMA17 at 1:25 could **not** carry the shoulder alone (6.5 N·m < 7.0 N·m), which is why the shoulder is a dual-motor joint.
+
+## 5. Decision: 1:25 on all stepper joints
+
+The single largest uncertainty is printed-gearbox efficiency — the term most likely to land worse than estimated on a first print. The system runs **open-loop steppers**: under-torque means missed steps, which v1's encoder-vs-command divergence check (see `docs/protocols/CAN_MESSAGE_PROTOCOL.md` §4.3a) catches *after the fact*, not before. Margins are healthy at 0.4 N·m and thin-but-positive at 0.3 N·m, so there is no room to drop to a lower ratio; going higher would cost joint speed.
+
+**Trade-off accepted**: a higher ratio reduces maximum joint angular velocity; for a 500 g-class manipulator this is not expected to be speed-limiting.
+
+## 6. Open items this budget does not resolve
+
+- No real link masses exist yet (no mechanical CAD in-repo) — the "+50% self-weight" multiplier in §2 and the elbow lever above are placeholders, not measured.
+- No specific motor part has been selected — the 0.3–0.4 N·m range is for "a 40 mm NEMA17," not a datasheet number. Redo with the real motor and TMC2209 RMS current setting.
+- No printed gearbox has been built and load-tested — the 65% efficiency figure is a literature-typical estimate for FDM cycloidal drives generally.
+- Once real numbers exist, update the joint effort limits in `sixeyes_description`'s URDF accordingly.

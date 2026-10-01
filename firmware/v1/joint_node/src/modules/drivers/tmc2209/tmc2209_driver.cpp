@@ -14,38 +14,32 @@ TMC2209Driver::TMC2209Driver() {}
 void TMC2209Driver::init(HardwareSerial &uart) {
   uart_ = &uart;
 
-  Serial.println("TMC2209Driver: initializing PDN_UART interface...");
-  Serial.println("  - PDN pins: active LOW for selection");
+  Serial.println("TMC2209Driver: initializing single-wire PDN_UART interface...");
+  Serial.println("  - UART TX via 1k series resistor, RX direct to PDN_UART");
   Serial.println("  - Using TMCStepper UART protocol handler");
-  Serial.println(
-      "  - Configured for PDN_UART mode (single UART + PDN switching)");
 
-  // Initialize DIAG pins as inputs (open-drain with PCB pull-ups)
+  // DIAG is not routed in v1 (255) -- only touch it if a board variant wires it.
   for (size_t i = 0; i < TMC2209_NUM_DRIVERS; ++i) {
-    pinMode(TMC2209_DIAG_PINS[i], INPUT);
+    if (TMC2209_DIAG_PINS[i] != 255) pinMode(TMC2209_DIAG_PINS[i], INPUT);
   }
 
-  // Initialize PDN pins and set them HIGH (disabled/deselected)
+  // EN is active low and pulled up on the PCB; assert "disabled" explicitly
+  // before anything else so a reset never leaves the motor energized.
   for (size_t i = 0; i < TMC2209_NUM_DRIVERS; ++i) {
-    pinMode(TMC2209_PDN_PINS[i], OUTPUT);
-    digitalWrite(TMC2209_PDN_PINS[i], HIGH); // All deselected initially
-    Serial.print("  Motor ");
-    Serial.print(i);
-    Serial.print(": PDN pin GPIO");
-    Serial.println(TMC2209_PDN_PINS[i]);
+    pinMode(TMC2209_EN_PINS[i], OUTPUT);
+    setEnabled(i, false);
   }
 
-  // Start UART for PDN_UART communication at standard baud
-  // TMC2209 in PDN_UART mode typically uses 115200 baud
-  uart_->begin(115200);
+  // PDN_UART at 115200 baud. TX and RX are separate GPIOs (board_config.h);
+  // the PCB joins them at the TMC2209 end, so TMCStepper reads back its own
+  // echoed bytes -- this is the standard TMCStepper single-wire wiring.
+  uart_->begin(115200, SERIAL_8N1, TMC2209_UART_RX_PIN, TMC2209_UART_TX_PIN);
   delay(100); // Wait for UART to settle
 
-  // Create TMCStepper wrapper instances
-  // Each driver shares the same UART; PDN selection ensures only one responds
+  // MS1/MS2 are strapped to GND on the PCB -> UART address 0.
   for (uint8_t i = 0; i < TMC2209_NUM_DRIVERS; ++i) {
     drivers[i] = new TMC2209Stepper(uart_, TMC2209_R_SENSE, 0);
     if (drivers[i]) {
-      selectDriver(i);
       drivers[i]->begin(); // Initialize the driver's internal state
 
       // Apply default safe configuration
@@ -53,11 +47,9 @@ void TMC2209Driver::init(HardwareSerial &uart) {
       drivers[i]->rms_current(600); // Conservative default 600mA
       drivers[i]->microsteps(16);   // 16 microsteps per step
 
-      deselectAll();
-
       Serial.print("  Motor ");
       Serial.print(i);
-      Serial.println(": initialized");
+      Serial.println(": initialized (disabled)");
     }
   }
 
@@ -65,21 +57,11 @@ void TMC2209Driver::init(HardwareSerial &uart) {
   Serial.println("  - Ready for configureAllMotors() or per-motor setup");
 }
 
-void TMC2209Driver::selectDriver(uint8_t motor_index) {
-  // Deselect all first
-  deselectAll();
-  if (motor_index < TMC2209_NUM_DRIVERS) {
-    // Active low: pull PDN low to enable UART on that driver
-    digitalWrite(TMC2209_PDN_PINS[motor_index], LOW);
-    // small delay to allow device to wake/respond over UART
-    delayMicroseconds(200);
-  }
-}
-
-void TMC2209Driver::deselectAll() {
-  for (size_t i = 0; i < TMC2209_NUM_DRIVERS; ++i) {
-    digitalWrite(TMC2209_PDN_PINS[i], HIGH);
-  }
+void TMC2209Driver::setEnabled(uint8_t motor_index, bool enabled) {
+  if (motor_index >= TMC2209_NUM_DRIVERS) return;
+  // EN is active low: LOW energizes the driver, HIGH disables it.
+  const bool level_high = TMC2209_EN_ACTIVE_LOW ? !enabled : enabled;
+  digitalWrite(TMC2209_EN_PINS[motor_index], level_high ? HIGH : LOW);
 }
 
 void TMC2209Driver::configureMotor(uint8_t motor_index,
@@ -123,9 +105,7 @@ bool TMC2209Driver::readDrvStatus(uint8_t motor_index, uint32_t &status) {
     return false;
   }
 
-  selectDriver(motor_index);
   status = drivers[motor_index]->DRV_STATUS();
-  deselectAll();
   return true;
 }
 
@@ -141,14 +121,13 @@ bool TMC2209Driver::isStalled(uint8_t motor_index) {
 
 bool TMC2209Driver::isDiagAsserted(uint8_t motor_index) {
   if (motor_index >= TMC2209_NUM_DRIVERS) return false;
+  if (TMC2209_DIAG_PINS[motor_index] == 255) return false; // DIAG not routed in v1
   return digitalRead(TMC2209_DIAG_PINS[motor_index]) == HIGH;
 }
 
 bool TMC2209Driver::readMSCNT(uint8_t motor_index, uint16_t &mscnt) {
   if (motor_index >= TMC2209_NUM_DRIVERS || !drivers[motor_index]) return false;
-  selectDriver(motor_index);
   mscnt = drivers[motor_index]->MSCNT();
-  deselectAll();
   return true;
 }
 
@@ -171,9 +150,7 @@ void TMC2209Driver::enableStallGuard(uint8_t motor_index, uint8_t sensitivity) {
   if (!drivers[motor_index])
     return;
 
-  selectDriver(motor_index);
   drivers[motor_index]->SGTHRS(sensitivity);
-  deselectAll();
 
   Serial.print("TMC2209Driver: StallGuard enabled on motor ");
   Serial.print(motor_index);
@@ -187,9 +164,7 @@ void TMC2209Driver::disableStallGuard(uint8_t motor_index) {
   if (!drivers[motor_index])
     return;
 
-  selectDriver(motor_index);
   drivers[motor_index]->SGTHRS(0);
-  deselectAll();
 }
 
 void TMC2209Driver::setCurrent(uint8_t motor_index, uint16_t milliamps) {
@@ -219,7 +194,6 @@ uint16_t TMC2209Driver::getCurrent(uint8_t motor_index) {
 // NOTE: TMCStepper handles all UART protocol details including:
 // - Official TMC2209 register addresses
 // - CRC checksums per UART standard
-// - PDN selection via selectDriver()/deselectAll()
 // - Proper timing and synchronization
 // No custom framing is needed.
 
@@ -227,7 +201,6 @@ bool TMC2209Driver::writeRegister(uint8_t motor_index, uint8_t reg,
                                   uint32_t value) {
   if (motor_index >= TMC2209_NUM_DRIVERS || !drivers[motor_index]) return false;
 
-  selectDriver(motor_index);
   bool ok = true;
   switch (reg) {
     case TMC2209_REG_GCONF:    drivers[motor_index]->GCONF(value);                          break;
@@ -237,7 +210,6 @@ bool TMC2209Driver::writeRegister(uint8_t motor_index, uint8_t reg,
     case TMC2209_REG_TCOOLTHRS:drivers[motor_index]->TCOOLTHRS(value);                      break;
     default: ok = false; break;
   }
-  deselectAll();
   return ok;
 }
 
@@ -246,7 +218,6 @@ bool TMC2209Driver::readRegister(uint8_t motor_index, uint8_t reg,
   (void)timeout_ms;
   if (motor_index >= TMC2209_NUM_DRIVERS || !drivers[motor_index]) return false;
 
-  selectDriver(motor_index);
   bool ok = true;
   switch (reg) {
     case TMC2209_REG_GCONF:    value = drivers[motor_index]->GCONF();      break;
@@ -259,7 +230,6 @@ bool TMC2209Driver::readRegister(uint8_t motor_index, uint8_t reg,
     case TMC2209_REG_SGRESULT: value = drivers[motor_index]->DRV_STATUS() & 0x3FFU; break;
     default: value = 0; ok = false; break;
   }
-  deselectAll();
   return ok;
 }
 

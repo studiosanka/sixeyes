@@ -1,6 +1,6 @@
 # CAN Message Protocol — v1 Joint Bus
 
-**Status**: Current — authoritative protocol for v1 Universal Joint PCB hardware (`docs/hardware/v1/v1_PCB_Design_Reference.md`).
+**Status**: Current — authoritative protocol for v1 Universal Joint PCB hardware (`docs/hardware/v1/v1.2_PCB_Design_Reference.md`).
 **Supersedes**: `docs/protocols/legacy/JSON_MESSAGE_PROTOCOL.md` (single-MCU USB-CDC protocol, Alpha/Beta only).
 **Transport**: TWAI (CAN 2.0A, 11-bit standard ID), 1 Mbps, linear daisy chain Base → Shoulder L → Shoulder R → Elbow, 120 Ω termination at Base and Elbow only.
 
@@ -12,7 +12,7 @@ This is a design document, not yet implemented in firmware. It defines node addr
 
 ## 1. Why This Replaces the JSON Protocol
 
-The legacy protocol assumed one laptop-facing MCU (the Beta follower) directly owning every stepper and servo over local GPIO, with a single point-to-point USB-CDC link carrying ASCII heartbeat (`HB:`/`SB:`) and JSON commands. v1 has no single controller: four ESP32-C6-MINI-1 nodes (Base, Shoulder L, Shoulder R, Elbow) each own their own stepper (and Elbow additionally owns 3 open-loop servos), sharing one CAN bus. Only Base has a USB-C link to the laptop/ROS2 side.
+The legacy protocol assumed one laptop-facing MCU (the Beta follower) directly owning every stepper and servo over local GPIO, with a single point-to-point USB-CDC link carrying ASCII heartbeat (`HB:`/`SB:`) and JSON commands. v1 has no single controller: four ESP32-C6 (Super Mini module) nodes (Base, Shoulder L, Shoulder R, Elbow) each own their own stepper (and Elbow additionally owns 3 open-loop servos), sharing one CAN bus. Only Base has a USB-C link to the laptop/ROS2 side.
 
 Consequences for the protocol:
 - Laptop commands must be addressed to a specific node, not broadcast implicitly to "the follower."
@@ -69,13 +69,13 @@ Every node — including the one that raised it — treats *receipt* of this fra
 | 0 | `fault_bitmask` |
 | 1 | `motors_enabled` (0/1) |
 | 2 | `stall_detected` (0/1 — set by encoder-vs-commanded-position divergence exceeding threshold during normal operation; see §4.3a) |
-| 3–6 | `encoder_position` (int32, latest SPI encoder reading, raw counts) |
+| 3–6 | `encoder_position` (int32, latest AS5600 encoder reading, raw counts (12-bit, 4096 per turn, unwrapped to multi-turn)) |
 
 ### 4.3a Stall Detection Strategy
 
 **Decision**: StallGuard (TMC2209 sensorless stall detection, DIAG pin) is used for **homing only** — sensorless zero-finding at boot/home request, same role it played in legacy firmware. It is not used for runtime fault detection.
 
-**Runtime stall/fault detection** is encoder-vs-command divergence: each node compares its SPI encoder position against the last commanded `MOTOR_TARGET` and flags `stall_detected` in `NODE_STATUS` when divergence exceeds a threshold (threshold value TBD during bench tuning — not a protocol-level concern). This is strictly more informative than StallGuard alone, since it also catches slow drift and mechanical slip that never crosses StallGuard's stall threshold, not just hard stalls.
+**Runtime stall/fault detection** is encoder-vs-command divergence: each node compares its AS5600 encoder position against the last commanded `MOTOR_TARGET` and flags `stall_detected` in `NODE_STATUS` when divergence exceeds a threshold (threshold value TBD during bench tuning — not a protocol-level concern). This is strictly more informative than StallGuard alone, since it also catches slow drift and mechanical slip that never crosses StallGuard's stall threshold, not just hard stalls.
 
 ### 4.4 MOTOR_TARGET — `0x100 + node_id`, Base → node
 | Byte | Field |
@@ -94,7 +94,7 @@ Every node — including the one that raised it — treats *receipt* of this fra
 ### 4.6 ENCODER_TELEMETRY — `0x200 + node_id`, node → Base, control-loop rate
 | Byte | Field |
 |---|---|
-| 0–3 | `position` (int32, raw SPI encoder counts) |
+| 0–3 | `position` (int32, raw AS5600 encoder counts) |
 | 4–5 | `velocity_estimate` (int16, counts/tick) |
 | 6–7 | `seq` (uint16) |
 
@@ -117,7 +117,7 @@ This is the actual novel risk in v1: safety used to be one MCU watching one USB 
 **Control loop frequency — decided: 250 Hz** (down from legacy Alpha=500 Hz / Beta=400 Hz precedent). Two independent constraints drove this down rather than carrying the legacy number forward:
 
 - **CAN bus bandwidth**: steady-state per tick, worst case, Base sends 4× `MOTOR_TARGET` and the nodes reply with 4× `ENCODER_TELEMETRY` = 8 frames/tick, each ~130 µs worst-case on the wire → ~1.06 ms bus-busy time per tick. At 500 Hz (2.0 ms tick) that's ~53% bus utilization from motor+telemetry traffic alone; at 400 Hz (2.5 ms tick), ~43%. Both eat into the margin needed for arbitration/retry headroom under burst conditions (fault reports, heartbeat, E-stop all competing for the same wire). At 250 Hz (4.0 ms tick), utilization drops to ~27%, comfortably under the conventional ~30–40% ceiling for safety-critical CAN loading.
-- **MCU headroom**: legacy ran ESP32-S3 (dual-core, 240 MHz). v1's ESP32-C6-MINI-1 is single-core RISC-V at 160 MHz, and each node now does more per-core work than before — CAN RX/TX, SPI encoder polling, TMC2209 UART, and (Elbow) servo PWM — with no second core to offload any of it.
+- **MCU headroom**: legacy ran ESP32-S3 (dual-core, 240 MHz). v1's ESP32-C6 (Super Mini) is single-core RISC-V at 160 MHz, and each node now does more per-core work than before — CAN RX/TX, I²C encoder polling (AS5600, roughly 150–250 µs per read at 400 kHz, estimate), TMC2209 UART, and (Elbow) servo PWM — with no second core to offload any of it.
 
 250 Hz is a starting point, not a hard ceiling — revisit upward once bench profiling on real ESP32-C6 hardware shows spare CPU cycles and bus headroom.
 

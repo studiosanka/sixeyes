@@ -1,8 +1,8 @@
 // TMC2209 driver config — v1 Universal Joint PCB.
 // Unlike legacy Alpha/Beta (one follower MCU driving 4 steppers), each v1
 // node drives exactly one stepper. tmc2209_driver.{h,cpp} are copied
-// unchanged from firmware/legacy/beta -- they're already generic over
-// TMC2209_NUM_DRIVERS, so only this config file differs.
+// from firmware/legacy/beta, then adapted for v1.2: PDN_UART is a real
+// single-wire UART here (TX via 1k, RX direct), not a per-driver chip-select.
 
 #pragma once
 #include "modules/config/board_config.h"
@@ -10,21 +10,18 @@
 
 #define TMC2209_NUM_DRIVERS 1
 
-static const uint8_t TMC2209_PDN_PINS[TMC2209_NUM_DRIVERS]  = { TMC2209_UART_PIN };
 static const uint8_t TMC2209_STEP_PINS[TMC2209_NUM_DRIVERS] = { TMC2209_STEP_PIN };
 static const uint8_t TMC2209_DIR_PINS[TMC2209_NUM_DRIVERS]  = { TMC2209_DIR_PIN };
 
-// v1 hardware doc does not define a separate driver-enable pin in the
-// ESP32-C6-MINI-1 pin map (§3) -- TBD once the KiCad schematic exists.
-// Placeholder pin 255 makes an unresolved EN line loud instead of silently
-// wrong; fix before bring-up.
-static const uint8_t TMC2209_EN_PINS[TMC2209_NUM_DRIVERS] = { 255 };
+// Active-low enable, pulled up on the PCB (RDR2) so the driver stays disabled
+// until firmware drives it low. See TMC2209Driver::setEnabled().
+static const uint8_t TMC2209_EN_PINS[TMC2209_NUM_DRIVERS] = { TMC2209_EN_PIN };
 
 // No DIAG pin routed for runtime use in v1 -- StallGuard is homing-only
 // (see docs/protocols/CAN_MESSAGE_PROTOCOL.md §4.3a) and only needs to be
 // enabled transiently during the homing sequence via UART register access,
 // not a dedicated GPIO. Runtime stall detection is encoder-vs-command
-// divergence instead, computed against ENCODER_SPI_* in board_config.h.
+// divergence instead (AS5600, see encoder_driver.h). 255 = not routed.
 static const uint8_t TMC2209_DIAG_PINS[TMC2209_NUM_DRIVERS] = { 255 };
 
 static constexpr bool TMC2209_EN_ACTIVE_LOW = true;

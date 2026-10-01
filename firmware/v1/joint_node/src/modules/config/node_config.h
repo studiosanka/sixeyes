@@ -26,9 +26,10 @@
 // Shoulder R runs inverse-direction logic relative to Shoulder L (see v1 hardware doc §1).
 #define JOINT_NODE_INVERT_DIRECTION (JOINT_NODE_ID == JOINT_NODE_SHOULDER_R)
 
-// 120 Ohm CAN termination is populated at Base and Elbow only (physical bus ends).
-// This is a hardware BOM fact (DNP on Shoulder L/R), not firmware-configurable —
-// documented here so it's visible next to the other per-role differences.
+// 120 Ohm CAN termination is switched in by the JCN3 jumper at Base and Elbow only
+// (physical bus ends); the shunt is left off on Shoulder L/R. This is a hardware
+// fact, not firmware-configurable — documented here so it's visible next to the
+// other per-role differences.
 #define JOINT_NODE_HAS_CAN_TERMINATION \
   (JOINT_NODE_ID == JOINT_NODE_BASE || JOINT_NODE_ID == JOINT_NODE_ELBOW)
 

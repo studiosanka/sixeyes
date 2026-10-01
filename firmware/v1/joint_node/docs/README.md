@@ -1,20 +1,25 @@
 # firmware/v1/joint_node
 
-Scaffold only — see `docs/V1_TODO.md` at the repo root for what is and isn't implemented yet.
+One PlatformIO project, four node roles (`v1_base` / `v1_shoulder_l` / `v1_shoulder_r` / `v1_elbow`), target module ESP32-C6 Super Mini. See `docs/V1_TODO.md` at the repo root for what is and isn't implemented yet.
 
-- Hardware spec: `docs/hardware/v1/v1_PCB_Design_Reference.md`
+- Hardware spec: `docs/hardware/v1/v1.2_PCB_Design_Reference.md` (§3 pin map is mirrored in `src/modules/config/board_config.h`)
 - Protocol spec: `docs/protocols/CAN_MESSAGE_PROTOCOL.md`
-- Build: `pio run -e v1_base` / `v1_shoulder_l` / `v1_shoulder_r` / `v1_elbow`
+- Build: `pio run -e v1_base` / `v1_shoulder_l` / `v1_shoulder_r` / `v1_elbow` (all four build; none has run on hardware yet)
+- Flash/debug over each module's own USB-C; `Serial` is mapped to native USB CDC (`ARDUINO_USB_CDC_ON_BOOT=1`) so it does not claim UART0 (GPIO16/17)
 
-## What's real vs. stub in this scaffold
+## What's real vs. stub
 
-Real (interfaces and control-flow match the protocol doc): node role selection, CAN ID allocation and message structs, the dual-timeout safety model (`can_safety_task`), ISR-decoupled E-stop handling (`estop_handler`), pin map from the v1 hardware doc.
+Real (builds; interfaces and control flow match the docs, untested on hardware):
+- node role selection, CAN ID allocation and message structs, the dual-timeout safety model (`can_safety_task`), ISR-decoupled E-stop handling (`estop_handler`)
+- v1.2 pin map in `board_config.h`
+- TMC2209 driver adapted for v1.2: single-wire PDN_UART on separate TX/RX GPIOs (TX via 1 kΩ on the PCB), real active-low EN pin held disabled at boot, and the E-stop path (`CanSafetyTask::emergencyDisable()`) now drops EN via `MotorController::disable()`
+- AS5600 I²C encoder driver (`encoder_driver.cpp`): status + raw angle read, magnet-detect fault, multi-turn unwrap
 
 Stubbed (compiles, does not work yet — see inline `TODO` comments):
-- `encoder_driver.cpp` — no register-level implementation; final part (MT6835 vs AS5048A) not yet chosen
-- `motor_controller.cpp` — no step generation, no homing sequence, divergence check uses placeholder unit conversion
+- `motor_controller.cpp` — no step generation, no homing sequence; the divergence check converts counts to degrees of the magnet's own shaft only (magnet position — motor shaft vs 1:25 output — is undecided)
 - `usb_bridge.cpp` — no JSON↔CAN translation; ROS2-side `usb_bridge_node` also needs its own rework
 - `main.cpp`'s `loop()` — placeholder pacing via `delay()`, not the FreeRTOS-scheduled deterministic timing legacy firmware used (`MotorControlScheduler` equivalent not yet ported)
 - CAN RX dispatch runs from a polled `loop()` call, not a true hardware ISR — the E-stop latency budget in the protocol doc assumes ISR-level dispatch, not yet wired that way
+- servo disable on E-stop (Elbow) is not wired yet
 
 No unit tests yet (legacy's `test/` directory with `MockSerial`/`MockGPIO`/`MockTimer` pattern is a reasonable model to reuse once real logic lands).
