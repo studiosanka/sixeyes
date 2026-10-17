@@ -1,2 +1,0 @@
-{"bridge_ts":1741130001000,"direction":"leader_to_follower","payload":{"cmd":"JOINT_STATE","seq":"bad","ts":1741130001000,"leader_joints":[0.0,45.0],"valid_mask":[1,1,1,1,1,1]}}
-{"bridge_ts":1741130001010,"direction":"follower_to_laptop","payload":{"cmd":"TELEMETRY_STATE","seq":102,"ts":1741130001010,"follower_joints":[0.0,45.0,90.0,120.0,80.0,30.0],"errors":[0,0,0,0,0,0],"faults":[0,0,0,0,0],"motors_en":"on"}}
