@@ -74,5 +74,5 @@ void CanSafetyTask::emergencyDisable() {
   motors_enabled_ = false;
   MotorController::instance().disable(); // asserts TMC2209 EN (driver off)
   // TODO: (Elbow only) ServoManager::instance().disableAll() -- servo
-  // disable path not wired yet, see docs/V1_TODO.md.
+  // disable path not wired yet, see firmware/joint_node/docs/README.md.
 }

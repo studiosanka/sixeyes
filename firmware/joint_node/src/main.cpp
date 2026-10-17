@@ -4,7 +4,7 @@
 // This is a scaffold: module wiring and boot sequence are believed correct
 // per docs/reference/CAN_MESSAGE_PROTOCOL.md, but several modules contain
 // TODO stubs (encoder register-level driver, USB<->CAN translation, homing
-// sequence, step generation) -- see docs/V1_TODO.md for what's outstanding
+// sequence, step generation) -- see firmware/joint_node/docs/README.md for what's outstanding
 // before this is bring-up ready.
 
 #include "modules/comms/can/can_driver.h"
@@ -31,7 +31,7 @@
 // NOT from an actual hardware ISR yet -- true ISR-driven dispatch (per the
 // latency budget in the protocol doc §5) needs this moved into TWAI's
 // interrupt-driven RX path or a high-priority FreeRTOS task pinned close to
-// it. Scaffold only; see docs/V1_TODO.md.
+// it. Scaffold only; see firmware/joint_node/docs/README.md.
 static void onCanFrame(uint32_t id, const uint8_t *data, uint8_t len) {
   if (id == CAN_ID_ESTOP) {
     EstopHandler::onEstopFrameReceived(data, len);

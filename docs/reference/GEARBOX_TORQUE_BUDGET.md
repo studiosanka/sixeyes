@@ -17,7 +17,7 @@ Worst case: arm fully extended horizontally, 500 g at 500 mm from the joint.
 
 Two multipliers stack on top of the payload-only figure:
 
-- **Arm self-weight**: unknown until real CAD exists (no mechanical model is in this repo yet — see `docs/V1_TODO.md`). Placeholder: +50% (`×1.5`), a rough rule of thumb for a lightweight printed arm where distributed link mass contributes a comparable moment to the payload itself.
+- **Arm self-weight**: unknown until real CAD exists (no mechanical model is in this repo yet). Placeholder: +50% (`×1.5`), a rough rule of thumb for a lightweight printed arm where distributed link mass contributes a comparable moment to the payload itself.
 - **Application safety factor**: `×1.75`, covering dynamic loads (acceleration, not just static hold), backlash, and general print-quality uncertainty.
 
 ```

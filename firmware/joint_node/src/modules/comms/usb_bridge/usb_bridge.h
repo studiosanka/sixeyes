@@ -6,7 +6,7 @@
 // the appropriate per-node CAN frame.
 //
 // Not implemented -- the ROS2-side usb_bridge_node also needs a
-// corresponding rework (see docs/V1_TODO.md), and until that's designed in
+// corresponding rework (planned), and until that's designed in
 // detail this is a placeholder that proves out compile-time role gating
 // (only Base builds this in) rather than real framing logic.
 

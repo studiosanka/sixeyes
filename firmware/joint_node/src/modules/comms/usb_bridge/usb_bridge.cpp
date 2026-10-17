@@ -12,6 +12,6 @@ void UsbBridge::init() {
 }
 
 void UsbBridge::update() {
-  // TODO: not implemented. See header comment and docs/V1_TODO.md
+  // TODO: not implemented. See the header comment.
   // "usb_bridge_node (ROS2): rework to a Base-only USB link".
 }

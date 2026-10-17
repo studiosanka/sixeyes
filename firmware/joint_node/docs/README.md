@@ -1,6 +1,6 @@
 # firmware/joint_node
 
-One PlatformIO project, four node roles (`v1_base` / `v1_shoulder_l` / `v1_shoulder_r` / `v1_elbow`), target module ESP32-C6 Super Mini. See `docs/V1_TODO.md` at the repo root for what is and isn't implemented yet.
+One PlatformIO project, four node roles (`v1_base` / `v1_shoulder_l` / `v1_shoulder_r` / `v1_elbow`), target module ESP32-C6 Super Mini. The list below shows what is and isn't implemented yet.
 
 - Hardware spec: `docs/reference/v1.2_PCB_Design_Reference.md` (§3 pin map is mirrored in `src/modules/config/board_config.h`)
 - Protocol spec: `docs/reference/CAN_MESSAGE_PROTOCOL.md`
