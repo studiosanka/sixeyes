@@ -1,374 +1,87 @@
-name: Release Build
+name: Release
+
+# Push a tag such as v1.0.0 (or v1.0.0-pre for a pre-release) to publish a GitHub Release with the
+# firmware binaries for the four board roles, the bill of materials, and, once they exist, zips of the
+# manufacturing files (hardware/pcb/gerbers) and the printable parts (hardware/mechanical/stl).
+# "Run workflow" (manual) builds everything and uploads it as a workflow artifact without publishing.
 
 on:
   push:
     tags:
       - 'v*.*.*'
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Release version (e.g., 1.0.0)'
-        required: true
-      prerelease:
-        description: 'Mark as pre-release?'
-        required: false
-        default: 'false'
 
 permissions:
   contents: write
-  packages: write
 
 jobs:
-  build-release:
-    name: Build Release Firmware
+  release:
+    name: Build and publish release
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Determine Version
-      id: version
-      run: |
-        if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-          VERSION=${GITHUB_REF#refs/tags/v}
-        else
-          VERSION=${{ github.event.inputs.version }}
-        fi
-        
-        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-        echo "TAG=v$VERSION" >> $GITHUB_OUTPUT
-        echo "VERSION_DATE=$(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-        cache: 'pip'
+      - name: Install PlatformIO
+        run: |
+          python -m pip install --upgrade pip
+          pip install platformio
 
-    - name: Install PlatformIO
-      run: |
-        python -m pip install --upgrade pip
-        pip install platformio
+      - name: Cache PlatformIO packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-platformio-${{ hashFiles('firmware/joint_node/platformio.ini') }}
+          restore-keys: |
+            ${{ runner.os }}-platformio-
 
-    - name: Cache PlatformIO packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.platformio
-        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
-        restore-keys: |
-          ${{ runner.os }}-platformio-
+      - name: Build all four board roles
+        working-directory: firmware/joint_node
+        run: pio run
 
-    - name: Build Firmware
-      working-directory: sixeyes/firmware/follower_esp32
-      run: |
-        echo "=== Building Release v${{ steps.version.outputs.VERSION }} ==="
-        pio run
-        
-        # Get build information
-        pio run --target size
-
-    - name: Generate Checksums
-      working-directory: sixeyes/firmware/follower_esp32/.pio/build/follower_esp32
-      run: |
-        echo "Generating checksums..."
-        sha256sum firmware.bin > firmware.bin.sha256
-        sha256sum firmware.elf > firmware.elf.sha256
-        sha256sum firmware.map > firmware.map.sha256
-        
-        echo ""
-        echo "=== Checksums ==="
-        cat firmware.bin.sha256
-        cat firmware.elf.sha256
-
-    - name: Collect Release Artifacts
-      run: |
-        mkdir -p release_artifacts
-        
-        # Copy binaries
-        cp sixeyes/firmware/follower_esp32/.pio/build/follower_esp32/firmware.bin \
-           release_artifacts/firmware-v${{ steps.version.outputs.VERSION }}.bin
-        cp sixeyes/firmware/follower_esp32/.pio/build/follower_esp32/firmware.elf \
-           release_artifacts/firmware-v${{ steps.version.outputs.VERSION }}.elf
-        cp sixeyes/firmware/follower_esp32/.pio/build/follower_esp32/firmware.map \
-           release_artifacts/firmware-v${{ steps.version.outputs.VERSION }}.map
-        
-        # Copy checksums
-        cp sixeyes/firmware/follower_esp32/.pio/build/follower_esp32/firmware.bin.sha256 \
-           release_artifacts/
-        cp sixeyes/firmware/follower_esp32/.pio/build/follower_esp32/firmware.elf.sha256 \
-           release_artifacts/
-        cp sixeyes/firmware/follower_esp32/.pio/build/follower_esp32/firmware.map.sha256 \
-           release_artifacts/
-        
-        # Copy documentation
-        cp JSON_MESSAGE_PROTOCOL.md release_artifacts/
-        cp FLASHING_AND_DEPLOYMENT.md release_artifacts/
-        cp IMPLEMENTATION_SUMMARY.md release_artifacts/
-        cp VISUAL_ARCHITECTURE_GUIDE.md release_artifacts/
-        cp WIRING_AND_ASSEMBLY.md release_artifacts/
-        
-        # List artifacts
-        echo "Release artifacts:"
-        ls -lh release_artifacts/
-
-    - name: Generate Release Notes
-      id: release_notes
-      working-directory: sixeyes/firmware/follower_esp32
-      run: |
-        cat > ../../../release_artifacts/RELEASE_NOTES.md << 'EOF'
-        # SixEyes Firmware v${{ steps.version.outputs.VERSION }}
-        
-        **Release Date**: ${{ steps.version.outputs.VERSION_DATE }}
-        **Commit**: ${{ github.sha }}
-        
-        ## Features
-        
-        ### Firmware Architecture
-        - ✅ 400 Hz deterministic control loop (FreeRTOS)
-        - ✅ ROS2 heartbeat integration with safety hooks
-        - ✅ 4× NEMA23 stepper motor control (TMC2209 drivers)
-        - ✅ 3× MG996R servo motor control (LEDC PWM)
-        - ✅ USB-CDC telemetry streaming
-        - ✅ JSON message protocol (UART extensibility)
-        - ✅ Advanced PID motor control
-        - ✅ Fault detection and recovery
-        
-        ### Safety Features
-        - Motor-disable on ROS2 heartbeat timeout (500 ms)
-        - Thermal protection with automatic shutdown
-        - Over-current protection per motor
-        - Graceful fault recovery mechanism
-        - Watchdog timer integration
-        
-        ### Communications
-        - **USB-CDC**: Virtual serial port at 115200 baud
-        - **UART2**: Optional leader board communication
-        - **Protocol**: JSON + ASCII for backward compatibility
-        - **Telemetry**: 10 Hz status updates, configurable
-        
-        ## Building the Firmware
-        
-        ### Prerequisites
-        - PlatformIO CLI or VSCode extension
-        - Python 3.7+
-        - ESP32-S3 DevKitC-1 board
-        
-        ### Build Steps
-        ```bash
-        cd sixeyes/firmware/follower_esp32
-        pio run
-        ```
-        
-        Expected output:
-        ```
-        RAM:   [=         ]   6.1% (used 20064 bytes from 327680 bytes)
-        Flash: [=         ]  10.0% (used 335257 bytes from 3342336 bytes)
-        ====== BUILD SUCCESSFUL ======
-        ```
-        
-        ## Flashing to Hardware
-        
-        ### USB Connection
-        ```bash
-        pio run --target upload
-        ```
-        
-        ### Manual esptool
-        ```bash
-        esptool.py -p /dev/ttyUSB0 write_flash \
-          0x0 bootloader.bin \
-          0x8000 partitions.bin \
-          0x10000 firmware.bin
-        ```
-        
-        ### Verify Installation
-        ```bash
-        pio device monitor --port /dev/ttyUSB0 --baud 115200
-        ```
-        
-        Should see:
-        ```
-        SixEyes follower_esp32 starting
-        [Module] Initialized...
-        Initialization complete; control loop running
-        ```
-        
-        ## Memory Report
-        
-        ```
-        RAM Usage:   6.1% (20 KB / 320 KB) ✅
-        Flash Usage: 10.0% (335 KB / 3.3 MB) ✅
-        ```
-        
-        Excellent headroom for future features.
-        
-        ## API Documentation
-        
-        - **JSON Protocol**: See `JSON_MESSAGE_PROTOCOL.md`
-        - **Heartbeat Integration**: See `IMPLEMENTATION_SUMMARY.md`
-        - **Hardware Wiring**: See `WIRING_AND_ASSEMBLY.md`
-        - **Flashing Guide**: See `FLASHING_AND_DEPLOYMENT.md`
-        - **System Architecture**: See `VISUAL_ARCHITECTURE_GUIDE.md`
-        
-        ## Known Limitations
-        
-        - Vision feedback from camera: placeholder (future feature)
-        - OTA updates: not yet implemented
-        - Advanced trajectory planning: manual targets only
-        
-        ## Hardware Requirements
-        
-        | Component | Specs | Quantity |
-        |-----------|-------|----------|
-        | ESP32-S3 | WROOM-1, 240 MHz | 1 |
-        | NEMA23 Stepper | 24V, 2.8A | 4 |
-        | TMC2209 Driver | UART/PDN support | 4 |
-        | MG996R Servo | 6V, 1A peak | 3 |
-        | 24V PSU | 6A minimum | 1 |
-        | 6V PSU | 3A minimum | 1 |
-        
-        ## Changelog
-        
-        ### v${{ steps.version.outputs.VERSION }}
-        - Initial stable release with ROS2 heartbeat integration
-        - JSON message parser for extensible communication
-        - Complete hardware assembly & flashing documentation
-        - CI/CD pipeline with automated builds
-        
-        ## Support & Issues
-        
-        **GitHub Issues**: https://github.com/SixEyes-Open-Source/sixeyes/issues
-        **Wiki**: https://github.com/SixEyes-Open-Source/sixeyes/wiki
-        **Documentation**: See included .md files
-        
-        ## Installation Artifacts
-        
-        | File | Size | Purpose |
-        |------|------|---------|
-        | `firmware-v${{ steps.version.outputs.VERSION }}.bin` | ~335 KB | Main application binary |
-        | `firmware-v${{ steps.version.outputs.VERSION }}.elf` | ~1.2 MB | Debug symbols (optional) |
-        | `firmware-v${{ steps.version.outputs.VERSION }}.map` | ~50 KB | Symbol map (optional) |
-        | `.sha256` files | - | Checksum verification |
-        
-        ### Verify Integrity
-        ```bash
-        sha256sum -c firmware.bin.sha256
-        ```
-        
-        ## Testing Checklist
-        
-        - [ ] Power-on: firmware boots correctly
-        - [ ] USB-CDC: serial monitor shows status
-        - [ ] Heartbeat: send `HB:0,0` → EN pin toggles
-        - [ ] Motors: receive motion commands
-        - [ ] Servos: receive position commands
-        - [ ] Faults: trigger overcurrent, observe recovery
-        - [ ] Telemetry: receive status packets at 10 Hz
-        
-        ---
-        
-        **Ready for hardware deployment! 🚀**
-        EOF
-        
-        cat ../../../release_artifacts/RELEASE_NOTES.md
-
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2
-      if: startsWith(github.ref, 'refs/tags/')
-      with:
-        tag_name: ${{ steps.version.outputs.TAG }}
-        name: SixEyes Firmware ${{ steps.version.outputs.VERSION }}
-        draft: false
-        prerelease: ${{ github.event.inputs.prerelease == 'true' }}
-        files: |
-          release_artifacts/firmware-*.bin
-          release_artifacts/firmware-*.elf
-          release_artifacts/firmware-*.map
-          release_artifacts/*.sha256
-          release_artifacts/RELEASE_NOTES.md
-          release_artifacts/JSON_MESSAGE_PROTOCOL.md
-          release_artifacts/FLASHING_AND_DEPLOYMENT.md
-          release_artifacts/IMPLEMENTATION_SUMMARY.md
-          release_artifacts/VISUAL_ARCHITECTURE_GUIDE.md
-          release_artifacts/WIRING_AND_ASSEMBLY.md
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Upload Release Assets
-      uses: actions/upload-artifact@v4
-      with:
-        name: release-v${{ steps.version.outputs.VERSION }}
-        path: release_artifacts/
-        retention-days: 90
-
-    - name: Print Release Summary
-      run: |
-        echo "=== Release Build Complete ==="
-        echo ""
-        echo "Version: ${{ steps.version.outputs.VERSION }}"
-        echo "Tag: ${{ steps.version.outputs.TAG }}"
-        echo "Date: ${{ steps.version.outputs.VERSION_DATE }}"
-        echo "Commit: ${{ github.sha }}"
-        echo ""
-        echo "Artifacts:"
-        ls -lh release_artifacts/
-        echo ""
-        echo "Next steps:"
-        echo "1. GitHub release created automatically (if tagged)"
-        echo "2. Download artifacts from GitHub releases page"
-        echo "3. Share with deployment team"
-        echo "4. Begin hardware bring-up testing"
-
-  verify-release:
-    name: Verify Release Artifacts
-    needs: build-release
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Download Release Artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: release-v${{ needs.build-release.outputs.version }}
-
-    - name: Verify Checksums
-      run: |
-        echo "=== Verifying Release Checksums ==="
-        
-        if [ -f "firmware.bin.sha256" ]; then
-          sha256sum -c firmware.bin.sha256 && echo "✅ firmware.bin verified"
-        fi
-        
-        if [ -f "firmware.elf.sha256" ]; then
-          sha256sum -c firmware.elf.sha256 && echo "✅ firmware.elf verified"
-        fi
-        
-        echo ""
-        echo "All checksums valid ✅"
-
-    - name: Verify Documentation Included
-      run: |
-        echo "=== Verifying Release Documentation ==="
-        
-        DOCS=(
-          "RELEASE_NOTES.md"
-          "JSON_MESSAGE_PROTOCOL.md"
-          "FLASHING_AND_DEPLOYMENT.md"
-          "IMPLEMENTATION_SUMMARY.md"
-          "VISUAL_ARCHITECTURE_GUIDE.md"
-          "WIRING_AND_ASSEMBLY.md"
-        )
-        
-        for doc in "${DOCS[@]}"; do
-          if [ -f "$doc" ]; then
-            echo "✅ $doc"
-          else
-            echo "❌ Missing: $doc"
-            exit 1
+      - name: Collect release files
+        env:
+          NAME: ${{ github.ref_type == 'tag' && github.ref_name || format('dev-{0}', github.run_number) }}
+        run: |
+          mkdir -p release
+          for env in v1_base v1_shoulder_l v1_shoulder_r v1_elbow; do
+            cp "firmware/joint_node/.pio/build/$env/firmware.bin" "release/sixeyes-$env-$NAME.bin"
+          done
+          cp hardware/pcb/bom/v1.2_BOM_LCSC.csv release/
+          # Zip the manufacturing files and printable parts only when they contain more than the README.
+          if [ -n "$(find hardware/pcb/gerbers -type f ! -name README.md)" ]; then
+            (cd hardware/pcb/gerbers && zip -r "../../../release/sixeyes-gerbers-$NAME.zip" . -x README.md)
           fi
-        done
-        
-        echo ""
-        echo "All documentation present ✅"
+          if [ -n "$(find hardware/mechanical/stl -type f ! -name README.md)" ]; then
+            (cd hardware/mechanical/stl && zip -r "../../../release/sixeyes-stl-$NAME.zip" . -x README.md)
+          fi
+          (cd release && sha256sum * > SHA256SUMS.txt)
+          ls -l release
+
+      - name: Upload files as a workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-files
+          path: release/
+          retention-days: 30
+
+      - name: Publish GitHub Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          body: |
+            Files for the SixEyes joint board: firmware binaries for the four board roles
+            (`base`, `shoulder_l`, `shoulder_r`, `elbow`), the bill of materials, and a `SHA256SUMS.txt`
+            to check your downloads.
+
+            This is a work in progress. The firmware has not been tested on hardware yet. Start with the
+            [documentation](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/README.md).

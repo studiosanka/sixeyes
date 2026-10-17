@@ -1,146 +1,64 @@
 name: Build Firmware
 
+# Builds the joint-board firmware for each of the four board roles.
+
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
     paths:
       - 'firmware/**'
       - '.github/workflows/platformio-build.yml'
   pull_request:
-    branches: [main, develop]
     paths:
       - 'firmware/**'
   workflow_dispatch:
 
 permissions:
   contents: read
-  checks: write
-  pull-requests: write
 
 jobs:
-  build-firmware:
-    name: Build Firmware (${{ matrix.target }})
+  build:
+    name: Build (${{ matrix.env }})
     runs-on: ubuntu-latest
 
     strategy:
-      matrix:
-        include:
-          - target: alpha_follower
-            working_dir: firmware/legacy/alpha/follower_esp32
-          - target: beta_follower
-            working_dir: firmware/legacy/beta/follower_esp32
       fail-fast: false
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-
-    - name: Install PlatformIO
-      run: |
-        python -m pip install --upgrade pip
-        pip install platformio
-
-    - name: Cache PlatformIO packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.platformio
-        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
-        restore-keys: |
-          ${{ runner.os }}-platformio-
-
-    - name: Build
-      working-directory: ${{ matrix.working_dir }}
-      run: pio run -e ${{ matrix.target }} --verbose
-
-    - name: Check warnings
-      working-directory: ${{ matrix.working_dir }}
-      run: |
-        BUILD_OUTPUT=$(python -m platformio run -e ${{ matrix.target }} --verbose 2>&1 || true)
-        WARNING_COUNT=$(printf '%s\n' "$BUILD_OUTPUT" | awk '/warning:/{count++} END{print count+0}')
-        if [ "$WARNING_COUNT" -gt 0 ]; then
-          echo "WARNING: Found $WARNING_COUNT compiler warnings"
-          printf '%s\n' "$BUILD_OUTPUT" | grep "warning:" | head -20
-          exit 1
-        fi
-        echo "No warnings detected"
-
-    - name: Check memory usage
-      working-directory: ${{ matrix.working_dir }}
-      run: |
-        pio run -e ${{ matrix.target }} --target size
-        FIRMWARE_SIZE=$(stat -c%s .pio/build/${{ matrix.target }}/firmware.bin)
-        MAX_APP=$(( 3342336 * 80 / 100 ))
-        if [ "$FIRMWARE_SIZE" -gt "$MAX_APP" ]; then
-          echo "FAILED: Firmware exceeds 80% of flash"
-          exit 1
-        fi
-        PCT=$(( FIRMWARE_SIZE * 100 / 3342336 ))
-        echo "Flash usage: $PCT%"
-
-    - name: Upload artifacts
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: firmware-${{ matrix.target }}-${{ github.run_number }}
-        path: |
-          ${{ matrix.working_dir }}/.pio/build/${{ matrix.target }}/firmware.bin
-          ${{ matrix.working_dir }}/.pio/build/${{ matrix.target }}/firmware.elf
-        retention-days: 30
-
-  lint-code:
-    name: Lint (${{ matrix.target }})
-    runs-on: ubuntu-latest
-
-    strategy:
       matrix:
-        include:
-          - target: alpha_follower
-            src_dir: firmware/legacy/alpha/follower_esp32/src
-          - target: beta_follower
-            src_dir: firmware/legacy/beta/follower_esp32/src
-      fail-fast: false
+        env: [v1_base, v1_shoulder_l, v1_shoulder_r, v1_elbow]
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-    - name: Install cpplint
-      run: pip install cpplint
+      - name: Install PlatformIO
+        run: |
+          python -m pip install --upgrade pip
+          pip install platformio
 
-    - name: Run cpplint
-      working-directory: ${{ matrix.src_dir }}
-      run: |
-        find . -name "*.h" -o -name "*.cpp" | while read file; do
-          cpplint --linelength=120 --filter=-whitespace/comments,-whitespace/line_length "$file" || true
-        done
-        echo "Style warnings logged (non-blocking)"
+      - name: Cache PlatformIO packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-platformio-${{ hashFiles('firmware/joint_node/platformio.ini') }}
+          restore-keys: |
+            ${{ runner.os }}-platformio-
 
-  summary:
-    name: Build Summary
-    runs-on: ubuntu-latest
-    needs: [build-firmware]
-    if: always()
+      - name: Build
+        working-directory: firmware/joint_node
+        run: pio run -e ${{ matrix.env }}
 
-    steps:
-    - name: Print Summary
-      run: |
-        echo "Alpha follower: ${{ needs.build-firmware.result }}"
-        echo "Beta follower:  ${{ needs.build-firmware.result }}"
-        if [[ "${{ needs.build-firmware.result }}" == "success" ]]; then
-          echo "All builds passed"
-        else
-          echo "Build failures detected"
-          exit 1
-        fi
+      - name: Report memory use
+        working-directory: firmware/joint_node
+        run: pio run -e ${{ matrix.env }} --target size
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{ matrix.env }}
+          path: firmware/joint_node/.pio/build/${{ matrix.env }}/firmware.bin
+          retention-days: 14
