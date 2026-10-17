@@ -1,14 +1,14 @@
 // AS5600 magnetic position encoder (I2C module) -- new in v1.
 // Alpha/Beta had no shaft position feedback on the follower side; open-loop
 // stepper drift was mitigated with StallGuard homing only (see
-// docs/firmware/legacy/OPEN_LOOP_STEPPER_STRATEGIES.md). v1 adds this
+// OPEN_LOOP_STEPPER_STRATEGIES.md on the archive/dev-2026-10 branch). v1 adds this
 // encoder per node, used both for runtime stall/fault detection
-// (encoder-vs-command divergence, see docs/protocols/CAN_MESSAGE_PROTOCOL.md
+// (encoder-vs-command divergence, see docs/reference/CAN_MESSAGE_PROTOCOL.md
 // §4.3a) and reported upstream via ENCODER_TELEMETRY.
 //
 // v1.2 uses an AS5600 module on I2C (fixed address 0x36, 12-bit, 4096 counts
 // per turn) instead of the MT6835 / AS5048A SPI part planned in v1.1. See
-// docs/hardware/v1/v1.2_PCB_Design_Reference.md §6.
+// docs/reference/v1.2_PCB_Design_Reference.md §6.
 
 #pragma once
 #include <cstdint>

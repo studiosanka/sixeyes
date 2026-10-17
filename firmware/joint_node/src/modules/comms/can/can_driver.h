@@ -29,7 +29,7 @@ public:
   // Registers a callback invoked from the RX task for every received frame.
   // The E-STOP handler (can_safety_task) registers here and must do its
   // motor-disable work directly in this callback path, not by deferring to
-  // the control loop tick -- see docs/protocols/CAN_MESSAGE_PROTOCOL.md §5.
+  // the control loop tick -- see docs/reference/CAN_MESSAGE_PROTOCOL.md §5.
   using RxCallback = std::function<void(uint32_t id, const uint8_t *data, uint8_t len)>;
   void onReceive(RxCallback callback);
 

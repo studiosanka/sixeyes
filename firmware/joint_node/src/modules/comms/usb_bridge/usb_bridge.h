@@ -1,5 +1,5 @@
 // Base-only: laptop/ROS2-facing USB link, translates to CAN fan-out.
-// Per docs/protocols/CAN_MESSAGE_PROTOCOL.md §1, Base is assumed to
+// Per docs/reference/CAN_MESSAGE_PROTOCOL.md §1, Base is assumed to
 // TRANSLATE rather than transparently relay: ROS2 keeps speaking the
 // existing JSON/ASCII vocabulary over USB (reusing the legacy
 // usb_bridge_node's message shapes), and this module fans commands out to

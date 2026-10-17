@@ -1,9 +1,9 @@
-# firmware/v1/joint_node
+# firmware/joint_node
 
 One PlatformIO project, four node roles (`v1_base` / `v1_shoulder_l` / `v1_shoulder_r` / `v1_elbow`), target module ESP32-C6 Super Mini. See `docs/V1_TODO.md` at the repo root for what is and isn't implemented yet.
 
-- Hardware spec: `docs/hardware/v1/v1.2_PCB_Design_Reference.md` (§3 pin map is mirrored in `src/modules/config/board_config.h`)
-- Protocol spec: `docs/protocols/CAN_MESSAGE_PROTOCOL.md`
+- Hardware spec: `docs/reference/v1.2_PCB_Design_Reference.md` (§3 pin map is mirrored in `src/modules/config/board_config.h`)
+- Protocol spec: `docs/reference/CAN_MESSAGE_PROTOCOL.md`
 - Build: `pio run -e v1_base` / `v1_shoulder_l` / `v1_shoulder_r` / `v1_elbow` (all four build; none has run on hardware yet)
 - Flash/debug over each module's own USB-C; `Serial` is mapped to native USB CDC (`ARDUINO_USB_CDC_ON_BOOT=1`) so it does not claim UART0 (GPIO16/17)
 

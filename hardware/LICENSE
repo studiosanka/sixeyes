@@ -6,9 +6,9 @@ CERN-OHL-S v2
 
 This licence applies to all hardware design files in this repository,
 including but not limited to:
-  - KiCad schematics and PCB layouts (hardware_assets/pcb_project_files/)
-  - Gerber fabrication files (hardware_assets/pcb_latest_gerber/)
-  - 3D-printed mechanical parts (hardware_assets/3d_print_stl/)
+  - KiCad schematics and PCB layouts (hardware/pcb/)
+  - Gerber fabrication files (hardware/pcb/gerbers/)
+  - 3D-printed mechanical parts (hardware/mechanical/)
   - Any other hardware design files
 
 The firmware and software in this repository are separately licensed

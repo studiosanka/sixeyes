@@ -1,5 +1,5 @@
 // Immediate E-STOP handling, decoupled from the control loop tick.
-// Per docs/protocols/CAN_MESSAGE_PROTOCOL.md §5, E-STOP disable must not
+// Per docs/reference/CAN_MESSAGE_PROTOCOL.md §5, E-STOP disable must not
 // wait for the next control-loop iteration -- it is wired directly into
 // CanDriver's RX callback from main.cpp, so this function runs as part of
 // CAN frame reception, not the scheduled control task.

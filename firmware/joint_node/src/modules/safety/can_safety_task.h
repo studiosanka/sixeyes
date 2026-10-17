@@ -1,5 +1,5 @@
 // Distributed safety/heartbeat for the v1 joint bus.
-// Implements docs/protocols/CAN_MESSAGE_PROTOCOL.md §5 exactly:
+// Implements docs/reference/CAN_MESSAGE_PROTOCOL.md §5 exactly:
 //
 //   1. Bus heartbeat timeout (every node): if BUS_HEARTBEAT isn't seen
 //      within BUS_HEARTBEAT_TIMEOUT_MS, this node disables its own motors

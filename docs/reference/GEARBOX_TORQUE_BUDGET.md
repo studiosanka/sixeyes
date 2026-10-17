@@ -1,6 +1,6 @@
 # Cycloidal Gearbox Torque Budget
 
-**Status**: Current — informs both the URDF placeholder joint limits (`ros2_ws/src/sixeyes_description/`) and the printed cycloidal reduction ratio choice for the steppers driving v1's joints.
+**Status**: Current — informs the printed cycloidal reduction ratio choice for the steppers driving v1's joints.
 **Design target**: 500 g payload at 500 mm reach.
 
 This is a first-pass budget using placeholder assumptions, not a validated engineering result — every number below is flagged with its uncertainty. Revisit once real motor current settings, printed gearbox efficiency measurements, and actual link masses exist.
@@ -52,7 +52,7 @@ A single NEMA17 at 1:25 could **not** carry the shoulder alone (6.5 N·m < 7.0 N
 
 ## 5. Decision: 1:25 on all stepper joints
 
-The single largest uncertainty is printed-gearbox efficiency — the term most likely to land worse than estimated on a first print. The system runs **open-loop steppers**: under-torque means missed steps, which v1's encoder-vs-command divergence check (see `docs/protocols/CAN_MESSAGE_PROTOCOL.md` §4.3a) catches *after the fact*, not before. Margins are healthy at 0.4 N·m and thin-but-positive at 0.3 N·m, so there is no room to drop to a lower ratio; going higher would cost joint speed.
+The single largest uncertainty is printed-gearbox efficiency — the term most likely to land worse than estimated on a first print. The system runs **open-loop steppers**: under-torque means missed steps, which v1's encoder-vs-command divergence check (see [CAN_MESSAGE_PROTOCOL.md](CAN_MESSAGE_PROTOCOL.md) §4.3a) catches *after the fact*, not before. Margins are healthy at 0.4 N·m and thin-but-positive at 0.3 N·m, so there is no room to drop to a lower ratio; going higher would cost joint speed.
 
 **Trade-off accepted**: a higher ratio reduces maximum joint angular velocity; for a 500 g-class manipulator this is not expected to be speed-limiting.
 

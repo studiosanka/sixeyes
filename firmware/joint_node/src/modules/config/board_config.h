@@ -3,12 +3,12 @@
 //         pins are used (GPIO 0-7, 14-20 plus 5V/GND/3V3); the underside pads
 //         (GPIO12/13 USB, 21/22/23) are NOT used.
 // PCB:    4-layer, one design deployed to all joint nodes, through-hole
-// Source: docs/hardware/v1/v1.2_PCB_Design_Reference.md (§3 pin map)
+// Source: docs/reference/v1.2_PCB_Design_Reference.md (§3 pin map)
 
 #pragma once
 #include "node_config.h"
 
-// Control loop — decided 250 Hz; see docs/protocols/CAN_MESSAGE_PROTOCOL.md §5.
+// Control loop — decided 250 Hz; see docs/reference/CAN_MESSAGE_PROTOCOL.md §5.
 // CAN bus bandwidth (~27% util at this rate) and single-core ESP32-C6 headroom
 // drove this down from the legacy Alpha/Beta 400-500 Hz precedent. E-stop
 // disable is handled in the CAN RX ISR, not gated on this loop's tick —

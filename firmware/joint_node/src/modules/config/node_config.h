@@ -1,6 +1,6 @@
 // Node role selection — Universal Joint PCB, one image / four roles.
 // Set at compile time via platformio.ini: build_flags = -DJOINT_NODE_ID=N
-// See docs/protocols/CAN_MESSAGE_PROTOCOL.md §2 (Node Addressing).
+// See docs/reference/CAN_MESSAGE_PROTOCOL.md §2 (Node Addressing).
 
 #pragma once
 

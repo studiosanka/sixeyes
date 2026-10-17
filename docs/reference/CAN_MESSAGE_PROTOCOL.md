@@ -1,10 +1,10 @@
 # CAN Message Protocol — v1 Joint Bus
 
-**Status**: Current — authoritative protocol for v1 Universal Joint PCB hardware (`docs/hardware/v1/v1.2_PCB_Design_Reference.md`).
-**Supersedes**: `docs/protocols/legacy/JSON_MESSAGE_PROTOCOL.md` (single-MCU USB-CDC protocol, Alpha/Beta only).
+**Status**: Current — authoritative protocol for v1 Universal Joint PCB hardware ([v1.2_PCB_Design_Reference.md](v1.2_PCB_Design_Reference.md)).
+**Supersedes**: the legacy single-MCU USB-CDC JSON protocol (Alpha/Beta only; kept on the `archive/dev-2026-10` branch).
 **Transport**: TWAI (CAN 2.0A, 11-bit standard ID), 1 Mbps, linear daisy chain Base → Shoulder L → Shoulder R → Elbow, 120 Ω termination at Base and Elbow only.
 
-This is a design document, not yet implemented in firmware. It defines node addressing, message framing, and the distributed safety/heartbeat model needed before `firmware/v1/joint_node/` CAN and safety modules can be written.
+This is a design document, not yet implemented in firmware. It defines node addressing, message framing, and the distributed safety/heartbeat model needed before the CAN and safety modules in [`firmware/joint_node/`](../../firmware/joint_node/) can be completed.
 
 **Design decisions locked (2026-08-22)**: stall detection strategy, control loop frequency, checksum policy, and bus-off recovery behavior are all resolved below — see §4.3, §5, and §6.
 

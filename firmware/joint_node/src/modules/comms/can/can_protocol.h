@@ -1,5 +1,5 @@
 // CAN message IDs and payload layouts for the v1 joint bus.
-// Mirrors docs/protocols/CAN_MESSAGE_PROTOCOL.md exactly — that document is
+// Mirrors docs/reference/CAN_MESSAGE_PROTOCOL.md exactly — that document is
 // the source of truth; keep this header in sync with it, not the other way
 // around.
 

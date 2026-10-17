@@ -1,7 +1,7 @@
 // TMC2209 driver config — v1 Universal Joint PCB.
 // Unlike legacy Alpha/Beta (one follower MCU driving 4 steppers), each v1
 // node drives exactly one stepper. tmc2209_driver.{h,cpp} are copied
-// from firmware/legacy/beta, then adapted for v1.2: PDN_UART is a real
+// from the archived Beta firmware (branch archive/dev-2026-10), then adapted for v1.2: PDN_UART is a real
 // single-wire UART here (TX via 1k, RX direct), not a per-driver chip-select.
 
 #pragma once
@@ -18,7 +18,7 @@ static const uint8_t TMC2209_DIR_PINS[TMC2209_NUM_DRIVERS]  = { TMC2209_DIR_PIN 
 static const uint8_t TMC2209_EN_PINS[TMC2209_NUM_DRIVERS] = { TMC2209_EN_PIN };
 
 // No DIAG pin routed for runtime use in v1 -- StallGuard is homing-only
-// (see docs/protocols/CAN_MESSAGE_PROTOCOL.md §4.3a) and only needs to be
+// (see docs/reference/CAN_MESSAGE_PROTOCOL.md §4.3a) and only needs to be
 // enabled transiently during the homing sequence via UART register access,
 // not a dedicated GPIO. Runtime stall detection is encoder-vs-command
 // divergence instead (AS5600, see encoder_driver.h). 255 = not routed.

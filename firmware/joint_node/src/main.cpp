@@ -2,7 +2,7 @@
 // Role selected at build time via JOINT_NODE_ID (see modules/config/node_config.h).
 //
 // This is a scaffold: module wiring and boot sequence are believed correct
-// per docs/protocols/CAN_MESSAGE_PROTOCOL.md, but several modules contain
+// per docs/reference/CAN_MESSAGE_PROTOCOL.md, but several modules contain
 // TODO stubs (encoder register-level driver, USB<->CAN translation, homing
 // sequence, step generation) -- see docs/V1_TODO.md for what's outstanding
 // before this is bring-up ready.
@@ -119,7 +119,7 @@ void loop() {
 
   // TODO: control loop should run at CONTROL_LOOP_HZ on a dedicated
   // FreeRTOS task/timer, not a busy Arduino loop() -- legacy used
-  // MotorControlScheduler for this (see firmware/legacy/beta's equivalent
+  // MotorControlScheduler for this (see the archived Beta firmware (branch archive/dev-2026-10)'s equivalent
   // module). Not yet ported; loop() here is a placeholder pace, not the
   // real 250 Hz timing guarantee described in board_config.h.
   delay(1000 / CONTROL_LOOP_HZ);

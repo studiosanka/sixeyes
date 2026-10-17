@@ -3,7 +3,7 @@
 // this drives exactly one TMC2209 and closes the loop against the AS5600
 // encoder for stall/fault detection only -- it does not do closed-loop PID
 // position control (encoder is a divergence check, not a control input;
-// see docs/protocols/CAN_MESSAGE_PROTOCOL.md §4.3a for why).
+// see docs/reference/CAN_MESSAGE_PROTOCOL.md §4.3a for why).
 
 #pragma once
 #include <cstdint>
