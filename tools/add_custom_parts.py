@@ -300,7 +300,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--register", action="store_true")
     args = ap.parse_args()
-    for f in [NEMA_STEP, STANDOFF_STEP] + [ASSETS / v["step"] for v in VARIANTS.values()]:
+    # only the active variants need their source STEP; the others (A, B) were pruned from the repo
+    for f in [NEMA_STEP, STANDOFF_STEP] + [ASSETS / VARIANTS[k]["step"] for k in ACTIVE_VARIANTS]:
         if not f.exists():
             sys.exit(f"missing {f}")
     pretty = LIB_DIR / f"{LIB_NAME}.pretty"
@@ -317,9 +318,9 @@ def main():
     for key in VARIANTS:
         if key in ACTIVE_VARIANTS:
             continue
-        archive.mkdir(exist_ok=True)
         for src in (pretty / f"{fp_name(key)}.kicad_mod", shapes / f"AS5600_module_{key}.step"):
             if src.exists():
+                archive.mkdir(exist_ok=True)
                 shutil.move(str(src), str(archive / src.name))
     for key, v in VARIANTS.items():
         if key not in ACTIVE_VARIANTS:
