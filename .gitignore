@@ -46,8 +46,8 @@ nodemesh/
 # KiCad lock files
 *.lck
 
-# Local-only KiCad library generated from LCSC/EasyEDA (easyeda2kicad) -- personal use, not committed
-hardware_assets/pcb_project_files/lcsc_lib/
+# Variants the library generator moves aside when they are switched off
+hardware/pcb/libraries/SixEyes_custom/_archive/
 
 # KiCad per-user files and automatic backups
 *.kicad_sch.bak
