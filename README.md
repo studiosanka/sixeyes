@@ -73,6 +73,12 @@ SixEyes uses three licences:
 See [CONTRIBUTING.md](CONTRIBUTING.md) for what is required if you manufacture or sell hardware based on these
 designs.
 
+## AI assistance
+
+The firmware, software and documentation in this repository were developed with AI assistance from
+[Claude](https://www.anthropic.com/claude) (Anthropic) and [GitHub Copilot](https://github.com/features/copilot).
+The designs, decisions and review are by the Studio Sanka team.
+
 ## Credits
 
 | Role | Contributor |
@@ -81,7 +87,8 @@ designs.
 | Firmware & System Architecture | Vincent Santosa ([@markantosa](https://github.com/markantosa)) |
 | Joint PCB Design (v1) and earlier Follower PCB Design | Vincent Santosa ([@markantosa](https://github.com/markantosa)) |
 | Leader PCB Design (Alpha/Beta, archived) | Audrey ([@odriyy](https://github.com/odriyy)) |
-| Mechanical Design | Ren Jie ([@trenjie03](https://github.com/trenjie03)) |
+| Mechanical Design (cycloidal drive, original design) | Ren Jie ([@trenjie03](https://github.com/trenjie03)) |
+| Mechanical Design (continuing the cycloidal drive design) | Chai ([@sevenovaa](https://github.com/sevenovaa)) |
 
 ## Contact
 
