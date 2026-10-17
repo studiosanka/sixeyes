@@ -1,0 +1,5 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "SixEyes_v1.2") (type "KiCad") (uri "C:/Users/Vincent Santosa/Desktop/SixEyes/hardware_assets/pcb_project_files/lcsc_lib/SixEyes_v1.2.kicad_sym") (options "") (descr ""))
+  (lib (name "SixEyes_custom") (type "KiCad") (uri "${KIPRJMOD}/../../custom_lib/SixEyes_custom.kicad_sym") (options "") (descr ""))
+)
