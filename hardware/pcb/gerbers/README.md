@@ -1,16 +1,6 @@
-# PCB Schematic and Gerber Files
+# Manufacturing files (Gerbers)
 
-Place PCB design artifacts here.
+**Coming soon.** The files to send to a PCB manufacturer will be published here once the board layout is
+finished.
 
-Recommended structure:
-- `schematic/` (PDF exports, source files)
-- `gerber/` (manufacturing Gerber + drill files)
-- `bom/` (Bill of Materials)
-- `assembly/` (pick-and-place, fab notes)
-
-Recommended naming format:
-`<board_name>_v<major>.<minor>_<artifact>`
-
-Examples:
-- `follower_mainboard_v1.0_schematic.pdf`
-- `follower_mainboard_v1.0_gerber.zip`
+See [docs/04-build-the-pcb.md](../../../docs/04-build-the-pcb.md).

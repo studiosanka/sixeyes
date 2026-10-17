@@ -1,15 +1,5 @@
-# 3D Print STL Files
+# 3D-printable parts
 
-Place printable STL files for SixEyes mechanical parts in this folder.
+**Coming soon.** The printable files for the arm and its 1:25 cycloidal gearboxes will be published here.
 
-Recommended structure:
-- `arm_base/`
-- `joint_brackets/`
-- `servo_mounts/`
-- `cable_guides/`
-
-Recommended naming format:
-`<part_name>_v<major>.<minor>.stl`
-
-Example:
-`shoulder_bracket_v1.2.stl`
+See [docs/03-print-the-mechanics.md](../../../docs/03-print-the-mechanics.md).
