@@ -20,7 +20,7 @@
   (fp_circle (center 0 0) (end 2.5 0) (stroke (width 0.1) (type solid)) (fill none) (layer "F.Fab"))
   (fp_line (start -3.000 0.000) (end 3.000 0.000) (stroke (width 0.12) (type solid)) (layer "F.SilkS"))
   (fp_line (start 0.000 -3.000) (end 0.000 3.000) (stroke (width 0.12) (type solid)) (layer "F.SilkS"))
-  (model "${KIPRJMOD}/../../custom_lib/SixEyes_custom.3dshapes/NEMA17_40mm.step"
+  (model "${KIPRJMOD}/../libraries/SixEyes_custom/SixEyes_custom.3dshapes/NEMA17_40mm.step"
     (offset (xyz 0.000 0.000 19.100))
     (scale (xyz 1 1 1))
     (rotate (xyz 90 0 0))

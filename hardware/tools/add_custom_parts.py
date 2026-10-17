@@ -2,18 +2,20 @@
 """Generate the SixEyes_custom KiCad library (symbols, footprints, 3D models).
 
 Parts:
-  AS5600_Module            - 7-pin symbol. Three footprints (variants A/B/C), one per
-                             candidate STEP model, each = the two female sockets
-                             (1x3 + 1x4) with the module STEP floating above them.
-                             The STEP files are copied UNMODIFIED so they can be
-                             compared in the 3D viewer.
+  AS5600_Module            - 7-pin symbol. Footprint = the module's two pin rows (1x3 + 1x4,
+                             slotted holes, soldered straight to the board) with the module
+                             STEP sitting on its header plastic. Three candidate models (A/B/C)
+                             were compared; only C is kept (A/B definitions stay in VARIANTS
+                             and need their STEP in source_models to be re-enabled).
   NEMA17_40                - mechanical-only symbol (no pins), outline footprint, motor
                              STEP floats above the board, rear face toward the chip.
+  Standoff_M3_8            - mechanical-only M3x8 brass standoff (STEP from make_standoff_step.py).
 
-Run:   python tools/add_custom_parts.py            (writes the library)
-       python tools/add_custom_parts.py --register (also adds it to the project's
-                                                    fp-lib-table / sym-lib-table;
-                                                    close KiCad first)
+Run from anywhere:
+       python hardware/tools/add_custom_parts.py            (writes the library)
+       python hardware/tools/add_custom_parts.py --register (also adds it to the project's
+                                                             fp-lib-table / sym-lib-table;
+                                                             close KiCad first)
 Tune the numbers in CONFIG, re-run, reopen the footprint in KiCad.
 Geometry was read from the STEP files; see the notes beside each value.
 """
@@ -25,14 +27,14 @@ import sys
 from pathlib import Path
 
 # ---------------------------------------------------------------- CONFIG ----
-ROOT = Path(__file__).resolve().parent.parent
-PCB_DIR = ROOT / "hardware_assets" / "pcb_project_files"
-ASSETS = PCB_DIR / "v1.0" / "SixEyes_v1.2" / "Custom Assets"
-PROJECT = PCB_DIR / "v1.0" / "SixEyes_v1.2"
+HARDWARE = Path(__file__).resolve().parent.parent          # the hardware/ folder
+LIBS = HARDWARE / "pcb" / "libraries"
+ASSETS = LIBS / "source_models"                             # source STEP files
+PROJECT = HARDWARE / "pcb" / "kicad"                        # KiCad project folder
 LIB_NAME = "SixEyes_custom"
-LIB_DIR = PCB_DIR / "custom_lib"
+LIB_DIR = LIBS / "SixEyes_custom"
 # Model paths are written relative to the project (${KIPRJMOD} = PROJECT).
-MODEL_BASE = "${KIPRJMOD}/../../custom_lib/" + LIB_NAME + ".3dshapes/"
+MODEL_BASE = "${KIPRJMOD}/../libraries/SixEyes_custom/" + LIB_NAME + ".3dshapes/"
 
 NEMA_STEP = ASSETS / "Nema 17 40x42x5mm.STEP"
 STANDOFF_STEP = ASSETS / "M3x8_brass_standoff.step"     # made by tools/make_standoff_step.py
@@ -91,7 +93,7 @@ VARIANTS = {
         outline=(23.0, 23.0)),
 }
 ACTIVE_VARIANTS = ("C",)       # variants written to the library; the rest are archived to
-                               # custom_lib/_archive/ (kept, not in the library)
+                               # SixEyes_custom/_archive/ (not kept in git)
 DEFAULT_VARIANT = "C"          # footprint the AS5600 symbol points at
 MOTOR_VARIANT = "C"            # motor rear-face height is computed from this variant
 
@@ -281,9 +283,9 @@ def symbols(fp_nema, fp_standoff):
 def register():
     entries = {
         "fp-lib-table": f'  (lib (name "{LIB_NAME}") (type "KiCad") '
-                        f'(uri "${{KIPRJMOD}}/../../custom_lib/{LIB_NAME}.pretty") (options "") (descr ""))',
+                        f'(uri "${{KIPRJMOD}}/../libraries/SixEyes_custom/{LIB_NAME}.pretty") (options "") (descr ""))',
         "sym-lib-table": f'  (lib (name "{LIB_NAME}") (type "KiCad") '
-                         f'(uri "${{KIPRJMOD}}/../../custom_lib/{LIB_NAME}.kicad_sym") (options "") (descr ""))',
+                         f'(uri "${{KIPRJMOD}}/../libraries/SixEyes_custom/{LIB_NAME}.kicad_sym") (options "") (descr ""))',
     }
     for fname, entry in entries.items():
         p = PROJECT / fname

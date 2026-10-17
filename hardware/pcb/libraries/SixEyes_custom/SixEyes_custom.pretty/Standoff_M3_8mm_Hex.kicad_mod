@@ -17,7 +17,7 @@
   (fp_line (start 1.357 -2.350) (end 2.714 0.000) (stroke (width 0.1) (type solid)) (layer "F.Fab"))
   (fp_circle (center 0 0) (end 2.964 0) (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd"))
   (fp_circle (center 0 0) (end 1.950 0) (stroke (width 0.12) (type solid)) (fill none) (layer "F.SilkS"))
-  (model "${KIPRJMOD}/../../custom_lib/SixEyes_custom.3dshapes/M3x8_brass_standoff.step"
+  (model "${KIPRJMOD}/../libraries/SixEyes_custom/SixEyes_custom.3dshapes/M3x8_brass_standoff.step"
     (offset (xyz 0.000 0.000 0.000))
     (scale (xyz 1 1 1))
     (rotate (xyz 0 0 0))

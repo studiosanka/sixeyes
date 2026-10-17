@@ -25,7 +25,7 @@
   (pad "5" thru_hole oval (at 6.650 -1.985) (size 2.4 1.7) (drill oval 1.6 1.0) (layers "*.Cu" "*.Mask"))
   (pad "6" thru_hole oval (at 6.650 0.555) (size 2.4 1.7) (drill oval 1.6 1.0) (layers "*.Cu" "*.Mask"))
   (pad "7" thru_hole oval (at 6.650 3.095) (size 2.4 1.7) (drill oval 1.6 1.0) (layers "*.Cu" "*.Mask"))
-  (model "${KIPRJMOD}/../../custom_lib/SixEyes_custom.3dshapes/AS5600_module_C.step"
+  (model "${KIPRJMOD}/../libraries/SixEyes_custom/SixEyes_custom.3dshapes/AS5600_module_C.step"
     (offset (xyz -11.515 11.480 2.290))
     (scale (xyz 1 1 1))
     (rotate (xyz -90 0 90))

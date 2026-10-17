@@ -3,7 +3,7 @@
 
 Female-female M3 hex standoff (LCSC C551328, Shuntian M3*8), 8 mm, 4.7 mm across
 flats, through bore at the M3 tap size (2.5 mm; threads are not modelled). Z up, base on z=0, extends to z=LENGTH.
-Writes `Custom Assets/M3x8_brass_standoff.step`; add_custom_parts.py copies it into
+Writes `hardware/pcb/libraries/source_models/M3x8_brass_standoff.step`; add_custom_parts.py copies it into
 the SixEyes_custom library.
 """
 import sys
@@ -17,8 +17,8 @@ BORE = 2.5             # mm, M3 tap drill
 CHAMFER = 0.3          # mm, end edges
 BRASS = (0.71, 0.60, 0.25)
 
-OUT = (Path(__file__).resolve().parent.parent / "hardware_assets" / "pcb_project_files" /
-       "v1.0" / "SixEyes_v1.2" / "Custom Assets" / "M3x8_brass_standoff.step")
+OUT = (Path(__file__).resolve().parent.parent / "pcb" / "libraries" / "source_models" /
+       "M3x8_brass_standoff.step")
 
 
 def main():
