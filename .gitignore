@@ -21,11 +21,6 @@ venv/
 .venv/
 env/
 
-# ROS2 build artifacts
-/install/
-/build/
-/log/
-
 # Misc
 .DS_Store
 Thumbs.db
