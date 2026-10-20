@@ -26,11 +26,17 @@ static constexpr unsigned long NODE_LIVENESS_TIMEOUT_MS = 500; // Base-side only
 // PDN_UART through a 1k series resistor (RDR1), UART RX is wired straight to
 // PDN_UART. EN is active low with a 10k pull-up to 3V3 (RDR2), so the driver
 // is disabled until firmware drives it low.
+// MS1/MS2 are driven by the ESP32: both LOW = UART address 0 (and 1/8 microstep
+// without UART); both HIGH = 1/16 microstep without UART. VREF (the module's
+// current-setting pot) is read on an ADC pin through a 10k series resistor (RDR3).
 static constexpr int TMC2209_STEP_PIN    = 0;
 static constexpr int TMC2209_DIR_PIN     = 1;
-static constexpr int TMC2209_UART_TX_PIN = 2;
+static constexpr int TMC2209_UART_TX_PIN = 5;  // MTDI strapping pin: SDIO timing only, no effect here
 static constexpr int TMC2209_UART_RX_PIN = 17; // header pad labelled "RX"
 static constexpr int TMC2209_EN_PIN      = 3;
+static constexpr int TMC2209_MS1_PIN     = 15; // JTAG_SEL strapping pin: ignored with default eFuses
+static constexpr int TMC2209_MS2_PIN     = 16; // UART0 TX (ROM boot log only; Serial is on USB CDC)
+static constexpr int TMC2209_VREF_ADC_PIN = 2; // ADC1_CH2
 
 // AS5600 magnetic encoder module (I2C, fixed address 0x36) -- replaces the
 // MT6835 / AS5048A SPI encoder planned in v1.1. Pull-ups live on the module.
@@ -55,5 +61,5 @@ static constexpr int SERVO_PIN_2 = 4;
 // USB CDC (platformio.ini sets ARDUINO_USB_CDC_ON_BOOT=1) because UART0's
 // default pads, GPIO16/17, would collide with TMC2209_UART_RX_PIN.
 
-// Not used / do not route: GPIO5 and GPIO16 (spare); GPIO8 (RGB LED + strapping),
-// GPIO9 (BOOT button), GPIO15 (LED + JTAG_SEL).
+// Not used / do not route: GPIO8 (RGB LED + strapping) and GPIO9 (BOOT button).
+// Every other header GPIO is assigned (see the design reference, section 3).

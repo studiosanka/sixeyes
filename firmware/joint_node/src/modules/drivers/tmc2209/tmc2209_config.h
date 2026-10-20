@@ -29,6 +29,21 @@ static constexpr bool TMC2209_EN_ACTIVE_LOW = true;
 static constexpr float TMC2209_FULL_STEPS_PER_REV = 200.0f;
 static constexpr float TMC2209_MICROSTEPS = 16.0f;
 
+// Without UART the module's VREF pot sets the motor current, so the firmware reads VREF on an ADC pin
+// and refuses to enable the driver if it is above this limit. Default 1.4 V is about 1.0 A RMS
+// (Vref = 1.41 x I_rms for the 0.11 ohm sense resistors). Set it to your motor's rating; never above 2.2 V.
+// With UART answering, current is digital and this check is skipped.
+static constexpr float TMC2209_VREF_MAX_V = 1.4f;
+static constexpr float TMC2209_AMPS_PER_VREF_V = 0.71f; // I_rms ~ Vref / 1.41
+
+// Run current (RMS) the driver starts at in UART mode. Deliberately low and safe for a first power-up:
+// raise it in small steps, and never above the motor's rated current (a generic 40 mm NEMA17 is ~1.5 A).
+static constexpr uint16_t TMC2209_DEFAULT_RUN_MA = 500;
+
+// Microsteps used without UART: only 1/8 (MS1=MS2=low) and 1/16 (both high) are used, the two settings the
+// Trinamic datasheet and BigTreeTech's own table agree on.
+static constexpr uint16_t TMC2209_STANDALONE_MICROSTEPS = 16;
+
 #ifndef TMC2209_R_SENSE
 #define TMC2209_R_SENSE 0.11f
 #endif
