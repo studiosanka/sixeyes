@@ -10,6 +10,10 @@ mechanics and electronics; power supply and computer excluded), and 500 g at 500
 > but has not run on hardware yet, and the printable parts and build guides are not published yet. Check the
 > [status](#status) before you buy anything.
 
+![The SixEyes joint board on a NEMA 17 motor, front and back](docs/images/joint-board-assembly.png)
+
+*3D render of the joint board on a NEMA 17 motor (the motor is drawn transparent). Left: the front. Right: the back, with the AS5600 encoder module and the four standoffs that carry the motor. The Super Mini and TMC2209 modules are not shown in their sockets.*
+
 ## What you will build
 
 One **Universal Joint PCB** design (ESP32-C6 Super Mini, TMC2209 driver and AS5600 encoder as plug-in or

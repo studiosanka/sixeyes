@@ -8,7 +8,7 @@ planned but not written yet.
 | 1 | [Overview: what you are building](01-overview.md) | draft |
 | 2 | [Parts and bill of materials](02-parts-and-bom.md) | draft |
 | 3 | [Print the mechanics](03-print-the-mechanics.md) | coming soon |
-| 4 | [Build the PCB](04-build-the-pcb.md) | coming soon |
+| 4 | [Build the PCB](04-build-the-pcb.md) | draft (check against the final silkscreen) |
 | 5 | [Flash the firmware](05-flash-the-firmware.md) | coming soon |
 | 6 | [Assemble and test](06-assemble-and-test.md) | coming soon |
 
@@ -19,6 +19,9 @@ planned but not written yet.
 | [PCB design reference (v1.2)](reference/v1.2_PCB_Design_Reference.md) | The joint board: circuit, pin map, parts, wiring, motor mounting |
 | [Gearbox torque budget](reference/GEARBOX_TORQUE_BUDGET.md) | Torque needed per joint and what the NEMA17 motors and 1:25 cycloidal gearboxes provide |
 | [CAN message protocol](reference/CAN_MESSAGE_PROTOCOL.md) | How the four joint boards talk to each other (draft) |
+| [IC and diode pin verification](reference/ic-pin-verification.md) | How each IC's pins were checked against its datasheet, and what is still unverified |
+| [TMC2209 module schematics](reference/tmc2209-module-schematics.md) | The two supported driver modules compared, with their schematic PDFs |
+| [TMC2209 modules: what we tried and learned](reference/tmc2209-modules.md) | Test results, the stalling and UART investigation, and open questions |
 | [Datasheets and links](reference/datasheets.md) | Manufacturer pages for the main parts |
 
 ## Where things are
