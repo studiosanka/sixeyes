@@ -1,0 +1,86 @@
+(version 1)
+
+# SixEyes joint board custom design rules. Net classes live in SixEyes_v1.2.kicad_pro.
+# Widths come from IPC-2221 for a 10 C rise on 1 oz outer copper:
+#   1.77 A RMS (TMC2209 motor phase) -> 0.66 mm,  2.5 A (servo) -> 1.06 mm.
+# These rules apply to TRACKS and VIAS only. Zones (copper pours) are not tracks and are not checked here.
+
+# ---- High-current minimum track widths (tracks only; zones are exempt) ----
+(rule "Motor phase min track width"
+	(condition "A.Type == 'Track' && A.hasNetclass('Motor_Power')")
+	(constraint track_width (min 0.7mm)))
+
+(rule "24V supply min track width"
+	(condition "A.Type == 'Track' && A.hasNetclass('Supply_24V')")
+	(constraint track_width (min 0.7mm)))
+
+(rule "Servo 6.5V min track width"
+	(condition "A.Type == 'Track' && A.hasNetclass('Servo_Power')")
+	(constraint track_width (min 1.0mm)))
+
+# ---- Via-size floors ----
+# A via carries roughly 1 A. Current-carrying nets get the 0.6/0.3 mm via; GND stitching vias may use
+# the board minimum (0.5/0.3 mm), so anything smaller than that is flagged.
+(rule "Power via size floor"
+	(condition "A.Type == 'Via' && (A.hasNetclass('Motor_Power') || A.hasNetclass('Supply_24V') || A.hasNetclass('Servo_Power'))")
+	(constraint via_diameter (min 0.6mm))
+	(constraint hole_size (min 0.3mm)))
+
+(rule "GND stitching via size floor"
+	(condition "A.Type == 'Via' && A.NetName == 'GND'")
+	(constraint via_diameter (min 0.5mm))
+	(constraint hole_size (min 0.3mm)))
+
+# ---- JLCPCB manufacturing limits (4-layer) not covered by the board-setup fields ----
+# Via hole to via hole >= 0.2 mm, pad hole to any hole >= 0.45 mm, PTH annular ring >= 0.15 mm (0.20 recommended).
+(rule "JLC via to via hole spacing"
+	(condition "A.Type == 'Via' && B.Type == 'Via'")
+	(constraint hole_to_hole (min 0.2mm)))
+
+(rule "JLC pad hole spacing"
+	(condition "A.Type == 'Pad' && A.Pad_Type == 'Through-hole' && B.Type != 'Via'")
+	(constraint hole_to_hole (min 0.45mm)))
+
+(rule "JLC PTH pad annular ring"
+	(condition "A.Type == 'Pad' && A.Pad_Type == 'Through-hole'")
+	(constraint annular_width (min 0.149mm)))
+
+# ---- Noisy switch node stays away from tracks and vias of other nets ----
+(rule "Switch node clearance"
+	(condition "A.NetName == '/SW_BK' && (B.Type == 'Track' || B.Type == 'Via')")
+	(constraint clearance (min 0.3mm)))
+
+# ---- General track width (own floor; JLCPCB standard process allows 0.1 mm or less) ----
+(rule "Min track width"
+	(condition "A.Type == 'Track'")
+	(constraint track_width (min 0.2mm)))
+
+# ---- CAN differential pair /CAN+ and /CAN-: about 120 ohm (estimate) on an outer layer over In1 ----
+# Standard JLCPCB 1.6 mm 4-layer, 7628 prepreg (0.2104 mm, Dk 4.4): 0.2 mm trace, 0.3 mm gap. No impedance control is
+# ordered (cheapest option), so this is a design target, not a guaranteed value.
+(rule "CAN track width"
+	(condition "A.Type == 'Track' && A.hasNetclass('CAN')")
+	(constraint track_width (min 0.2mm) (max 0.25mm)))
+
+(rule "CAN keep-out from switch node"
+	(condition "A.hasNetclass('CAN') && B.NetName == '/SW_BK'")
+	(constraint clearance (min 0.5mm)))
+
+# Net length is the total of all tracks on the net (the bus branches), so this only catches gross mistakes.
+# At 1 Mbps (1 us bit time) several mm of skew is irrelevant, so skew is a loose 10 mm.
+(rule "CAN net length"
+	(condition "A.hasNetclass('CAN')")
+	(constraint length (max 200mm)))
+
+# Gap max is loose because the pair fans out to pads 2.54 mm apart; the uncoupled-length rule catches long separate runs.
+(rule "CAN pair gap"
+	(condition "A.inDiffPair('/CAN')")
+	(constraint diff_pair_gap (min 0.25mm) (opt 0.3mm) (max 1.7mm)))
+
+(rule "CAN pair uncoupled length"
+	(condition "A.inDiffPair('/CAN')")
+	(constraint diff_pair_uncoupled (max 25mm)))
+
+(rule "CAN pair skew"
+	(condition "A.inDiffPair('/CAN')")
+	(constraint skew (max 10mm)))

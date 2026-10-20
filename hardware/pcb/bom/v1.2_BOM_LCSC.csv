@@ -19,9 +19,9 @@ C640345,4,UCN1,MCP2562-E/P CAN transceiver,PDIP-8,1,2.3438,"VDD=5V, VIO=3V3, STB
 C714282,4,RCN1,120R 5% 1/4W,Axial,1,0.0068,"Bus termination, enabled by JCN3 jumper"
 C52461,1,"JCN3, JSV1-JSV3","Male header 1x40 strip (cut): JCN3 2-pin termination jumper on every board, 3x 1x3 servo headers on Elbow",2.54mm,0,0.2310,One strip covers the whole arm
 C100114,2,(shunt),Jumper cap 2.54mm,2.54mm,0,0.0094,Fit on Base and Elbow only
-C2932676,16,"JMC1,JMC2, JDR1,JDR2",Female header 1x15 2.54mm (cut to fit),2.54mm,4,0.1872,"JMC1/JMC2: Super Mini 2 x 1x10; JDR1/JDR2: TMC2209 2 x 1x8; cut from 1x15 strips. The AS5600 module has no sockets: it is soldered directly (JEC1/JEC2 removed)"
+C2932676,16,"JMC1,JMC2, JDR1,JDR2, JDR4",Female header 1x15 2.54mm (cut to fit),2.54mm,4,0.1872,"JMC1/JMC2: Super Mini 2 x 1x10; JDR1/JDR2: TMC2209 2 x 1x8; JDR4: 1x2 socket for the module VREF/DIAG pads; cut from 1x15 strips. The AS5600 module has no sockets: it is soldered directly (JEC1/JEC2 removed)"
 C157925,4,JDR3,"JST S4B-XH-A(LF)(SN) XH 4-pin header, right angle (side entry)",P=2.5 THT right angle,1,0.0911,"Motor; leads exit sideways at the board edge; mating XHP-4 housing + crimps not on LCSC list"
 C1580926,4,CDR1,100uF 50V electrolytic,Radial,1,0.1111,TMC2209 VM bulk
 C119324,7,"RDR1, RSV1-RSV3",1k 1% 1/4W,Axial,1,0.0111,"UART_TX to PDN_UART series resistor; Servo signal series resistors, Elbow only"
-C119347,4,RDR2,10k 1% 1/4W,Axial,1,0.0113,EN pull-up to 3V3 (driver disabled at boot)
+C119347,8,"RDR2, RDR3",10k 1% 1/4W,Axial,2,0.0113,"RDR2: EN pull-up to 3V3 (driver disabled at boot). RDR3: series resistor from the module's VREF pad to the ESP32 ADC (GPIO2)"
 C551328,16,"SO1-SO4",M3x8 brass hex standoff female-female (Shuntian; 4.7 mm across flats),Hex 4.7 AF x 8 mm,4,0.0361,"Carries the motor (stands on top of the board, enters the 1.5 mm motor indentation). Assumed 4 per board; count and positions TBD. Needs M3x14 screws + 0.5 mm washers (not on this list)"
