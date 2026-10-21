@@ -1,27 +1,27 @@
 LCSC Part #,Quantity,Designator,Comment,Footprint,Qty per board,Unit price USD (qty 1),Notes
 C55881,4,UBK1,XL4016E1 buck regulator,TO-220-5,1,1.0950,"Tab = SW node: insulate the heatsink, never ground it"
 C2041465,4,L1,"Bourns SRP1265A-220M 22uH (Isat 12A, Irms 9A, 32.5mohm)",SMD 13.5x12.5mm,1,1.1784,Hand-soldered SMD (big pads); only non-THT part
-C260256,4,D1,MBR1060 60V 10A Schottky,TO-220AC-2,1,0.4238,Catch diode; stock was 95 when checked
+C260256,4,D1,MBR1060 60V 10A Schottky,TO-220AC-2,1,0.4238,Catch diode. LOW STOCK: 95 at LCSC on 2026-10-21
 C165672,4,CIN,470uF 50V electrolytic 105C 27mohm 2.05A@100kHz,D12.5xL20,1,0.4575,Buck input bulk (NXH)
-C3002380,4,COUT,1000uF 16V electrolytic 105C 28mohm 1.76A@100kHz,D10xL16,1,0.2263,"Buck output bulk, place near servo header"
-C409823,12,"CC,C1,C2",1uF 50V X7R ceramic,Radial P=5.08,3,0.0680,CC: VIN(5)-VC(4); C1: VIN(5)-GND(1) at IC; C2: V6-GND at output
-C401238,4,CFF,33nF 63V film,Radial P=5,1,0.0609,Feed-forward across R2
-C410594,4,R2,6.2k 1% 1/4W,Axial,1,0.0121,FB divider top; stock was 50 when checked
-C119328,4,R1,1.5k 1% 1/4W,Axial,1,0.0112,FB divider bottom; Vout = 1.25*(1+6.2/1.5) = 6.42V
-C223958,4,DPW1,P6KE30A TVS 25.6Vwm / 41.4Vc,DO-15,1,0.1847,Across 24V/GND at input
-C474952,8,"JPW1,JPW2",Screw terminal 2P 5.08mm,P=5.08,2,0.1933,24V / GND in and out
-C474892,8,"JCN1,JCN2",Screw terminal 2P 3.5mm,P=3.5,2,0.1196,CAN_H / CAN_L in and out
+C3002380,4,COUT,1000uF 16V electrolytic 105C 28mohm 1.76A@100kHz,D10xL16,1,0.2263,"Buck output bulk, place near servo header. MOQ 5 (multiples of 5): order 5 for 4 needed, 1 spare"
+C409823,12,"CC,C1,C2",1uF 50V X7R ceramic,Radial P=5.08,3,0.0680,"CC: VIN(5)-VC(4); C1: VIN(5)-GND(1) at IC; C2: V6-GND at output. MOQ 10 (multiples of 10): order 20 for 12 needed, 8 spare"
+C401238,4,CFF,33nF 63V film,Radial P=5,1,0.0609,"Feed-forward across R2. MOQ 10 (multiples of 10): order 10 for 4 needed, 6 spare"
+C410594,4,R2,6.2k 1% 1/4W,Axial,1,0.0121,"FB divider top; MOQ 50 (multiples of 50): order 50 for 4 needed, 46 spare; LOW STOCK: 50 at LCSC on 2026-10-21 (only the minimum order)"
+C119328,4,R1,1.5k 1% 1/4W,Axial,1,0.0112,"FB divider bottom; Vout = 1.25*(1+6.2/1.5) = 6.42V. MOQ 50 (multiples of 50): order 50 for 4 needed, 46 spare"
+C223958,4,DPW1,P6KE30A TVS 25.6Vwm / 41.4Vc,DO-15,1,0.1847,"Across 24V/GND at input. MOQ 5 (multiples of 5): order 5 for 4 needed, 1 spare"
+C474952,8,"JPW1,JPW2",Screw terminal 2P 5.08mm,P=5.08,2,0.1933,"24V / GND in and out. MOQ 5 (multiples of 5): order 10 for 8 needed, 2 spare"
+C474892,8,"JCN1,JCN2",Screw terminal 2P 3.5mm,P=3.5,2,0.1196,"CAN_H / CAN_L in and out. MOQ 5 (multiples of 5): order 10 for 8 needed, 2 spare"
 C9413,4,ULD1,LM2940CT-5.0/NOPB LDO,TO-220,1,2.6036,Straight-lead TO-220. Avoid C2866631 (/LF01 appears to have formed leads)
-C342794,12,"CIN_LD,CCN1,CCN2",100nF 50V X7R ceramic,Radial P=5,3,0.0924,"LDO input, MCP2562 VDD, MCP2562 VIO"
-C346942,4,COUT_LD,"47uF 25V electrolytic, low impedance",D5xL11,1,0.0832,LM2940 needs >=22uF with ESR 0.1-1 ohm: no ceramic/polymer here
-C2474,4,DLD1,1N5819 Schottky 40V 1A,DO-41,1,0.0378,V5 rail to Super Mini 5V pad (diode-OR with USB VBUS)
-C640345,4,UCN1,MCP2562-E/P CAN transceiver,PDIP-8,1,2.3438,"VDD=5V, VIO=3V3, STBY tied to GND"
-C714282,4,RCN1,120R 5% 1/4W,Axial,1,0.0068,"Bus termination, enabled by JCN3 jumper"
-C52461,1,"JCN3, JSV1-JSV3","Male header 1x40 strip (cut): JCN3 2-pin termination jumper on every board, 3x 1x3 servo headers on Elbow",2.54mm,0,0.2310,One strip covers the whole arm
-C100114,2,(shunt),Jumper cap 2.54mm,2.54mm,0,0.0094,Fit on Base and Elbow only
-C2932676,16,"JMC1,JMC2, JDR1,JDR2, JDR4",Female header 1x15 2.54mm (cut to fit),2.54mm,4,0.1872,"JMC1/JMC2: Super Mini 2 x 1x10; JDR1/JDR2: TMC2209 2 x 1x8; JDR4: 1x2 socket for the module VREF/DIAG pads; cut from 1x15 strips. The AS5600 module has no sockets: it is soldered directly (JEC1/JEC2 removed)"
-C157925,4,JDR3,"JST S4B-XH-A(LF)(SN) XH 4-pin header, right angle (side entry)",P=2.5 THT right angle,1,0.0911,"Motor; leads exit sideways at the board edge; mating XHP-4 housing + crimps not on LCSC list"
-C1580926,4,CDR1,100uF 50V electrolytic,Radial,1,0.1111,TMC2209 VM bulk
-C119324,7,"RDR1, RSV1-RSV3",1k 1% 1/4W,Axial,1,0.0111,"UART_TX to PDN_UART series resistor; Servo signal series resistors, Elbow only"
-C119347,8,"RDR2, RDR3",10k 1% 1/4W,Axial,2,0.0113,"RDR2: EN pull-up to 3V3 (driver disabled at boot). RDR3: series resistor from the module's VREF pad to the ESP32 ADC (GPIO2)"
-C551328,16,"SO1-SO4",M3x8 brass hex standoff female-female (Shuntian; 4.7 mm across flats),Hex 4.7 AF x 8 mm,4,0.0361,"Carries the motor (stands on top of the board, enters the 1.5 mm motor indentation). Assumed 4 per board; count and positions TBD. Needs M3x14 screws + 0.5 mm washers (not on this list)"
+C342794,12,"CIN_LD,CCN1,CCN2",100nF 50V X7R ceramic,Radial P=5,3,0.0924,"LDO input, MCP2562 VDD, MCP2562 VIO. MOQ 5 (multiples of 5): order 15 for 12 needed, 3 spare"
+C346942,4,COUT_LD,"47uF 25V electrolytic, low impedance",D5xL11,1,0.0832,"LM2940 needs >=22uF with ESR 0.1-1 ohm: no ceramic/polymer here. MOQ 10 (multiples of 10): order 10 for 4 needed, 6 spare"
+C2474,4,DLD1,1N5819 Schottky 40V 1A,DO-41,1,0.0378,"V5 rail to Super Mini 5V pad (diode-OR with USB VBUS). MOQ 20 (multiples of 20): order 20 for 4 needed, 16 spare"
+C640345,4,UCN1,MCP2562-E/P CAN transceiver,PDIP-8,1,2.3438,"VDD=5V, VIO=3V3, STBY tied to GND. LOW STOCK: 87 at LCSC on 2026-10-21"
+C714282,4,RCN1,120R 5% 1/4W,Axial,1,0.0068,"Bus termination, enabled by JCN3 jumper. MOQ 100 (multiples of 100): order 100 for 4 needed, 96 spare"
+C52461,1,"JCN3, JSV1-JSV3","Male header 1x40 strip (cut): JCN3 2-pin termination jumper on every board, 3x 1x3 servo headers on Elbow",2.54mm,0,0.2310,"One strip covers the whole arm. MOQ 5 (multiples of 5): order 5 for 1 needed, 4 spare"
+C100114,2,(shunt),Jumper cap 2.54mm,2.54mm,0,0.0094,"Fit on Base and Elbow only. MOQ 50 (multiples of 50): order 50 for 2 needed, 48 spare"
+C2932676,16,"JMC1,JMC2, JDR1,JDR2, JDR4",Female header 1x15 2.54mm (cut to fit),2.54mm,4,0.1872,"JMC1/JMC2: Super Mini 2 x 1x10; JDR1/JDR2: TMC2209 2 x 1x8; JDR4: 1x2 socket for the module VREF/DIAG pads; cut from 1x15 strips. The AS5600 module has no sockets: it is soldered directly (JEC1/JEC2 removed). MOQ 5 (multiples of 5): order 20 for 16 needed, 4 spare"
+C157925,4,JDR3,"JST S4B-XH-A(LF)(SN) XH 4-pin header, right angle (side entry)",P=2.5 THT right angle,1,0.0911,"Motor; leads exit sideways at the board edge; mating XHP-4 housing + crimps not on LCSC list. MOQ 5 (multiples of 5): order 5 for 4 needed, 1 spare"
+C1580926,4,CDR1,100uF 50V electrolytic,Radial,1,0.1111,"TMC2209 VM bulk. MOQ 5 (multiples of 5): order 5 for 4 needed, 1 spare"
+C119324,7,"RDR1, RSV1-RSV3",1k 1% 1/4W,Axial,1,0.0111,"UART_TX to PDN_UART series resistor; Servo signal series resistors, Elbow only. MOQ 50 (multiples of 50): order 50 for 7 needed, 43 spare"
+C119347,8,"RDR2, RDR3",10k 1% 1/4W,Axial,2,0.0113,"RDR2: EN pull-up to 3V3 (driver disabled at boot). RDR3: series resistor from the module's VREF pad to the ESP32 ADC (GPIO2). MOQ 50 (multiples of 50): order 50 for 8 needed, 42 spare"
+C551328,16,SO1-SO4,M3x8 brass hex standoff female-female (Shuntian; 4.7 mm across flats),Hex 4.7 AF x 8 mm,4,0.0361,"Carries the motor (stands on top of the board, enters the 1.5 mm motor indentation). Assumed 4 per board; count and positions TBD. Needs M3x14 screws + 0.5 mm washers (not on this list). MOQ 10 (multiples of 10): order 20 for 16 needed, 4 spare"
