@@ -6,7 +6,7 @@ SixEyes is an open-source 5-DOF arm plus a gripper, built from 3D-printed cycloi
 stepper motors and a hand-solderable PCB. The ~S$250 figure is the whole-arm build budget (prints,
 mechanics and electronics; power supply and computer excluded), and 500 g at 500 mm is the design target.
 
-> **Work in progress.** The board design is written and the PCB layout is in progress. The firmware builds
+> **Work in progress.** The board design and PCB layout (v1.2) are finished but not yet built or tested. The firmware builds
 > but has not run on hardware yet, and the printable parts and build guides are not published yet. Check the
 > [status](#status) before you buy anything.
 
@@ -36,6 +36,7 @@ solder-on modules, fully through-hole) is built four times and linked by a CAN b
 1. Read the [documentation index](docs/README.md) and follow the numbered guides.
 2. The parts list with LCSC part numbers is [`hardware/pcb/bom/v1.2_BOM_LCSC.csv`](hardware/pcb/bom/v1.2_BOM_LCSC.csv).
 3. The circuit and wiring are explained in the [PCB design reference](docs/reference/v1.2_PCB_Design_Reference.md).
+4. The S$250 claim is checked line by line in the [budget](docs/reference/BUDGET.md).
 
 ## Repository map
 
@@ -53,8 +54,9 @@ Earlier generations of the project (Alpha and Beta boards, experiments) are kept
 | Part | State |
 |---|---|
 | Board design v1.2 (circuit, parts list) | ✅ written |
-| KiCad schematic and PCB layout | 🚧 in progress |
-| Manufacturing files (Gerbers) | ⬜ not yet |
+| KiCad schematic and PCB layout | ✅ v1.2 complete (checks clean, not yet built or tested) |
+| Manufacturing files (Gerbers) | ✅ v1.2 in [`hardware/pcb/gerbers/`](hardware/pcb/gerbers/) |
+| [Budget (S$250 claim)](docs/reference/BUDGET.md) | 🚧 being verified; most prices still unknown |
 | Firmware (`firmware/joint_node`) | 🚧 builds for all four board roles; not yet run on hardware; several modules are stubs |
 | CAN protocol | 🚧 draft |
 | 3D-printable parts | ⬜ not yet published |

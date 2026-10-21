@@ -26,7 +26,7 @@
 - Multimeter, magnifying glass, safety glasses
 - Plastic screwdriver (for the module's current pot)
 - Inline fuse holder and a **3 A slow-blow fuse** for the first bench test, and a bench supply with a current limit if you have one
-- The board and the parts in the [bill of materials](../hardware/pcb/bom/v1.2_BOM_LCSC.csv)
+- The board and the parts in the [bill of materials](../hardware/pcb/bom/v1.2_BOM_LCSC.csv). The signed [schematic](../hardware/pcb/drawings/SXE-PCB-v1.2-SCH.pdf) and [layout plots](../hardware/pcb/drawings/SXE-PCB-v1.2-GBR.pdf) show where everything goes
 - **One supported driver module: BIGTREETECH TMC2209 V1.2 or MKS TMC2209 V2.0.** Other modules are not supported.
 
 ## Rules for every part

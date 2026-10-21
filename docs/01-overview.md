@@ -1,7 +1,7 @@
 # 1. Overview: what you are building
 
 SixEyes is an open-source robotic arm designed to be built by one person for **under about S$250**,
-not counting the power supply and a computer. The design target is to hold
+not counting the power supply and a computer (this is [still being verified](reference/BUDGET.md)). The design target is to hold
 **500 g at 500 mm reach**.
 
 ## How it is built
