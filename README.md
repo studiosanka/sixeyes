@@ -10,7 +10,9 @@ mechanics and electronics; power supply and computer excluded), and 500 g at 500
 > but has not run on hardware yet, and the printable parts and build guides are not published yet. Check the
 > [status](#status) before you buy anything.
 
-![The SixEyes joint board on a NEMA 17 motor, front and back](docs/images/joint-board-assembly.png)
+| Front | Back |
+|:-:|:-:|
+| <img src="docs/images/joint-board-top-iso.png" alt="Joint board front on a NEMA 17 motor" width="100%"> | <img src="docs/images/joint-board-bottom-iso.png" alt="Joint board back on a NEMA 17 motor" width="100%"> |
 
 *3D render of the joint board on a NEMA 17 motor (the motor is drawn transparent). Left: the front. Right: the back, with the AS5600 encoder module and the four standoffs that carry the motor. The Super Mini and TMC2209 modules are not shown in their sockets.*
 

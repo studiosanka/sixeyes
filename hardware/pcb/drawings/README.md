@@ -1,6 +1,6 @@
 # Signed drawings, v1.2
 
-Release documents for the joint board, on the Studio Sanka drawing sheet (A3). Both are **drawn and approved by Vincent Santosa** on 21 Oct 2026.
+Release documents for the joint board, on the Studio Sanka drawing sheet (A3). Both are **drawn and approved by Vincent Santosa**. The schematic was signed on 21 Oct 2026; the layout plot was re-signed on 22 Oct 2026 after the terminal pinouts were added to the silkscreen.
 
 | Document no. | File | What it is |
 |---|---|---|

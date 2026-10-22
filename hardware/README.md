@@ -2,13 +2,15 @@
 
 Everything needed to build the electronics and the mechanics of the arm.
 
-![The SixEyes joint board on a NEMA 17 motor, front and back](../docs/images/joint-board-assembly.png)
+| Front | Back |
+|:-:|:-:|
+| <img src="../docs/images/joint-board-top-iso.png" alt="Joint board front on a NEMA 17 motor" width="100%"> | <img src="../docs/images/joint-board-bottom-iso.png" alt="Joint board back on a NEMA 17 motor" width="100%"> |
 
-*3D render of the joint board on a NEMA 17 motor (the motor is drawn transparent). Left: the front. Right: the back, with the AS5600 encoder module and the four standoffs that carry the motor. The Super Mini and TMC2209 modules are not shown in their sockets.*
+*3D renders of the joint board on a NEMA 17 motor (the motor is drawn transparent). Left: the front. Right: the back, with the AS5600 encoder module and the four standoffs that carry the motor. The Super Mini and TMC2209 modules are not shown in their sockets.*
 
 | Folder | What is in it | Status |
 |---|---|---|
-| [`pcb/kicad/`](pcb/kicad/) | KiCad project for the joint board (open `SixEyes_v1.2.kicad_pro`) | layout in progress |
+| [`pcb/kicad/`](pcb/kicad/) | KiCad project for the joint board (open `SixEyes_v1.2.kicad_pro`) | ready (v1.2) |
 | [`pcb/libraries/`](pcb/libraries/) | Symbols, footprints and 3D models the project uses (nothing to install) | ready |
 | [`pcb/bom/`](pcb/bom/) | Bill of materials with LCSC part numbers | ready (v1.2) |
 | [`pcb/drawings/`](pcb/drawings/) | Signed schematic and layout plots (PDF), v1.2 | ready |

@@ -2,9 +2,11 @@
 
 **Status: draft.** The layout is still being finished, so check every part name against the **silkscreen on your board**. The silkscreen is always right. The names here match the current design.
 
-![The finished joint board on a NEMA 17 motor, front and back](images/joint-board-assembly.png)
+| Front | Back |
+|:-:|:-:|
+| <img src="images/joint-board-top-iso.png" alt="Joint board front on a NEMA 17 motor" width="100%"> | <img src="images/joint-board-bottom-iso.png" alt="Joint board back on a NEMA 17 motor" width="100%"> |
 
-*3D render of the joint board on a NEMA 17 motor (the motor is drawn transparent). Left: the front. Right: the back, with the AS5600 encoder module and the four standoffs that carry the motor. The Super Mini and TMC2209 modules are not shown in their sockets.*
+*3D renders of the joint board on a NEMA 17 motor (the motor is drawn transparent). Left: the front. Right: the back, with the AS5600 encoder module and the four standoffs that carry the motor. The Super Mini and TMC2209 modules are not shown in their sockets.*
 
 ## Safety first (read this before you touch anything)
 
@@ -19,6 +21,16 @@
 - **Never use a breadboard** for 24 V or motor wires. Use screw terminals or soldered joints.
 - **Smell, smoke or a very hot part? Switch off at the power supply first**, then look.
 - **Ask a mentor to watch your first power-up.**
+
+## What the board looks like
+
+![The bare board, front](images/bare-pcb-top.png)
+
+*Front of the bare board (3D render). The silkscreen marks the power terminals (⊖ and ⊕), the CAN terminals (H and L), the module sockets and every part name.*
+
+![The bare board, back](images/bare-pcb-bottom.png)
+
+*Back of the bare board (3D render). The outlined square is where the AS5600 module goes. The edges are marked +24V, GND, CANH, CANL and the three servo outputs (PWM, 6.5V, GND).*
 
 ## What you need
 
@@ -68,7 +80,7 @@ Work in this order. Tick each group when it is done.
    - JMC1, JMC2 (the Super Mini) and JDR1, JDR2 (the driver module). **Tip:** plug the sockets onto the module first and solder them with the module in place, so they stay parallel.
    - **JDR4**, a 2-pin socket next to the EN marker. The module's VREF and DIAG pads connect here (Step 6).
    - JCN3 (2-pin jumper), and JSV1 to JSV3 (servo headers) on the **Elbow only**.
-6. **Terminals:** the screw terminals JPW1, JPW2, JCN1, JCN2 with the wire openings facing the board edge. The JST motor connector JDR3 with its opening facing the edge.
+6. **Terminals:** the screw terminals JPW1, JPW2, JCN1, JCN2 with the wire openings facing the board edge. The JST motor connector JDR3 with its opening facing the edge. The silkscreen labels each terminal: ⊖ and ⊕ on JPW1/JPW2, H and L (also CANH, CANL) on JCN1/JCN2, +24V and GND at the board edge. Check them before wiring.
 7. **Electrolytic capacitors (COUT_LD1, CDR1, COUT1, CIN1):** the **stripe is the minus side**. Match it to the marked side on the silkscreen. A backwards capacitor can burst.
 8. **The two big regulators (ULD1 LM2940 and UBK1 XL4016E1):** the **metal tab goes on the side marked on the silkscreen**. UBK1's tab is a live switching node: **never connect its heatsink to ground.**
 

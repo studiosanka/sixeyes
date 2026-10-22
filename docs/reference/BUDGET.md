@@ -17,7 +17,7 @@ Each line has a status:
 Rules for keeping it honest:
 
 - Prices are for **one complete arm** (4 joint boards), at the quantity you must really buy (minimum order and pack sizes included), not the fraction you use. Leftovers are shown in the Notes column.
-- Prices are in **S$**. Foreign prices are converted at the rate written in [Inputs](#inputs). Shipping is its own section so it is not forgotten.
+- Prices are in **S$**. Foreign prices are converted at the rate written in [Inputs](#inputs). **Shipping and import tax are not counted** (see [scope](#scope)); lines that show a shipping fee in the listing note it instead.
 - Put the **date checked** and a **source** (shop and link, or "invoice") on every `OK` line. Prices change; an old date is a warning.
 - The totals are shown three ways: confirmed only (`OK`), plus estimates (`OK` + `EST`), and the number of `TBD` lines left.
 
@@ -36,29 +36,26 @@ Rules for keeping it honest:
 | Modules, motors, servos, cables | Computer / USB cable used to flash |
 | 3D-printing filament | Printer, soldering iron, crimper, other tools |
 | Bearings, heat inserts, screws | Your own time |
-| Shipping and import tax on the above | Spare parts you choose to buy |
+| | Shipping and import tax on any purchase |
 
 ## 1. PCB and board parts
 
 | Item | Qty | Source | Cost (S$) | Status | Notes |
 |---|---|---|---|---|---|
-| Bare PCBs (JLCPCB, 4 layers, 1.6 mm, HASL) | 4 pcs (minimum 5) | JLCPCB | TBD | `TBD` | Order planned 2026-10-22: fill from the invoice. |
+| Bare PCBs (JLCPCB, 4 layers, 1.6 mm, HASL) | 5 | JLCPCB quote | 10.23 | `OK` | Quote US$8.00 (= S$10.23), 2026-10-21, 5 pcs, shipping not included. May be a first-order offer, so later orders could cost more. Replace with the invoice after ordering. |
 | LCSC parts for 4 boards | 26 lines | LCSC | 65.00 | `EST` | **US$50.85** (= S$65.00 at the rate above) at qty-1 prices incl. minimum order quantities, checked 2026-10-21. Detail: [`v1.2_BOM_LCSC.csv`](../../hardware/pcb/bom/v1.2_BOM_LCSC.csv). |
-| LCSC shipping and tax | | LCSC | TBD | `TBD` | |
-| PCB shipping and tax | | JLCPCB | TBD | `TBD` | |
-| **Subtotal** | | | **TBD** | | |
+| **Subtotal** | | | **75.23** | | includes the LCSC estimate |
 
 ## 2. Modules and electronics that are not on LCSC
 
 | Item | Qty | Source (link) | Unit (S$) | Cost (S$) | Status | Notes |
 |---|---|---|---|---|---|---|
-| ESP32-C6 Super Mini | 4 | TBD | TBD | TBD | `TBD` | |
-| TMC2209 driver module (BTT V1.2 or MKS V2.0 only) | 4 | TBD | TBD | TBD | `TBD` | Other modules are not supported. |
-| AS5600 module | 4 | TBD | TBD | TBD | `TBD` | Soldered directly to the board; no headers needed. |
-| Diametric magnet, about 6 x 2.5 mm | 4 | TBD | TBD | TBD | `TBD` | |
+| ESP32-C6 Super Mini | 4 | [AliExpress, ICFLY Store (item 1005009007946552)](https://www.aliexpress.com/item/1005009007946552.html) | 3.92 | 15.68 | `OK` | Cart price 2026-10-21, listing sold as 1 pc per unit. Ships separately from a global seller: see the shipping line below. |
+| TMC2209 driver module, MKS V2.0, pack of 4 | 4 | [AliExpress, BEGRINT 3D Printer Store (item 1005008704098385)](https://www.aliexpress.com/item/1005008704098385.html) | 13.22 | 13.22 | `OK` | Cart price 2026-10-21 for the 4-pack option (no spare), one-time offer, 1 pack left. Check on arrival that the modules are the MKS V2.0 (see [supported modules](tmc2209-module-schematics.md)). |
+| AS5600 module (Estardyn), with male header pins fitted | 4 | [AliExpress, bundle deal (item 1005012105119654)](https://www.aliexpress.com/item/1005012105119654.html) | 1.99 | 7.96 | `OK` | Cart price 2026-10-21, free shipping. The male header pins stay on and are soldered to the board; the pin plastic is the gap between the two boards, as the design assumes. |
+| Diametric magnet, N42 NdFeB, 6 x 2 mm, radial | 10 (4 needed) | [AliExpress, HHCX Huahai Chuangxin (item 1005012687239354)](https://www.aliexpress.com/item/1005012687239354.html) | 6.95 | 6.95 | `OK` | Cart price 2026-10-21 for a pack of 10, 6 spare. **Check:** the design assumed about 6 x 2.5 mm; 2 mm is thinner, which changes the field at the chip. Verify on the first motor. |
 | TO-220 heatsink for the XL4016 | 4 | TBD | TBD | TBD | `TBD` | |
-| Motor lead: XH2.54 4-pin to 6-pin terminal, 10 cm, white | 4 | [AliExpress, Super 3D (item 32811275446)](https://www.aliexpress.com/item/32811275446.html) | 0.91 | 3.64 | `OK` | Checked 2026-10-21, tax excluded. 4-pin XH end fits JDR3. The seller gives 1% off for 2 or more, not counted. Listing showed only 9 left. |
-| Shipping for the motor leads | 1 | same listing | 2.66 | 2.66 | `OK` | Delivery 26 to 31 Oct. Cheaper if combined with other items from the same seller. |
+| Motor lead: XH2.54 4-pin to 6-pin terminal, 10 cm, white | 5 (4 needed) | [AliExpress, Super 3D (item 32811275446)](https://www.aliexpress.com/item/32811275446.html) | 0.91 | 4.55 | `OK` | Cart price 2026-10-21, one spare. 4-pin XH end fits JDR3. Shipping is free because it ships with the other AliExpress-shipped items in the cart. |
 | 24 V inline fuse and holder | 1 | TBD | TBD | TBD | `TBD` | Outside the board. Required by the build guide. |
 | Wire (24 V, CAN, motor, servo) | | TBD | TBD | TBD | `TBD` | |
 | **Subtotal** | | | | **TBD** | | |
@@ -88,11 +85,11 @@ The full lists will live in [`hardware/mechanical/`](../../hardware/mechanical/)
 
 | Section | Confirmed (`OK`) | With estimates (`OK` + `EST`) | `TBD` lines |
 |---|---|---|---|
-| 1. PCB and board parts | S$0 | S$65.00 | 3 |
-| 2. Modules and electronics | S$6.30 | S$6.30 | 7 |
+| 1. PCB and board parts | S$10.23 | S$75.23 | 0 |
+| 2. Modules and electronics | S$48.36 | S$48.36 | 3 |
 | 3. Motors and servos | S$0 | S$0 | 2 |
 | 4. Mechanical parts | S$0 | S$0 | 5 |
-| **Total (so far, not complete)** | **S$6.30** | **S$71.30** | **17** |
+| **Total (so far, not complete)** | **S$58.59** | **S$123.59** | **10** |
 | **Claim** | | **S$250** | |
 
 Update the counts and totals whenever a line changes. If the total goes over S$250, say so here and either lower the cost or change the claim in the [README](../../README.md) and the [overview](../01-overview.md).
@@ -102,4 +99,8 @@ Update the counts and totals whenever a line changes. If the total goes over S$2
 | Date | Change |
 |---|---|
 | 2026-10-21 | Page created. Only the LCSC estimate is filled in. |
+| 2026-10-21 | Shipping and import tax removed from the budget scope. PCB quote US$8 added. |
+| 2026-10-21 | MKS TMC2209 4-pack option added (S$13.22). |
+| 2026-10-21 | MKS TMC2209 listing removed (to be re-sourced). AS5600 header pins confirmed as intended. |
+| 2026-10-21 | AliExpress cart added: ESP32-C6, MKS TMC2209, AS5600, magnets, motor leads (S$53.56 with shipping). |
 | 2026-10-21 | Exchange rate set. Motor lead priced from AliExpress. LCSC estimate converted. |

@@ -123,7 +123,7 @@
 		(filling no)
 		(pcbplotparams
 			(layerselection 0x00000000_00000000_55555555_575555ff)
-			(plot_on_all_layers_selection 0x00000000_00000000_00000000_00000000)
+			(plot_on_all_layers_selection 0x00000000_00000000_00000000_02000000)
 			(disableapertmacros no)
 			(usegerberextensions no)
 			(usegerberattributes yes)
@@ -132,28 +132,28 @@
 			(dashed_line_dash_ratio 12)
 			(dashed_line_gap_ratio 3)
 			(svgprecision 4)
-			(plotframeref no)
+			(plotframeref yes)
 			(mode 1)
 			(useauxorigin no)
 			(pdf_front_fp_property_popups yes)
 			(pdf_back_fp_property_popups yes)
 			(pdf_metadata yes)
-			(pdf_single_document no)
+			(pdf_single_document yes)
 			(dxfpolygonmode yes)
 			(dxfimperialunits yes)
 			(dxfusepcbnewfont yes)
 			(psnegative no)
 			(psa4output no)
-			(plot_black_and_white yes)
+			(plot_black_and_white no)
 			(sketchpadsonfab no)
 			(plotpadnumbers no)
 			(hidednponfab no)
 			(sketchdnponfab yes)
 			(crossoutdnponfab yes)
 			(subtractmaskfromsilk yes)
-			(outputformat 1)
+			(outputformat 4)
 			(mirror no)
-			(drillshape 0)
+			(drillshape 2)
 			(scaleselection 1)
 			(outputdirectory "../gerbers/")
 		)
@@ -1237,7 +1237,7 @@
 		(property "Reference" "JPW1"
 			(at -0.01 4.44 0)
 			(layer "F.SilkS")
-			(uuid "b9bfcff9-9065-4c2e-9043-63ba107298ee")
+			(uuid "fcb2f297-b5b9-4118-af49-90717028b728")
 			(effects
 				(font
 					(size 0.75 0.75)
@@ -1248,7 +1248,7 @@
 		(property "Value" "KF128-5.08-2P"
 			(at 0 4 0)
 			(layer "F.Fab")
-			(uuid "7ebb4676-d9cf-4503-afcf-7f0d8834b0cc")
+			(uuid "99a57b37-d340-49de-9397-c9827b423ce4")
 			(effects
 				(font
 					(size 1 1)
@@ -1260,7 +1260,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "9411f3a6-0e98-4c31-9ddb-672a1894d1bf")
+			(uuid "2c510a56-269d-4e5f-9610-d9d4fbf18e5b")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1271,7 +1271,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "f6f84f37-a26b-4964-8839-00cabfb94946")
+			(uuid "d48f59c0-69d1-4839-aa87-14442702cc23")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -27940,9 +27940,135 @@
 			(justify mirror)
 		)
 	)
+	(gr_text "GND\n"
+		(locked yes)
+		(at 148.21 158.57 270)
+		(layer "B.SilkS")
+		(uuid "4b59b5a6-6eb8-4e69-81aa-b5d6594ecad6")
+		(effects
+			(font
+				(size 0.75 0.75)
+				(thickness 0.1875)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "6.5V"
+		(locked yes)
+		(at 150.62 158.58 270)
+		(layer "B.SilkS")
+		(uuid "92a0de49-cd44-4561-9036-113e0e2e2a42")
+		(effects
+			(font
+				(size 0.75 0.75)
+				(thickness 0.1875)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "PWM\n"
+		(locked yes)
+		(at 153.22 158.58 270)
+		(layer "B.SilkS")
+		(uuid "e9b98f4f-1843-4208-9edd-74a9b12f20dd")
+		(effects
+			(font
+				(size 0.75 0.75)
+				(thickness 0.1875)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "GND\n"
+		(locked yes)
+		(at 156.13 158.57 270)
+		(layer "B.SilkS")
+		(uuid "af4d9d39-03fa-4480-bf2a-3f839300ad4f")
+		(effects
+			(font
+				(size 0.75 0.75)
+				(thickness 0.1875)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "6.5V"
+		(locked yes)
+		(at 158.64 158.59 270)
+		(layer "B.SilkS")
+		(uuid "acbb0e6d-22ef-4f0a-9caa-5bda8d2ce0af")
+		(effects
+			(font
+				(size 0.75 0.75)
+				(thickness 0.1875)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "PWM\n"
+		(locked yes)
+		(at 161.24 158.59 270)
+		(layer "B.SilkS")
+		(uuid "848b84c5-df96-4b6e-84af-bd730db24f4a")
+		(effects
+			(font
+				(size 0.75 0.75)
+				(thickness 0.1875)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "GND\n"
+		(locked yes)
+		(at 164.14 158.56 270)
+		(layer "B.SilkS")
+		(uuid "f2eecc88-b344-4f1e-a972-f2743ba3f7f0")
+		(effects
+			(font
+				(size 0.75 0.75)
+				(thickness 0.1875)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "6.5V"
+		(locked yes)
+		(at 166.55 158.57 270)
+		(layer "B.SilkS")
+		(uuid "69a5d52f-8ec9-4be0-ba49-5b3a7bc2f7ec")
+		(effects
+			(font
+				(size 0.75 0.75)
+				(thickness 0.1875)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "PWM\n"
+		(locked yes)
+		(at 169.17 158.41 270)
+		(layer "B.SilkS")
+		(uuid "7917b1cd-b15e-4c83-826a-4c31f32d15c2")
+		(effects
+			(font
+				(size 0.75 0.75)
+				(thickness 0.1875)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
 	(gr_text "CERN-OHL-S-2.0 \n\n"
 		(locked yes)
-		(at 141.43 159.65 0)
+		(at 152.95 155.37 0)
 		(layer "B.SilkS")
 		(uuid "dd9e9413-5ca9-46fe-ae62-231500ad8356")
 		(effects
@@ -27956,13 +28082,139 @@
 	)
 	(gr_text "(c) 2026 Studio Sanka"
 		(locked yes)
-		(at 143.79 156.81 0)
+		(at 170.33 153.93 0)
 		(layer "B.SilkS")
 		(uuid "8ca82d20-5b28-425a-8e14-b9f207b7293c")
 		(effects
 			(font
 				(size 0.85 0.85)
 				(thickness 0.2125)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "GND\n"
+		(locked yes)
+		(at 130.759999 100.249999 90)
+		(layer "B.SilkS")
+		(uuid "8f36ed3e-aaf2-4c9d-bd08-b1a2bde9bcd8")
+		(effects
+			(font
+				(size 0.85 0.85)
+				(thickness 0.2125)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "+24V"
+		(locked yes)
+		(at 135.72 100.41 90)
+		(layer "B.SilkS")
+		(uuid "9a7a53b6-d44e-4968-91c6-c0005a4a9f56")
+		(effects
+			(font
+				(size 0.85 0.85)
+				(thickness 0.2125)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "CANH\n"
+		(locked yes)
+		(at 142.14 100.22 90)
+		(layer "B.SilkS")
+		(uuid "1e3375fa-a097-4168-818f-9a8c78457990")
+		(effects
+			(font
+				(size 0.85 0.85)
+				(thickness 0.2125)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "CANL"
+		(locked yes)
+		(at 145.560001 100.100002 90)
+		(layer "B.SilkS")
+		(uuid "8c578228-73ce-4998-8c5b-dab467272bda")
+		(effects
+			(font
+				(size 0.85 0.85)
+				(thickness 0.2125)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "+24V"
+		(locked yes)
+		(at 129.81 157.98 270)
+		(layer "B.SilkS")
+		(uuid "c54df15d-1d85-49c6-81d8-aef76d39b400")
+		(effects
+			(font
+				(size 0.85 0.85)
+				(thickness 0.2125)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "GND\n"
+		(locked yes)
+		(at 134.77 158.14 270)
+		(layer "B.SilkS")
+		(uuid "3867cdf8-8d8f-4f2b-918e-a644dd1b4035")
+		(effects
+			(font
+				(size 0.85 0.85)
+				(thickness 0.2125)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "CANL"
+		(locked yes)
+		(at 138.28 158.46 270)
+		(layer "B.SilkS")
+		(uuid "914b3324-f723-48a8-af05-276b8b4e06ae")
+		(effects
+			(font
+				(size 0.85 0.85)
+				(thickness 0.2125)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "CANH\n"
+		(locked yes)
+		(at 141.61 158.45 270)
+		(layer "B.SilkS")
+		(uuid "bde2e7aa-7053-466e-a41b-f76412dc0cc5")
+		(effects
+			(font
+				(size 0.85 0.85)
+				(thickness 0.2125)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "github.com/studiosanka/sixeyes"
+		(locked yes)
+		(at 161.82 138.53 0)
+		(layer "B.SilkS")
+		(uuid "62713801-dcb8-4f2e-b38d-179fbd5e6f3f")
+		(effects
+			(font
+				(size 0.95 0.95)
+				(thickness 0.2375)
 				(bold yes)
 			)
 			(justify left bottom mirror)
@@ -28033,51 +28285,9 @@
 			(justify left bottom mirror)
 		)
 	)
-	(gr_text "CERN-OHL-S-2.0 \n\n"
-		(locked yes)
-		(at 156.61 142.11 0)
-		(layer "B.SilkS")
-		(uuid "1d47a1cd-5da5-47d0-a0b3-5a513f3e5adf")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.25)
-				(bold yes)
-			)
-			(justify left bottom mirror)
-		)
-	)
-	(gr_text "(c) 2026 Studio Sanka"
-		(locked yes)
-		(at 159.33 138.67 0)
-		(layer "B.SilkS")
-		(uuid "c82a6afe-bfd3-47c5-9eb4-4763b3a2b156")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.25)
-				(bold yes)
-			)
-			(justify left bottom mirror)
-		)
-	)
-	(gr_text "github.com/studiosanka/sixeyes"
-		(locked yes)
-		(at 170.48 157.4 0)
-		(layer "B.SilkS")
-		(uuid "62713801-dcb8-4f2e-b38d-179fbd5e6f3f")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.25)
-				(bold yes)
-			)
-			(justify left bottom mirror)
-		)
-	)
 	(gr_text "SXE-PCB v1.2"
 		(locked yes)
-		(at 142.45 102.87 0)
+		(at 140.83 108.55 0)
 		(layer "B.SilkS")
 		(uuid "47f6f67b-2add-450e-9984-9c4dba25cc2f")
 		(effects
