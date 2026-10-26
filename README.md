@@ -58,7 +58,7 @@ Earlier generations of the project (Alpha and Beta boards, experiments) are kept
 | Board design v1.2 (circuit, parts list) | ✅ written |
 | KiCad schematic and PCB layout | ✅ v1.2 complete (checks clean, not yet built or tested) |
 | Manufacturing files (Gerbers) | ✅ v1.2 in [`hardware/pcb/gerbers/`](hardware/pcb/gerbers/) |
-| [Budget (S$250 claim)](docs/reference/BUDGET.md) | 🚧 being verified; most prices still unknown |
+| [Budget (S$250 claim)](docs/reference/BUDGET.md) | 🚧 being verified; S$185 priced at average survey prices, S$65 left for the mechanical parts |
 | Firmware (`firmware/joint_node`) | 🚧 builds for all four board roles; not yet run on hardware; several modules are stubs |
 | CAN protocol | 🚧 draft |
 | 3D-printable parts | ⬜ not yet published |

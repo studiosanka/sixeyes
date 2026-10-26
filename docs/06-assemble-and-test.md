@@ -13,8 +13,8 @@ Read the safety rules in [Build the PCB](04-build-the-pcb.md) first. They apply 
 *3D renders of the joint board on a NEMA 17 motor (the motor is drawn transparent). Left: the front. Right: the back, with the AS5600 encoder module and the four standoffs that carry the motor. The Super Mini and TMC2209 modules are not shown in their sockets.*
 
 1. The board carries the motor on **four M3×8 brass standoffs** (the circles marked SO1 to SO4). Screw them into place with M3×14 screws and **0.5 mm washers**.
-2. The motor sits on top of the standoffs. Its rear face is about **9.5 mm** above the board, and the rear shaft end must stick out about **1.6 mm** below the face. That sets the gap to the encoder chip (see the [design reference §6](reference/v1.2_PCB_Design_Reference.md)). These numbers are from the design and have **not been checked on a real motor yet**.
-3. Fit the **magnet** (diametrically magnetised, about 6 × 2.5 mm) centred on the shaft, **0.5 to 3 mm** from the AS5600 chip. The magnet's north and south must sit side by side across the chip, not top and bottom.
+2. The motor sits on top of the standoffs. Its rear face is about **9.5 mm** above the board. An ordinary single-shaft motor works: the magnet goes on the **rear shaft end**, which is visible through the opening in the back cover, so no dual-shaft motor is needed. How deep that shaft end sits sets the gap to the encoder chip (see the [design reference §6](reference/v1.2_PCB_Design_Reference.md)). These numbers are from the design and have **not been checked on a real motor yet**.
+3. Fit the **magnet** (diametrically magnetised, about 6 × 2 to 3 mm) centred on the rear shaft end, **0.5 to 3 mm** from the AS5600 chip. The magnet's north and south must sit side by side across the chip, not top and bottom.
 
 ## 2. Connect the motor and wires
 

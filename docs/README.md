@@ -17,7 +17,8 @@ planned but not written yet.
 | Document | What it covers |
 |---|---|
 | [PCB design reference (v1.2)](reference/v1.2_PCB_Design_Reference.md) | The joint board: circuit, pin map, parts, wiring, motor mounting |
-| [Budget: the S$250 claim](reference/BUDGET.md) | Every cost line for the whole arm, with a status (confirmed, estimated, unknown) and the running total |
+| [Budget: the S$250 claim](reference/BUDGET.md) | Every cost line for the whole arm with low, average and high prices from a price survey, and the room left under S$250 |
+| [Power and current budget](reference/POWER_BUDGET.md) | Current per board and per wire segment, wire gauge, voltage drop, fuse and supply sizing, and the servo rail limit (draft, estimates) |
 | [Gearbox torque budget](reference/GEARBOX_TORQUE_BUDGET.md) | Torque needed per joint and what the NEMA17 motors and 1:25 cycloidal gearboxes provide |
 | [CAN message protocol](reference/CAN_MESSAGE_PROTOCOL.md) | How the four joint boards talk to each other (draft) |
 | [IC and diode pin verification](reference/ic-pin-verification.md) | How each IC's pins were checked against its datasheet, and what is still unverified |
