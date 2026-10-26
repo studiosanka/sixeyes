@@ -1,6 +1,6 @@
 # 4. Build the PCB
 
-**Status: draft.** The layout is still being finished, so check every part name against the **silkscreen on your board**. The silkscreen is always right. The names here match the current design.
+**Status: draft.** The v1.2 layout is finished, but **this board has not been built yet**, so check every part name against the **silkscreen on your board**. The silkscreen is always right. The names here match the final design.
 
 | Front | Back |
 |:-:|:-:|

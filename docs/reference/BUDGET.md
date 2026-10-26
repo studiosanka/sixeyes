@@ -4,7 +4,7 @@ The project claims a whole-arm build for about **S$250** (prints, mechanics and 
 
 **How the check works:** each part gets a **low, average and high price** taken from real AliExpress listings in a [price survey](price-survey.csv). The budget is calculated at the **average**, and the low and high totals show how far prices can move. Marketplace prices change daily, so the survey is dated and the ranges are there to show that.
 
-**Verdict so far: not yet verified.** The mechanical parts (filament, bearings, inserts, screws) are not priced yet. The priced parts already use S$184.82 at average prices, so **S$65.18 is left** for the mechanical parts (S$77.21 at low prices, S$14.08 at high prices).
+**Verdict so far: not yet verified.** The mechanical parts (filament, bearings, inserts, screws) are not priced yet. The priced parts already use S$186.39 at average prices, so **S$63.61 is left** for the mechanical parts (S$75.64 at low prices, S$10.94 at high prices).
 
 ## How to read this page
 
@@ -20,6 +20,7 @@ The project claims a whole-arm build for about **S$250** (prints, mechanics and 
 
 Rules for keeping it honest:
 
+- **Quantities come from the arm [bill of materials](../../hardware/bom/arm_BOM.csv).** This page only adds prices, so change the BOM first when the design changes.
 - Prices are for **one complete arm** (4 joint boards). Where a part is only sold in a pack (the magnets, the LCSC minimum order quantities), the pack is what is counted.
 - Prices are in **S$**, with tax and shipping excluded. US$ prices use the rate in [Inputs](#inputs).
 - The **Where to buy** column links to the listings the prices came from. Listings and discounts change, so check the price before you buy, and update the survey and this page if it has moved.
@@ -41,7 +42,7 @@ Rules for keeping it honest:
 | 3D-printing filament | Printer, soldering iron, crimper, other tools |
 | Bearings, heat inserts, screws | Your own time |
 | | Shipping and import tax on any purchase |
-| | Heatsinks for the XL4016 and the 24 V inline fuse (small items, left out of this calculation) |
+| | Heatsinks for the XL4016 (small items, left out of this calculation) |
 
 ## 1. PCB and board parts
 
@@ -60,9 +61,10 @@ Rules for keeping it honest:
 | AS5600 module, header pins fitted | 4 | 1.99 | 1.99 | 4.80 | 7.96 | `SURVEY` n=1 | [1](https://www.aliexpress.com/item/1005012105119654.html) | The header pins stay on and are soldered to the board. |
 | Magnet, 6 x 2 mm N42 radial (1 pack of 10, 4 used) | 1 | 6.95 | 6.95 | 7.47 | 6.95 | `SURVEY` n=1 | [1](https://www.aliexpress.com/item/1005012687239354.html) | Sold as a pack of 10; you must buy the pack (S$6.95, list S$7.47). Check the field at the chip on the first motor; a 3 mm magnet may be needed. |
 | Motor lead, XH2.54 4-pin to 6-pin | 4 | 0.91 | 0.91 | 0.98 | 3.64 | `SURVEY` n=1 | [1](https://www.aliexpress.com/item/32811275446.html) | The 4-pin XH end fits JDR3. |
+| Inline fuse holder with 7.5 A fuse (24 V lead) | 1 | 1.57 | 1.57 | 3.14 | 1.57 | `SURVEY` n=1 | [1](https://www.aliexpress.com/item/1005008490074072.html) | Mini blade (automotive) holder with a 7.5 A fuse, S$1.57 on 2026-10-27 (list S$3.14). Blade fuses are fast-acting and rated 32 V DC, fine for 24 V. |
 | Wire, 22 AWG silicone, 5 m (CAN bus) | 2 | 2.66 | 2.66 | 2.66 | 5.32 | `SURVEY` n=1 | [1](https://www.aliexpress.com/item/1005006250522147.html) | Two 5 m sets (S$2.66 each, no list price shown), so two colours can be twisted into the CAN pair. |
 | Wire, 16 AWG PVC (UL1007 type), 5 m (24 V power) | 2 | 4.53 | 4.53 | 4.53 | 9.06 | `SURVEY` n=1 | [1](https://www.aliexpress.com/item/1005012122785303.html) | One red and one black 5 m roll (S$4.53 each, no list price shown). The price was read for the grey variant; red and black may differ slightly. PVC is stiffer than silicone. |
-| **Subtotal** | | | | | **66.09** | | | Low 61.85, high 103.69 |
+| **Subtotal** | | | | | **67.66** | | | Low 63.42, high 106.83 |
 
 ## 3. Motors and servos
 
@@ -81,7 +83,7 @@ The full lists will live in [`hardware/mechanical/`](../../hardware/mechanical/)
 | PETG filament | 2 rolls (1 kg each), colour TBD | TBD | `TBD` | Check the real print mass from the slicer for all parts (including supports and failed prints) and write it here. |
 | Bearings | `bearings.csv` (not written yet) | TBD | `TBD` | Type, size, qty per gearbox, qty in total. |
 | Heat-set inserts | `inserts.csv` (not written yet) | TBD | `TBD` | M3 length and qty. |
-| Screws, nuts, washers | `fasteners.csv` (not written yet) | TBD | `TBD` | Includes the M3x14 screws and 0.5 mm washers for the motor standoffs. |
+| Screws, nuts, washers | `fasteners.csv` (not written yet) | TBD | `TBD` | Includes the M3x14 screws for the motor standoffs. |
 | Other (grease, dowel pins, tape) | | TBD | `TBD` | |
 | **Subtotal** | | **TBD** | | |
 
@@ -90,12 +92,12 @@ The full lists will live in [`hardware/mechanical/`](../../hardware/mechanical/)
 | Section | At low prices (S$) | **At average prices (S$)** | At high prices (S$) | `TBD` lines |
 |---|---|---|---|---|
 | 1. PCB and board parts | 75.23 | **77.62** | 80.00 | 0 |
-| 2. Modules and electronics | 61.85 | **66.09** | 103.69 | 0 |
+| 2. Modules and electronics | 63.42 | **67.66** | 106.83 | 0 |
 | 3. Motors and servos | 35.71 | **41.11** | 52.23 | 0 |
 | 4. Mechanical parts | not priced | **not priced** | not priced | 5 |
-| **Total priced so far** | **172.79** | **184.82** | **235.92** | **5** |
+| **Total priced so far** | **174.36** | **186.39** | **239.06** | **5** |
 | **Claim** | 250.00 | 250.00 | 250.00 | |
-| **Left for the mechanical parts** | **77.21** | **65.18** | **14.08** | |
+| **Left for the mechanical parts** | **75.64** | **63.61** | **10.94** | |
 
 One thing makes the average total optimistic: several lines (AS5600, magnets, motor leads, servos) have only one listing behind them. The motor price assumes the magnet can go on the rear shaft end of an ordinary single-shaft motor; if the first real motor shows that it cannot, the motor line must be re-priced. If a price changes, a line is added or the room left turns out too small for the mechanical parts, say so here and either lower the cost or change the claim in the [README](../../README.md) and the [overview](../01-overview.md).
 
@@ -107,6 +109,7 @@ One thing makes the average total optimistic: several lines (AS5600, magnets, mo
 | 2026-10-27 | Changed to planning prices at the high end of the usual range, with no listing links. Added the wire lines and a S$15 PCB estimate. LCSC kept as fixed. |
 | 2026-10-27 | Heatsink and fuse removed from the calculation. Motors S$15 each, servos S$5 each. |
 | 2026-10-27 | Single-shaft motors accepted (magnet on the open rear shaft end); the dual-shaft caveat was removed. |
+| 2026-10-27 | Inline fuse added back (7.5 A mini blade holder, S$1.57). Heatsinks stay out. |
 | 2026-10-27 | 24 V power wire changed from 14 AWG to 16 AWG and priced from a listing (red and black, 5 m each, S$4.53 each). |
 | 2026-10-27 | CAN wire priced from a listing (2 x 5 m, 22 AWG, S$2.66 each). |
 | 2026-10-27 | Price survey added ([price-survey.csv](price-survey.csv)). The budget now uses the average survey price, shows the low and high ranges, and links to the AliExpress listings. |

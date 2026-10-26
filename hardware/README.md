@@ -13,6 +13,7 @@ Everything needed to build the electronics and the mechanics of the arm.
 | [`pcb/kicad/`](pcb/kicad/) | KiCad project for the joint board (open `SixEyes_v1.2.kicad_pro`) | ready (v1.2) |
 | [`pcb/libraries/`](pcb/libraries/) | Symbols, footprints and 3D models the project uses (nothing to install) | ready |
 | [`pcb/bom/`](pcb/bom/) | Bill of materials with LCSC part numbers | ready (v1.2) |
+| [`bom/`](bom/) | Bill of materials for the whole arm (quantities and specs, no prices) | electronics ready, mechanical to come |
 | [`pcb/drawings/`](pcb/drawings/) | Signed schematic and layout plots (PDF), v1.2 | ready |
 | [`pcb/gerbers/`](pcb/gerbers/) | Files to send to a PCB manufacturer | ready (v1.2) |
 | [`mechanical/stl/`](mechanical/stl/) | 3D-printable parts | coming soon |

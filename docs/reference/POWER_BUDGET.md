@@ -42,7 +42,7 @@ Using the 24 V per-board numbers above. The Elbow board includes the servo rail.
 | Shoulder L to Shoulder R | about 0.6 A | about 1.3 A | about 4.1 A | Shoulder R, Elbow |
 | Shoulder R to Elbow | about 0.3 A | about 0.7 A | about 3.0 A | Elbow only |
 
-The worst case of about 6 to 8 A at the supply matches the design reference. Treat **8 A** as the planning limit for the supply segment.
+The worst case of about 6 to 8 A at the supply matches the design reference. Treat about **7.5 A** (the fuse rating) as the planning limit for the supply segment.
 
 ## 4. The servo rail
 
@@ -61,7 +61,7 @@ The worst case of about 6 to 8 A at the supply matches the design reference. Tre
 | Segment lengths (placeholders) | supply to Base 1.0 m, other hops 0.4 m | **To be confirmed from the real arm.** |
 | Worst-case drop, supply to Elbow | about 0.3 V in total | 2 conductors × length × 13 mΩ/m × segment current, summed over the four segments. The Elbow sees about 23.7 V of 24 V. |
 | Terminal | KF128-5.08, 12 to 22 AWG, 24 A | One wire per terminal, separate IN and OUT blocks, ferrules on the ends. |
-| Fuse | **8 A** at the supply (design reference); **3 A slow-blow** for the first bench test | Outside the board. The inline fuse is required by the [build guide](../04-build-the-pcb.md). |
+| Fuse | **7.5 A** mini blade fuse in an inline holder at the supply (the design reference suggested 8 A); for the first bench test use a current-limited supply or a 5 A blade fuse | Outside the board. The inline fuse is required by the [build guide](../04-build-the-pcb.md). |
 | 24 V supply | at least 6.5 A (about 156 W) to cover the worst case; 10 A gives margin | The supply is not in the cost budget. |
 
 Limits to keep in mind: TMC2209 maximum VM is about 29 V, XL4016 maximum input is 40 V, and the board TVS (P6KE30A) cannot protect both parts from a big transient. Use a regulated 24 V supply that stays at or below about 26 V.
