@@ -33,6 +33,35 @@ solder-on modules, fully through-hole) is built four times and linked by a CAN b
   motors sharing one gearbox.
 - **Feedback:** an AS5600 magnetic encoder reads a magnet on each motor shaft.
 
+## Ways to drive the arm
+
+The Base board has two links: **USB** to a computer and **Bluetooth** to a phone. Only one of them is in
+control at a time, and the arm says which in every status message. That gives three modes:
+
+| Mode | Who drives | Link | What it is for | Software to use |
+|---|---|---|---|---|
+| **1. Phone** | Your phone | Bluetooth | Move the gripper by moving your phone; record a movement and replay it, with no computer | [sixeyes-drive](https://github.com/studiosanka/sixeyes-drive) |
+| **2. Phone, computer records** | Your phone | Bluetooth for the phone, USB for the computer | Record training data (joint positions and what the phone commanded) while a person teleoperates | [lerobot-sixeyes](https://github.com/studiosanka/lerobot-sixeyes) (listen-only), on top of [sixeyes-host](https://github.com/studiosanka/sixeyes-host) |
+| **3. Computer** | A program on your computer | USB | Scripts, motion planning, or a trained AI policy driving the arm | [sixeyes-host](https://github.com/studiosanka/sixeyes-host) (Python), [sixeyes_ros2](https://github.com/studiosanka/sixeyes_ros2) (ROS 2 and MoveIt), [lerobot-sixeyes](https://github.com/studiosanka/lerobot-sixeyes) (LeRobot policy) |
+
+The arm needs no computer for Mode 1. Every tool also has a **practice arm**, so you can try the software
+before the hardware is built.
+
+### Software repositories
+
+| Repository | What it is | Used in mode |
+|---|---|---|
+| [sixeyes-host](https://github.com/studiosanka/sixeyes-host) | The USB protocol (version 1), a Python library, a simulated arm and the `sixeyes-bringup` tool (ports, home, jog, check encoders, monitor). Every other tool builds on it | 2, 3 (and the protocol for 1) |
+| [sixeyes-drive](https://github.com/studiosanka/sixeyes-drive) | A web page for Chrome on an Android phone: hold a button and move the phone, record and replay | 1 |
+| [lerobot-sixeyes](https://github.com/studiosanka/lerobot-sixeyes) | Plugins for [LeRobot](https://github.com/huggingface/lerobot): record data (Mode 2) and run a policy (Mode 3) | 2, 3 |
+| [sixeyes_ros2](https://github.com/studiosanka/sixeyes_ros2) | ROS 2 and MoveIt control, in a mock arm, Gazebo or the real arm | 3 |
+| [sixeyes_description](https://github.com/studiosanka/sixeyes_description) | The arm's shape and joint limits (URDF), shared by ROS 2 and the phone page. Placeholder numbers until the CAD is final | 1, 3 |
+
+How the firmware in this repository fits in: it speaks the host protocol on both links
+([`firmware/joint_node`](firmware/joint_node/docs/README.md)), arbitrates who is in control, and can store
+motions on the arm itself. The Bluetooth service is described there. All of these repositories are
+work in progress and **none has run on a real arm yet**; each one's README has its own status table.
+
 ## Start here
 
 1. Read the [documentation index](docs/README.md) and follow the numbered guides.
@@ -48,6 +77,9 @@ firmware/    joint_node: the code that runs on the four joint boards
 docs/        build guides (start with docs/README.md) and reference documents
 ```
 
+The software that talks to the arm lives in separate repositories under
+[studiosanka](https://github.com/studiosanka); see [Ways to drive the arm](#ways-to-drive-the-arm).
+
 Earlier generations of the project (Alpha and Beta boards, experiments) are kept for reference on the
 `archive/dev-2026-10` branch.
 
@@ -59,7 +91,8 @@ Earlier generations of the project (Alpha and Beta boards, experiments) are kept
 | KiCad schematic and PCB layout | ✅ v1.2 complete (checks clean, not yet built or tested) |
 | Manufacturing files (Gerbers) | ✅ v1.2 in [`hardware/pcb/gerbers/`](hardware/pcb/gerbers/) |
 | [Budget (S$250 claim)](docs/reference/BUDGET.md) | 🚧 being verified; S$186 priced at average survey prices, S$64 left for the mechanical parts |
-| Firmware (`firmware/joint_node`) | 🚧 builds for all four board roles; not yet run on hardware; several modules are stubs |
+| Firmware (`firmware/joint_node`) | 🚧 builds for all four board roles, with the host link, Bluetooth, homing and motion slots; not yet run on hardware |
+| Host software (USB, phone, ROS 2, LeRobot) | 🚧 written in [separate repositories](#software-repositories); tested against practice arms only |
 | CAN protocol | 🚧 draft |
 | 3D-printable parts | ⬜ not yet published |
 | Build guides | 🚧 outlines (overview and parts list drafted) |
