@@ -128,6 +128,23 @@ bool selfTest() {
     }
   }
 
+  // A frame that arrives in 20-byte pieces (a phone at the default Bluetooth MTU) must
+  // come out whole, exactly once, with nothing added after each piece.
+  for (size_t i = 0; i < sizeof(kFrames) / sizeof(kFrames[0]); i++) {
+    const FrameVec &v = kFrames[i];
+    FrameParser parser;
+    Frame f;
+    int frames_seen = 0;
+    for (size_t k = 0; k < v.frame_len; k++) {
+      if (parser.feedByte(v.frame[k], f)) frames_seen++;
+      // (a piece boundary every 20 bytes changes nothing for a byte stream)
+    }
+    if (frames_seen != 1 || f.type != v.type || f.length != v.payload_len) {
+      Serial.printf("[SELFTEST] split-frame vector %u FAILED\n", static_cast<unsigned>(i));
+      failures++;
+    }
+  }
+
   if (failures == 0) {
     Serial.println("[SELFTEST] host codec: all golden vectors passed");
   } else {

@@ -1,7 +1,9 @@
 // Base-only: the Bluetooth Low Energy link to a phone (Mode 1).
 //
-// It carries exactly the same frames as the USB link (comms/host_link), one
-// frame per GATT value. This file is only the transport; the protocol rules,
+// It carries exactly the same frames as the USB link (comms/host_link). Both
+// directions are a plain byte stream: a frame may arrive or leave in several
+// pieces (a phone at the default 23-byte MTU writes 20 bytes at a time), and it
+// ends at its own closing 0x00, not at the end of a GATT value. This file is only the transport; the protocol rules,
 // including control-source arbitration and the 200 ms watchdog, live in
 // HostLink. Built only with -DSIXEYES_BLE (the Base environments).
 //

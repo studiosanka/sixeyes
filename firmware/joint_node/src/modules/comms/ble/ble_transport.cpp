@@ -113,8 +113,8 @@ class TxCallbacks : public NimBLECharacteristicCallbacks {
 } tx_callbacks;
 
 // Sends one encoded frame as notifications. A frame normally fits one value
-// (MTU 247); with a small MTU it is split into pieces and the host must treat
-// the link as a byte stream (the 0x00 at the end of the frame ends it).
+// (MTU 247); with a small MTU it is split into pieces. Either way the phone
+// treats the link as a byte stream: a frame ends at its own closing 0x00.
 bool bleSink(const uint8_t *data, size_t len, void *) {
   if (!authorised_ || !subscribed_ || !tx_) return false;
   const size_t payload = mtu_ > 3 ? mtu_ - 3 : 20;
@@ -218,12 +218,21 @@ void update(uint32_t now_ms) {
         link_->onFrame(SIXEYES_CONTROL_SOURCE_BLE, frame, now_ms);
       }
     }
-    // One frame per write: a phone may leave off the closing 0x00. Supply it, so the
-    // frame is complete (an extra 0x00 is an empty frame, which the parser ignores).
-    if (chunk.data[chunk.len - 1] != 0 && parser_.feedByte(0, frame)) {
-      saw_traffic_ = true;
-      last_rx_ms_ = now_ms;
-      link_->onFrame(SIXEYES_CONTROL_SOURCE_BLE, frame, now_ms);
+    // Nothing is added after a write. The link is a byte stream, as in PROTOCOL.md: a
+    // phone at the default 23-byte MTU writes a frame in 20-byte pieces (a targets
+    // frame is 30 bytes), and the frame ends at its own closing 0x00, never at the
+    // end of a write. The phone always sends that 0x00.
+  }
+
+  // A small MTU splits every state frame over several notifications. Say so once
+  // per connection, so a slow or choppy link is not a mystery.
+  static uint16_t warned_mtu = 0;
+  const uint16_t mtu = mtu_;
+  if (connected() && mtu != warned_mtu) {
+    warned_mtu = mtu;
+    if (mtu < 70) {
+      Logging::warnf("BleTransport: MTU is only %u, so each 62-byte state frame is split over several "
+                     "notifications (50 Hz); the phone should negotiate a larger MTU", static_cast<unsigned>(mtu));
     }
   }
 }
