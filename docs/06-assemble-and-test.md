@@ -1,6 +1,6 @@
 # 6. Assemble and test
 
-**Status: draft.** Some of this is written from the design only, because the mechanical parts are not published and the firmware does not move the motor yet. Each step says what is real and what is still to come.
+**Status: draft.** Some of this is written from the design only, because the mechanical parts are not published and the firmware's motor movement and homing have not run on a real arm yet. Each step says what is real and what is still to come.
 
 Read the safety rules in [Build the PCB](04-build-the-pcb.md) first. They apply here too.
 
@@ -35,7 +35,7 @@ Read the safety rules in [Build the PCB](04-build-the-pcb.md) first. They apply 
 
 ## 4. Moving the motor
 
-**Not available yet.** The step generation and homing are not written in the joint firmware. The standalone test rig showed that the driver and motor run, but that is separate test code. This section will be written when the joint firmware can move the motor.
+**Not ready to use yet.** The joint firmware can step the motor and home each joint, but this has never run on a real motor, and the homing stop positions are placeholders. This section will be written once homing has been run on the bench. Until then, read "Before the first homing run" in the [firmware README](../firmware/joint_node/docs/README.md) before you start homing on any arm.
 
 ## If something goes wrong
 

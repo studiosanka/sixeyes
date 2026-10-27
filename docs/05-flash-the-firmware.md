@@ -1,6 +1,6 @@
 # 5. Flash the firmware
 
-**Status: draft.** The firmware builds for all four board roles, but it has **not been tested on a real SixEyes board yet**, and the motor movement is not written yet (see [what works](#what-works-today)). Flashing and checking that the driver talks UART does work today.
+**Status: draft.** The firmware builds for all four board roles, but it has **not been tested on a real SixEyes board yet**, and the motor movement and homing are written but have never run on a real motor (see [what works](#what-works-today)). Flashing and checking that the driver talks UART does work today.
 
 ## Before you start
 
@@ -33,6 +33,8 @@ The same firmware runs on every board. Each board needs the build for **its own 
    ```
    If you don't see the start-up messages, **press RESET** with the monitor open.
 
+   *Base board only:* its USB port also carries the computer link (a binary protocol). Text messages stop as soon as a host program (for example the bring-up tool) sends its first message, so use the monitor on its own to read the start-up messages.
+
 ## Check that UART works (the important check)
 
 After a reset, the monitor must show the driver starting. **This is what you want to see:**
@@ -60,7 +62,14 @@ The board is not ready, and the motor must not be used. Switch off and check, in
 - It reads the AS5600 encoder.
 - The CAN safety logic and the E-stop path are written.
 
-**Not written yet:** the step generation (the motor will not move), homing, and the translation between the computer link and CAN. Check the [firmware README](../firmware/joint_node/docs/README.md) for the current list.
+- The **Base board** speaks the SixEyes host protocol over USB and Bluetooth: a computer or a phone can say hello, read the arm's state at 50 Hz and send commands. A new phone can pair only in the first minute after power-up (switch the arm off and on to open it again), or while the BOOT button on Base is held for 3 seconds.
+- The **BOOT button on any board is a stop button**: it stops the whole arm. A real emergency stop must be a switch or plug in the 24 V line.
+
+- The firmware can **step the motor** (with a bench console, `v1_bench`, to try one motor on its own) and **home** each joint (drive it slowly into a hard stop and notice the stall). **This has never run on a real motor, and the stop positions are placeholders.** Do not start homing on an arm until you have read "Before the first homing run" in the [firmware README](../firmware/joint_node/docs/README.md).
+
+- The Base board can **save up to four motions** in its flash and play them back on its own (draft protocol messages).
+
+The Bluetooth link, the stop button and the saved motions are written but have never run on real hardware. Check the [firmware README](../firmware/joint_node/docs/README.md) for the current list.
 
 ## Next
 

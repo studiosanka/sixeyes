@@ -17,7 +17,7 @@ The legacy protocol assumed one laptop-facing MCU (the Beta follower) directly o
 Consequences for the protocol:
 - Laptop commands must be addressed to a specific node, not broadcast implicitly to "the follower."
 - Heartbeat/safety can no longer rely on one MCU's local watchdog — loss of the *bus* heartbeat, or loss of any *individual node*, must both be detectable and must both result in that node's motors disabling.
-- Base is the only bridge to ROS2 — it either relays raw CAN frames over USB (transparent bridge) or terminates the JSON-over-USB link and re-encodes to CAN (translating bridge). This doc assumes **Base translates**: ROS2 still speaks a JSON/ASCII protocol to Base over USB (reusing `usb_bridge_node` mostly as-is), and Base fans commands out to CAN. This keeps ROS2-side code changes minimal — only `usb_bridge_node`'s downstream framing changes, not its message vocabulary.
+- Base is the only bridge to the laptop (and, later, a phone over Bluetooth). It **translates**: it terminates the host link and fans commands out to CAN. **Update 2026-10-27:** the host side is no longer the legacy JSON/ASCII vocabulary. It is the SixEyes **host protocol v1**, a binary framed protocol (COBS + CRC-16) defined in the `sixeyes-host` repo (`protocol/PROTOCOL.md`), carrying six joint values in radians at the output shaft. Base's firmware for it is `comms/host_link` and `comms/usb_bridge`. This document is only the joint-bus (CAN) side, and the CAN messages below are unchanged except for the notes marked 2026-10-27 (units, telemetry rates).
 
 ## 2. Node Addressing
 
@@ -53,7 +53,7 @@ All multi-byte fields little-endian. CAN 2.0A data payload is max 8 bytes; large
 ### 4.1 E-STOP — `0x000`, 1 byte, any sender
 | Byte | Field |
 |---|---|
-| 0 | `reason` (0=laptop/ROS2 request, 1=heartbeat timeout, 2=node-detected fault, 3=manual button) |
+| 0 | `reason` (0=laptop/ROS2 request, 1=heartbeat timeout, 2=node-detected fault, 3=manual button: the BOOT button on any board, which Base reports to the host as `hw_estop`) |
 
 Every node — including the one that raised it — treats *receipt* of this frame as an immediate, unconditional motor disable, regardless of source. No acknowledgement required; the frame itself is the action. Any node may transmit it (a stepper-detected stall on Elbow disables the whole arm, not just Elbow), which is why it is bus-wide rather than addressed.
 
@@ -66,7 +66,7 @@ Every node — including the one that raised it — treats *receipt* of this fra
 ### 4.3 NODE_STATUS — `0x020 + node_id`, node → Base, 10 Hz
 | Byte | Field |
 |---|---|
-| 0 | `fault_bitmask` |
+| 0 | `fault_bitmask`. Bit 0 encoder fault, bit 1 homing failed (faults); bit 4 homed, bit 5 homing (state). Bits 1, 4 and 5 added 2026-10-27 |
 | 1 | `motors_enabled` (0/1) |
 | 2 | `stall_detected` (0/1 — set by encoder-vs-commanded-position divergence exceeding threshold during normal operation; see §4.3a) |
 | 3–6 | `encoder_position` (int32, latest AS5600 encoder reading, raw counts (12-bit, 4096 per turn, unwrapped to multi-turn)) |
@@ -80,9 +80,9 @@ Every node — including the one that raised it — treats *receipt* of this fra
 ### 4.4 MOTOR_TARGET — `0x100 + node_id`, Base → node
 | Byte | Field |
 |---|---|
-| 0–3 | `target_position` (float32, degrees) |
+| 0–3 | `target_position` (float32, degrees **at the output shaft**; the node multiplies by the 1:25 ratio for its motor, and Shoulder R applies its mirrored direction itself. Clarified 2026-10-27) |
 | 4–5 | `seq` (uint16) |
-| 6 | `flags` (bit0 = home request, bit1 = reset fault) |
+| 6 | `flags` (bit0 = home request, bit1 = reset fault, bit2 = abort: stop where you are and abort homing; added 2026-10-27). With bit0 or bit2 set, `target_position` is ignored. For a home request `seq` names the homing run, and a node ignores a repeat of a `seq` it already handled |
 
 ### 4.5 SERVO_TARGET — `0x110 + 4` (Elbow only)
 | Byte | Field |
@@ -91,7 +91,9 @@ Every node — including the one that raised it — treats *receipt* of this fra
 | 1–4 | `target_angle` (float32, degrees) |
 | 5–6 | `seq` (uint16) |
 
-### 4.6 ENCODER_TELEMETRY — `0x200 + node_id`, node → Base, control-loop rate
+### 4.6 ENCODER_TELEMETRY — `0x200 + node_id`, node → Base, control-loop rate (firmware sends it at 50 Hz, enough for the host's state stream; see the bus-load note in §5)
+
+The `position` is in **motor-shaft** counts: the AS5600 magnet sits on the motor's rear shaft end (decided 2026-10-27), so one output turn is 25 × 4096 = 102,400 counts. Counts are relative to the first read after boot, which is why every boot starts unhomed.
 | Byte | Field |
 |---|---|
 | 0–3 | `position` (int32, raw AS5600 encoder counts) |
@@ -118,6 +120,8 @@ This is the actual novel risk in v1: safety used to be one MCU watching one USB 
 
 - **CAN bus bandwidth**: steady-state per tick, worst case, Base sends 4× `MOTOR_TARGET` and the nodes reply with 4× `ENCODER_TELEMETRY` = 8 frames/tick, each ~130 µs worst-case on the wire → ~1.06 ms bus-busy time per tick. At 500 Hz (2.0 ms tick) that's ~53% bus utilization from motor+telemetry traffic alone; at 400 Hz (2.5 ms tick), ~43%. Both eat into the margin needed for arbitration/retry headroom under burst conditions (fault reports, heartbeat, E-stop all competing for the same wire). At 250 Hz (4.0 ms tick), utilization drops to ~27%, comfortably under the conventional ~30–40% ceiling for safety-critical CAN loading.
 - **MCU headroom**: legacy ran ESP32-S3 (dual-core, 240 MHz). v1's ESP32-C6 (Super Mini) is single-core RISC-V at 160 MHz, and each node now does more per-core work than before — CAN RX/TX, I²C encoder polling (AS5600, roughly 150–250 µs per read at 400 kHz, estimate), TMC2209 UART, and (Elbow) servo PWM — with no second core to offload any of it.
+
+**Bus load with the host link (estimate, 2026-10-27):** the host's state stream runs at 50 to 100 Hz. Per state period Base sends 4 x `MOTOR_TARGET` (the Elbow's 3 servos add 3 more `SERVO_TARGET` frames when targets change) and the three other nodes each send 1 `ENCODER_TELEMETRY`, plus `NODE_STATUS` at 10 Hz and `BUS_HEARTBEAT` at 50 Hz. At about 130 us per frame worst case that is roughly 11 frames x 100 Hz x 130 us = 14% of the bus at 100 Hz, 7% at 50 Hz. Both are inside the ~30 to 40% ceiling above. Measure it on the real bus.
 
 250 Hz is a starting point, not a hard ceiling — revisit upward once bench profiling on real ESP32-C6 hardware shows spare CPU cycles and bus headroom.
 
