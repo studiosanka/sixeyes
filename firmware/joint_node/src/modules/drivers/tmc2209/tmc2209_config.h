@@ -86,6 +86,12 @@ static constexpr uint16_t TMC2209_STANDALONE_MICROSTEPS = 16;
 
 #define TMC2209_SGTHRS_DEFAULT 100
 
+// Sensorless homing (StallGuard). PLACEHOLDERS: StallGuard depends on motor, current, speed and the
+// gearbox load, so both numbers must be tuned on the real joint. A stall is reported when SG_RESULT
+// falls to 2 x SGTHRS or below (datasheet); a higher SGTHRS stalls earlier.
+static constexpr uint16_t TMC2209_HOMING_RUN_MA = 400; // gentle on the hard stop; below the run current
+static constexpr uint8_t TMC2209_SGTHRS_HOMING = 60;
+
 // Backlash compensation: microsteps to inject on direction reversal.
 // For 3D-printed cycloidal gearboxes tune empirically.
 #define TMC2209_BACKLASH_STEPS 50

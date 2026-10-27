@@ -38,6 +38,28 @@ public:
 
   bool isSafeToOperate() const;
 
+  // Enables this node's motor driver, but only if it is safe: a BUS_HEARTBEAT has
+  // been seen within its timeout and no bus fault is latched. Returns false (and
+  // leaves the driver off) otherwise. Nothing enables the motor except this.
+  bool requestEnable();
+  bool busHeartbeatAlive() const;
+  // MotorController tells us when it disabled itself (for example when homing failed).
+  void noteMotorsDisabled() { motors_enabled_ = false; }
+
+  // A bus-wide E-STOP was received, or (Base) a node went silent. Latched
+  // until the host sends clear_fault; Base reports it as fault bit `bus_lost`.
+  void latchBusFault();
+  void clearBusFault(); // also clears the manual-stop latch
+  bool hasBusFault() const { return bus_fault_; }
+
+  // A person pressed a stop button (any board's BOOT button, see stop_button.h):
+  // stops this node now and tells every other node over the bus. Base reports
+  // it to the host as fault bit hw_estop. Latched until clear_fault.
+  void manualStop();
+  // Called for a received E-STOP whose reason is MANUAL_BUTTON.
+  void latchManualStop();
+  bool hasManualStop() const { return manual_stop_; }
+
   // Directly disables this node's motors. Called both from update()'s
   // timeout logic and from the CAN RX E-STOP handler in main.cpp.
   void emergencyDisable();
@@ -48,4 +70,6 @@ private:
   unsigned long last_bus_heartbeat_ms_ = 0;
   unsigned long last_node_status_ms_[5] = {}; // indexed by node_id 1-4, Base-only use
   bool motors_enabled_ = false;
+  bool bus_fault_ = false;
+  bool manual_stop_ = false;
 };

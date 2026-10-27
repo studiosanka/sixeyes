@@ -11,11 +11,17 @@ void onEstopFrameReceived(const uint8_t *data, uint8_t len) {
     // E-STOP is not a reason to assume safety; fail toward disabled.
     Logging::error("EstopHandler: malformed E-STOP frame, disabling anyway");
     CanSafetyTask::instance().emergencyDisable();
+    CanSafetyTask::instance().latchBusFault();
     return;
   }
   const auto *frame = reinterpret_cast<const EstopFrame *>(data);
   Logging::warnf("EstopHandler: E-STOP received, reason=%u", frame->reason);
   CanSafetyTask::instance().emergencyDisable();
+  if (frame->reason == static_cast<uint8_t>(EstopReason::MANUAL_BUTTON)) {
+    CanSafetyTask::instance().latchManualStop(); // Base shows this to the host as hw_estop
+  } else {
+    CanSafetyTask::instance().latchBusFault();
+  }
 }
 
 } // namespace EstopHandler

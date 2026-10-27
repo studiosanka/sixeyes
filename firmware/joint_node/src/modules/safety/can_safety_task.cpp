@@ -45,6 +45,7 @@ void CanSafetyTask::update() {
       Logging::warnf("CanSafetyTask: node %u status timeout, firing E-STOP", node_id);
       EstopFrame frame{static_cast<uint8_t>(EstopReason::HEARTBEAT_TIMEOUT)};
       CanDriver::instance().send(CAN_ID_ESTOP, frame);
+      latchBusFault(); // so the host sees it (fault bit bus_lost) until it clears it
       // Reset so we don't spam E-STOP every tick while the node stays dead --
       // one E-STOP is sufficient, every node latches motors-disabled on
       // receipt regardless of how many times it's sent.
@@ -69,6 +70,44 @@ void CanSafetyTask::onNodeStatusReceived(uint8_t node_id) {
 }
 
 bool CanSafetyTask::isSafeToOperate() const { return motors_enabled_; }
+
+bool CanSafetyTask::busHeartbeatAlive() const {
+  return last_bus_heartbeat_ms_ != 0 &&
+         (millis() - last_bus_heartbeat_ms_) <= BUS_HEARTBEAT_TIMEOUT_MS;
+}
+
+bool CanSafetyTask::requestEnable() {
+#ifdef BENCH_CONSOLE
+  // Bench build: a lone board has no Base and no heartbeat. NEVER in the arm's firmware.
+  if (bus_fault_) return false;
+#else
+  if (bus_fault_ || !busHeartbeatAlive()) return false;
+#endif
+  MotorController::instance().enable();
+  motors_enabled_ = true;
+  return true;
+}
+
+void CanSafetyTask::latchBusFault() { bus_fault_ = true; }
+void CanSafetyTask::clearBusFault() {
+  bus_fault_ = false;
+  manual_stop_ = false;
+}
+
+void CanSafetyTask::latchManualStop() {
+  manual_stop_ = true;
+  bus_fault_ = true;
+}
+
+void CanSafetyTask::manualStop() {
+  Logging::warn("CanSafetyTask: stop button pressed, stopping the arm");
+  // Stop here first, then tell the others. A dropped frame is still safe: every
+  // node also stops on its own if the bus heartbeat or a node goes silent.
+  emergencyDisable();
+  latchManualStop();
+  EstopFrame frame{static_cast<uint8_t>(EstopReason::MANUAL_BUTTON)};
+  CanDriver::instance().send(CAN_ID_ESTOP, frame);
+}
 
 void CanSafetyTask::emergencyDisable() {
   motors_enabled_ = false;

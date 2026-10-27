@@ -43,7 +43,8 @@ public:
   // DRV_STATUS (0x6F) - contains stall detection flag and other diagnostic bits
   bool readDrvStatus(uint8_t motor_index, uint32_t &status);
 
-  // Check if motor has stalled via DRV_STATUS bit 24 (UART, use for homing)
+  // True when SG_RESULT is at or below the stall level (2 x SGTHRS) set by enableStallGuard().
+  // UART only; false if StallGuard is off or the read failed.
   bool isStalled(uint8_t motor_index);
 
   // Fast stall check via DIAG GPIO — no UART overhead, use in control loop
@@ -52,14 +53,17 @@ public:
   // MSCNT (0x6A) — microstep counter, 0–1023 within one electrical cycle
   bool readMSCNT(uint8_t motor_index, uint16_t &mscnt);
 
-  // SG_RESULT — StallGuard2 load value 0–1023 (0 = stall) from DRV_STATUS[9:0]
+  // SG_RESULT (register 0x41): StallGuard4 load value, high = light load, near 0 = stalled.
+  // Returns false if the UART read failed, so a failed read is never mistaken for a stall.
   bool readSGResult(uint8_t motor_index, uint16_t &sg_result);
 
   // IOIN (0x06) - read input/output pins state
   bool readIOIN(uint8_t motor_index, uint32_t &ioin);
 
   // === StallGuard Homing ===
-  // Enable StallGuard detection on motor with given sensitivity (0-255)
+  // Prepares StallGuard on the motor with the given threshold (0-255, higher stalls earlier): StealthChop
+  // on (StallGuard4 only works in it), CoolStep off (it changes the current and so the reading), and
+  // TCOOLTHRS set so the reading is valid at any speed. Poll readSGResult()/isStalled() while moving.
   void enableStallGuard(uint8_t motor_index,
                         uint8_t sensitivity = TMC2209_SGTHRS_DEFAULT);
   void disableStallGuard(uint8_t motor_index);
@@ -85,4 +89,5 @@ private:
   TMC2209Stepper *drivers[TMC2209_NUM_DRIVERS];
   uint16_t last_current_ma_[TMC2209_NUM_DRIVERS] =
       {}; // Track configured current
+  uint8_t sgthrs_[TMC2209_NUM_DRIVERS] = {}; // threshold set by enableStallGuard()
 };
