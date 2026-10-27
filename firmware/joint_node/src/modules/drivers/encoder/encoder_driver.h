@@ -31,9 +31,11 @@ public:
   // the last good value and latches the fault flag.
   int32_t readPosition();
 
-  // Counts -> degrees of whatever shaft the magnet is on. Whether that is the
-  // motor shaft or the 1:25 gearbox output (and therefore any gear-ratio
-  // factor) is a mechanical decision that is not made yet.
+  // Counts -> degrees of the shaft the magnet is on. That is the MOTOR shaft
+  // (the magnet sits on the motor's rear shaft end, decided 2026-10-27), so this
+  // is motor degrees, not joint degrees. For output-shaft values use
+  // motorCountsToOutputRad() in modules/config/joint_config.h, which applies
+  // the 1:25 ratio and the Shoulder R direction.
   static float countsToDegrees(int32_t counts);
 
   // True if the last I2C transaction failed or the magnet is not detected

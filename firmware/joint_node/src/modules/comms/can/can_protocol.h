@@ -41,6 +41,13 @@ struct BusHeartbeatFrame {
   uint8_t  ros2_alive; // 0/1
 }; // 5 bytes
 
+// NODE_STATUS fault_bitmask bits. Bits 0-1 are faults; bits 4-5 report state
+// (the protocol doc calls the byte fault_bitmask; homing state rides in it).
+static constexpr uint8_t NODE_FAULT_ENCODER       = 1 << 0; // AS5600 not answering, or no magnet seen
+static constexpr uint8_t NODE_FAULT_HOMING_FAILED = 1 << 1; // homing stopped without finding the stop
+static constexpr uint8_t NODE_STATE_HOMED         = 1 << 4; // the node has a reference and follows targets
+static constexpr uint8_t NODE_STATE_HOMING        = 1 << 5; // homing is running
+
 struct NodeStatusFrame {
   uint8_t  fault_bitmask;
   uint8_t  motors_enabled;   // 0/1
@@ -49,10 +56,15 @@ struct NodeStatusFrame {
 }; // 7 bytes
 
 struct MotorTargetFrame {
-  float    target_position; // degrees
+  float    target_position; // degrees at the OUTPUT shaft (the node multiplies by the 1:25 ratio)
   uint16_t seq;
-  uint8_t  flags; // bit0 = home request, bit1 = reset fault
+  uint8_t  flags; // MOTOR_FLAG_* below
 }; // 7 bytes
+
+// MOTOR_TARGET flags. A frame with HOME or ABORT set ignores target_position.
+static constexpr uint8_t MOTOR_FLAG_HOME        = 1 << 0; // start homing
+static constexpr uint8_t MOTOR_FLAG_RESET_FAULT = 1 << 1; // clear stall and homing-failed latches
+static constexpr uint8_t MOTOR_FLAG_ABORT       = 1 << 2; // stop where you are; abort homing (added 2026-10-27)
 
 struct ServoTargetFrame {
   uint8_t  servo_index; // 0-2
