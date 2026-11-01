@@ -127,9 +127,9 @@ The designs, decisions and review are by the Studio Sanka team.
 | Project Lead | Vincent Santosa ([@markantosa](https://github.com/markantosa)) |
 | Firmware & System Architecture | Vincent Santosa ([@markantosa](https://github.com/markantosa)) |
 | Joint PCB Design (v1) and earlier Follower PCB Design | Vincent Santosa ([@markantosa](https://github.com/markantosa)) |
+| Cycloidal Drive Design Lead | Chai ([@sevenovaa](https://github.com/sevenovaa)) |
 | Leader PCB Design (Alpha/Beta, archived) | Audrey ([@odriyy](https://github.com/odriyy)) |
 | Mechanical Design (cycloidal drive, original design) | Ren Jie ([@trenjie03](https://github.com/trenjie03)) |
-| Mechanical Design (continuing the cycloidal drive design) | Chai ([@sevenovaa](https://github.com/sevenovaa)) |
 
 ## Contact
 
