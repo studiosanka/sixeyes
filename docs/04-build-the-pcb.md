@@ -1,6 +1,6 @@
 # 4. Build the PCB
 
-**Status: draft.** The v1.2 layout is finished, but **this board has not been built yet**, so check every part name against the **silkscreen on your board**. The silkscreen is always right. The names here match the final design.
+**Status: draft.** The v1.2 layout is finished and **the first board has been built**. Its electronics (the driver on UART, STEP/DIR and the motor) have been tested on the bench, but not yet on a full arm. Check every part name against the **silkscreen on your board**. The silkscreen is always right. The names here match the final design.
 
 | Front | Back |
 |:-:|:-:|
@@ -57,32 +57,39 @@ It is the only surface-mount part, and it needs space, so it goes **first**.
 2. Hold the inductor with tweezers on the pads and reheat that pad until it settles flat.
 3. Solder the other pad. Check both joints have melted solder, not just a blob.
 
-## Step 2: the back side
+## Step 2: the back side, small parts and the encoder's header pins
 
 Turn the board over. Follow the **back silkscreen** exactly.
 
 1. **Resistors first:** **R2 (6.2 kΩ)**, **R5 (10 kΩ)**, and **RSV1, RSV2, RSV3 (1 kΩ)** on the **Elbow only**. Solder from the opposite side, then trim the legs.
 2. **The TVS diode DPW1 (P6KE30A).** **The stripe on the part must match the stripe on the silkscreen.** It protects the 24 V input, so a backwards one will not protect anything.
-3. **Then the AS5600 module (U1).** It has **no sockets**: its pins are soldered **straight into the board**.
-   - Match the module to the silkscreen outline, with its pins in the right holes and the right way round.
-   - Keep it **flat and square** to the board while you solder one pin, then check, then do the rest. The distance between the sensor chip and the motor magnet depends on it.
-   - Don't bend the module after it is soldered.
+3. **The male header pins for the AS5600 encoder module: the pins only, not the module.** The module is **bought with its header pins unsoldered**. Solder its own 1×3 row and 1×4 row of male header pins into the two slotted hole rows marked on the back silkscreen.
+   - **Why the module waits:** the module sits over the solder points of the parts on the front. If it goes on now you cannot reach them. It is soldered on **last** (Step 3, item 6).
+   - Keep the pins **straight and square** to the board: solder one pin of each row, check, then do the rest. A tilted row means a tilted module later, and the distance between the sensor chip and the motor magnet depends on it.
 
 ## Step 3: the front side, small to tall
 
 Work in this order. Tick each group when it is done.
 
-1. **Resistors:** **R1 (1.5 kΩ)**, **R3 (1 kΩ)**, **R4 (10 kΩ)** and **RCN1 (120 Ω)**. Use the multimeter if you can't read the colours.
-2. **Diodes:** **D1 (1N5819)** and **DBK1 (MBR1060)**. **The stripe on the part must match the stripe on the silkscreen.** For DBK1, test first: the lead that **beeps to the metal tab** is the cathode, and it goes in the **square pad**.
-3. **Small capacitors:** 1 µF (C1, C2, CC1), 100 nF (CCN1, CCN2, CIN_LD1) and 33 nF (CF1). They have no polarity.
-4. **The CAN chip UCN1 (MCP2562):** the **notch or dot is pin 1**. Match it to the notch on the silkscreen.
-5. **Headers and sockets:**
+1. **Small parts: resistors, diode and small capacitors.**
+   - **Resistors:** **R1 (1.5 kΩ)**, **R3 (1 kΩ)**, **R4 (10 kΩ)** and **RCN1 (120 Ω)**. Use the multimeter if you can't read the colours.
+   - **Diode D1 (1N5819):** **the stripe on the part must match the stripe on the silkscreen.**
+   - **Small capacitors:** 1 µF (C1, C2, CC1), 100 nF (CCN1, CCN2, CIN_LD1) and 33 nF (CF1). They have no polarity.
+   - **The CAN chip UCN1 (MCP2562):** the **notch or dot is pin 1**. Match it to the notch on the silkscreen.
+2. **The larger parts: the buck converter, the LDO and the big diode.**
+   - **UBK1 (XL4016E1, the buck converter)** and **ULD1 (LM2940, the 5 V regulator):** the **metal tab goes on the side marked on the silkscreen**. UBK1's tab is a live switching node: **never connect its heatsink to ground.**
+   - **DBK1 (MBR1060, the big diode):** **the stripe on the part must match the stripe on the silkscreen.** Test first: the lead that **beeps to the metal tab** is the cathode, and it goes in the **square pad**.
+3. **Electrolytic capacitors (COUT_LD1, CDR1, COUT1, CIN1):** the **stripe is the minus side**. Match it to the marked side on the silkscreen. A backwards capacitor can burst.
+   - **CDR1 is the 47 µF 50 V capacitor, not 100 µF.** It sits **under the driver module**, so it has to be the low part. A tall capacitor here touches the underside of the TMC2209.
+4. **Headers and sockets:**
    - JMC1, JMC2 (the Super Mini) and JDR1, JDR2 (the driver module). **Tip:** plug the sockets onto the module first and solder them with the module in place, so they stay parallel.
    - **JDR4**, a 2-pin socket next to the EN marker. The module's VREF and DIAG pads connect here (Step 6).
    - JCN3 (2-pin jumper), and JSV1 to JSV3 (servo headers) on the **Elbow only**.
-6. **Terminals:** the screw terminals JPW1, JPW2, JCN1, JCN2 with the wire openings facing the board edge. The JST motor connector JDR3 with its opening facing the edge. The silkscreen labels each terminal: ⊖ and ⊕ on JPW1/JPW2, H and L (also CANH, CANL) on JCN1/JCN2, +24V and GND at the board edge. Check them before wiring.
-7. **Electrolytic capacitors (COUT_LD1, CDR1, COUT1, CIN1):** the **stripe is the minus side**. Match it to the marked side on the silkscreen. A backwards capacitor can burst.
-8. **The two big regulators (ULD1 LM2940 and UBK1 XL4016E1):** the **metal tab goes on the side marked on the silkscreen**. UBK1's tab is a live switching node: **never connect its heatsink to ground.**
+5. **Terminals:** the screw terminals JPW1, JPW2, JCN1, JCN2 with the wire openings facing the board edge. The JST motor connector JDR3 with its opening facing the edge. The silkscreen labels each terminal: ⊖ and ⊕ on JPW1/JPW2, H and L (also CANH, CANL) on JCN1/JCN2, +24V and GND at the board edge. Check them before wiring.
+6. **Last of all: the AS5600 encoder module (U1).** Turn the board over and solder the module onto the header pins you fitted in Step 2.
+   - Match the module to the silkscreen outline, with its pads on the right pins and the right way round.
+   - Keep it **flat and square** to the board while you solder one pin, then check, then do the rest. Don't bend the module after it is soldered.
+   - The pins stick out toward the motor, so keep that area clear.
 
 ## Step 4: double-check everything
 
@@ -91,7 +98,8 @@ Do this before any power. Use the magnifying glass.
 - [ ] Every electrolytic capacitor stripe matches the silkscreen
 - [ ] Every diode stripe matches the silkscreen (D1, DBK1 on the front, DPW1 on the back)
 - [ ] The UCN1 notch matches pin 1 on the silkscreen
-- [ ] The AS5600 module is flat, square, and soldered on every pin (back side)
+- [ ] The encoder header pins are straight, and the AS5600 module is flat, square, and soldered on every pin (back side)
+- [ ] CDR1 is the 47 µF part (low), not a tall 100 µF one
 - [ ] The metal tab of ULD1 and UBK1 is on the marked side
 - [ ] JDR3 and the screw terminals face the board edge
 - [ ] Every joint is shiny and no two pins touch
@@ -131,8 +139,9 @@ You will confirm UART when you flash the firmware (Step 9): the Super Mini must 
 
 1. **Super Mini:** the silkscreen outline is labelled **SuperMini ESP32-C6**. The USB-C end goes to the end marked on the silkscreen, and it must sit flat in both sockets.
 2. **Driver module:** the outline is labelled **TMC2209**. Find the **EN pin** on the module. It must be at the **EN marker** on the board, and the VM pin must be at the same end. **A module the wrong way round is destroyed when you power it.** Look at both rows.
-3. Do **not** connect the motor yet.
-4. **JDR4** (next to the EN marker) is a 2-pin socket for the module's **VREF** (pin 1) and **DIAG** (pin 2) pads. Join those two module pads to JDR4 with two short wires, or solder a 2-pin header onto the module's pads so it plugs in (BIGTREETECH: J1 and J2; MKS: JP5 and JP4). **VREF must go to JDR4 pin 1.**
+3. **CDR1 sits under the driver module.** With the module seated, check it does not touch the capacitor. If it does, the capacitor is the wrong (tall) part.
+4. Do **not** connect the motor yet.
+5. **JDR4** (next to the EN marker) is a 2-pin socket for the module's **VREF** (pin 1) and **DIAG** (pin 2) pads. Join those two module pads to JDR4 with two short wires, or solder a 2-pin header onto the module's pads so it plugs in (BIGTREETECH: J1 and J2; MKS: JP5 and JP4). **VREF must go to JDR4 pin 1.**
 
 ## Step 7: first power-up and checks
 

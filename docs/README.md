@@ -8,7 +8,7 @@ planned but not written yet.
 | 1 | [Overview: what you are building](01-overview.md) | draft |
 | 2 | [Parts and bill of materials](02-parts-and-bom.md) | draft |
 | 3 | [Print the mechanics](03-print-the-mechanics.md) | coming soon |
-| 4 | [Build the PCB](04-build-the-pcb.md) | draft (the board is not built yet: check against your board's silkscreen) |
+| 4 | [Build the PCB](04-build-the-pcb.md) | draft (the first board is built and its electronics are bench-tested: check against your board's silkscreen) |
 | 5 | [Flash the firmware](05-flash-the-firmware.md) | draft (flashing works; motion and homing are written but never run on a real motor) |
 | 6 | [Assemble and test](06-assemble-and-test.md) | draft (partly written; not tested on a real arm) |
 

@@ -137,5 +137,5 @@ Bugs and questions: https://github.com/studiosanka/sixeyes/issues
 
 ---
 
-Built by [Studio Sanka](https://github.com/studiosanka), a non-profit mechatronics design collaborative in
+Built by [Studio Sanka](https://github.com/studiosanka), a not-for-profit mechatronics design collaborative in
 Singapore. **Last updated:** October 2026.
